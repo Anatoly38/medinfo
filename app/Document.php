@@ -79,6 +79,16 @@ class Document extends Model
         return $query->where('dtype', 2);
     }
 
+    public function scopeConsolidate($query)
+    {
+        return $query->where('dtype', 3);
+    }
+
+    public function scopeIndexes($query)
+    {
+        return $query->where('dtype', 4);
+    }
+
     public function scopeOfUPF($query, $ou, $period, $form)
     {
         return $query

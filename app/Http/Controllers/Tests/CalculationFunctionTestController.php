@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tests;
 
+use App\Medinfo\UnitTree;
 use App\Table;
 use Illuminate\Http\Request;
 
@@ -44,15 +45,20 @@ class CalculationFunctionTestController extends Controller
 
     public function calculation()
     {
-        $rule = "расчет(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С88Г4+Ф30Т1001С90Г4+Ф30Т1001С133Г4+Ф30Т1001С134Г4)"; //
-        $list = "юл, ~село";
-        $table = 2; // форма 47 таблица 0100
-        $document = \App\Document::find(19251);
+        $rule = "расчет(Ф30Т2510С7Г5/Ф100Т1000С1Г3*100)"; //
+        $list = "*";
+        //$table = 2; // форма 47 таблица 0100
+        $table = 1031; // форма 110-пр1 таблица 1000
+        //$document = \App\Document::find(19251); // ф.47 2017 год
+        $document = \App\Document::find(23753);  // ф. 110-пр1 2018 год
+        $level_descent_units = \App\Unit::getDescendants($document->ou_id);
+
         $trimed = preg_replace('/,+\s+/u', ' ', $list);
         $lists = array_unique(array_filter(explode(' ', $trimed)));
-        $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+        $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists, $level_descent_units);
         asort($units);
-        $prop = '[' . implode(',', $units) . ']';
+        //dd($units);
+        //$prop = '[' . implode(',', $units) . ']';
 
         $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($rule);
         $tockenstack = $lexer->getTokenStack();
@@ -68,8 +74,9 @@ class CalculationFunctionTestController extends Controller
         //dd($props);
         //$evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $props, $document);
-        $evaluator->makeConsolidation();
+        $evaluator->makeConsolidationIndex();
         //dd($evaluator->calculationLog);
+        dd($evaluator->evaluate());
         //echo $evaluator->evaluate();
         foreach ($evaluator->calculationLog as &$el) {
             $unit = \App\Unit::find($el['unit_id']);

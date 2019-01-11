@@ -31,7 +31,7 @@ class FunctionCompiler
         return $compiled_cache;
     }
 
-    public static function compileUnitList(array $lists)
+    public static function compileUnitList(array $lists, array $levelunits = [])
     {
         $addlists = [];
         $subtractlists = [];
@@ -66,6 +66,10 @@ class FunctionCompiler
         if (count($limitationunits) > 0) {
             $units = array_intersect($units, $limitationunits);
         }
+        // Если список учреждений полученнный от уровня консолидированного документа не пуст - ограничиваем вывод и по нему тоже
+        if (count($levelunits) > 0) {
+            $units = array_intersect($units, $levelunits);
+        }
 
         //return \App\Unit::whereIn('id', $units)->get(['id', 'unit_code', 'unit_name'])->sortBy('unit_code');
         return $units;
@@ -92,16 +96,20 @@ class FunctionCompiler
     {
         $units = [];
         switch ($staticlist) {
-            case 'оп' :
-            case 'обособподр' :
-                $units = \App\Unit::SubLegal()->get()->pluck('id')->toArray();
+            case '*' :
+            case 'все' :
+                $units = \App\Unit::Active()->pluck('id')->toArray();
                 break;
             case 'юл' :
             case 'юрлица' :
-                $units = \App\Unit::Legal()->get()->pluck('id')->toArray();
+                $units = \App\Unit::Active()->Legal()->get()->pluck('id')->toArray();
+                break;
+            case 'оп' :
+            case 'обособподр' :
+                $units = \App\Unit::Active()->SubLegal()->get()->pluck('id')->toArray();
                 break;
             case 'село' :
-                $units = \App\Unit::Country()->get()->pluck('id')->toArray();
+                $units = \App\Unit::Active()->Country()->get()->pluck('id')->toArray();
                 break;
             default :
                 throw new \Exception("Статический список/группа '$staticlist' не существует");
