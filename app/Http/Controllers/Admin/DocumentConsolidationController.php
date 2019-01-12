@@ -109,10 +109,10 @@ class DocumentConsolidationController extends Controller
                         $evaluator->clearCalculationLog();
                         $evaluator->makeConsolidation();
                         $value = $evaluator->evaluate();
-                        if ($value) {
+                        //if ($value) {
                             Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table->id, 'row_id' => $r->id, 'col_id' => $col->id, 'value' => $value]);
                             $cell_affected++;
-                        }
+                        //}
                         //dd($evaluator->calculationLog);
                         ConsolidationRuleHelper::logConsolidation($evaluator->calculationLog, $document->id, $r->id, $col->id);
                     }
