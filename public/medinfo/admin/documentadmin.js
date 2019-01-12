@@ -74,7 +74,8 @@ initfilterdatasources = function() {
             datatype: "json",
             datafields: [
                 { name: 'id' },
-                { name: 'form_code' }
+                { name: 'form_code' },
+                { name: 'form_name' }
             ],
             id: 'id',
             localdata: forms
@@ -955,9 +956,13 @@ initnewdocumentwindow = function () {
         source: formsDataAdapter,
         displayMember: "form_code",
         valueMember: "id",
-        placeHolder: "Выберите форму:",
-        width: 250,
-        height: 25
+        placeHolder: "Выберите формы:",
+        width: 350,
+        height: 25,
+        renderer: function (index, label, value) {
+            let rec = forms[index];
+            return "("+rec.form_code+")" + " " + rec.form_name;
+        }
     });
     $("#selectPeriod").jqxDropDownList({
         theme: theme,

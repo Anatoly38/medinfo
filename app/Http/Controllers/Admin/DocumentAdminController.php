@@ -34,7 +34,7 @@ class DocumentAdminController extends Controller
         $settings = StateHelper::getUserLastState(Auth::guard('admins')->id());
         $monitorings = \App\Monitoring::all();
         $albums = \App\Album::orderBy('album_name')->get();
-        $forms = Form::orderBy('form_index')->get(['id', 'form_code']);
+        $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $states = DicDocumentState::all(['code', 'name']);
         $dtypes = DicDocumentType::all(['code', 'name']);
         $periods = Period::orderBy('begin_date', 'desc')->get(['id', 'name']);
