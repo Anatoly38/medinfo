@@ -106,9 +106,9 @@ class CalculationFunctionEvaluator
     {
         $cells = [];
         property_exists($this, 'markOnlyFirstArg') ? $markOnlyFirstArg = true : $markOnlyFirstArg = false;
+        //dd($this->caStack);
         foreach ($iteration as $cell_label => $props) {
             if (!array_key_exists($cell_label, $this->caStack)) {
-
                 throw new \Exception("Ключ " . $cell_label . " не найден в стэке узлов адресов ячеек");
             }
             $node = $this->caStack[$cell_label];

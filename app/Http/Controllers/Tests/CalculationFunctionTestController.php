@@ -45,7 +45,7 @@ class CalculationFunctionTestController extends Controller
 
     public function calculation()
     {
-        $rule = "показатель((Ф14Т2000С10.4.2Г8+Ф14Т2000С10.4.3Г8)/(Ф14Т2000С10.4.2Г4+Ф14Т2000С10.4.3Г4+Ф14Т2000С10.4.2Г8))"; //
+        $rule = "показатель((Ф14Т2000С10.4.2Г8+Ф14Т2000С10.4.3Г8)/(Ф14Т2000С10.4.2Г4+Ф14Т2000С10.4.3Г4+Ф14Т2000С10.4.2Г8+Ф14Т2000С10.4.3Г8)*100)"; //
         $list = "*";
         //$table = 2; // форма 47 таблица 0100
         $table = 1031; // форма 110-пр1 таблица 1000
@@ -65,6 +65,7 @@ class CalculationFunctionTestController extends Controller
         $tockenstack = $lexer->getTokenStack();
         $parser = new \App\Medinfo\DSL\ControlFunctionParser($tockenstack);
         $parser->func();
+        //dd($parser);
         $translator = \App\Medinfo\DSL\Translator::invoke($parser, Table::find($table));
         //$translator->setUnits($units);
         $translator->prepareIteration();
