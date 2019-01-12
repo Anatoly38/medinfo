@@ -84,7 +84,7 @@ class TableAdminController extends Controller
         $newtable->form_id = $request->form_id;
         $newtable->table_index = $table_index;
         $newtable->table_code = $request->table_code;
-        $newtable->table_name = $request->table_name;
+        $newtable->table_name = pg_escape_string($request->table_name);
         $newtable->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
         $newtable->medstatnsk_id = empty($request->medstatnsk_id) ? null : $request->medstatnsk_id;
         $newtable->transposed = $request->transposed;

@@ -265,7 +265,7 @@ function setQueryString() {
     return "&form_id=" + $("#form_id").val() +
     "&table_index=" + $("#table_index").val() +
     "&table_code=" + $("#table_code").val() +
-    "&table_name=" + $("#table_name").val() +
+    "&table_name=" + encodeURIComponent($("#table_name").val()) +
     "&medstat_code=" + $("#medstat_code").val() +
     "&medstatnsk_id=" + $("#medstatnsk_id").val() +
     "&transposed=" + ($("#transposed").val() ? 1 :0) +
