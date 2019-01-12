@@ -45,12 +45,13 @@ class CalculationFunctionTestController extends Controller
 
     public function calculation()
     {
-        $rule = "расчет(Ф30Т2510С7Г5/Ф100Т1000С1Г3*100)"; //
+        $rule = "показатель(Ф30Т2510С7Г5/Ф100Т1000С1Г3*100)"; //
         $list = "*";
         //$table = 2; // форма 47 таблица 0100
         $table = 1031; // форма 110-пр1 таблица 1000
         //$document = \App\Document::find(19251); // ф.47 2017 год
-        $document = \App\Document::find(23753);  // ф. 110-пр1 2018 год
+        //$document = \App\Document::find(23753);  // ф. 110-пр1 2018 год Госуд.
+        $document = \App\Document::find(23756);  // ф. 110-пр1 2018 год Иркутск
         $level_descent_units = \App\Unit::getDescendants($document->ou_id);
 
         $trimed = preg_replace('/,+\s+/u', ' ', $list);
@@ -74,7 +75,7 @@ class CalculationFunctionTestController extends Controller
         //dd($props);
         //$evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $props, $document);
-        $evaluator->makeConsolidationIndex();
+        $evaluator->makeConsolidation();
         //dd($evaluator->calculationLog);
         dd($evaluator->evaluate());
         //echo $evaluator->evaluate();

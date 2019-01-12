@@ -224,7 +224,7 @@ class CalculationFunctionEvaluator
         return null;
     }
 
-    public function logIteration($ou_id, $value)
+    public function logIteration($ou_id, $value, $cell = null)
     {
         $this->calculationLog[] = ['unit_id' => $ou_id, 'value' => $value];
     }

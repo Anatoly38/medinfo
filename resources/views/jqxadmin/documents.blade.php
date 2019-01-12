@@ -149,10 +149,12 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-8">
+                <div class="col-sm-offset-1 col-sm-10">
                     <div class="checkbox">
                         <label><input type="checkbox" id="selectPrimary"> Первичные</label>
                         <label><input type="checkbox" id="selectAggregate"> Сводные</label>
+                        <label><input type="checkbox" id="selectConsolidate"> Консолидированные</label>
+                        <label><input type="checkbox" id="selectIndexes"> Показатели</label>
                     </div>
                 </div>
             </div>
@@ -212,7 +214,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=053') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=056') }}"></script>
 @endpush
 
 @section('inlinejs')

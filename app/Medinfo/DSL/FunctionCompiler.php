@@ -70,7 +70,6 @@ class FunctionCompiler
         if (count($levelunits) > 0) {
             $units = array_intersect($units, $levelunits);
         }
-
         //return \App\Unit::whereIn('id', $units)->get(['id', 'unit_code', 'unit_name'])->sortBy('unit_code');
         return $units;
     }

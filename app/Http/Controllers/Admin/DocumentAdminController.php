@@ -99,6 +99,8 @@ class DocumentAdminController extends Controller
         $forms = explode(",", $request->forms);
         $create_primary = $request->primary;
         $create_aggregate = $request->aggregate;
+        $create_consolidate = $request->consolidate;
+        $create_indexes = $request->indexes;
         $period = Period::find($request->period);
         $initial_state = $request->state;
         return \App\Medinfo\DocumentCreate::documentBulkCreate(
@@ -110,7 +112,9 @@ class DocumentAdminController extends Controller
             $period,
             $initial_state,
             $create_primary,
-            $create_aggregate
+            $create_aggregate,
+            $create_consolidate,
+            $create_indexes
         );
     }
 

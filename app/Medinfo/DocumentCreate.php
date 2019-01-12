@@ -18,7 +18,15 @@ use App\Document;
 class DocumentCreate
 {
 
-    public static function documentBulkCreate($mode, array $units, Monitoring $monitoring, array $forms, int $album, Period $period, $initial_state, $create_primary = true, $create_aggregate = false )
+    public static function documentBulkCreate($mode, array $units,
+                                              Monitoring $monitoring,
+                                              array $forms, int $album,
+                                              Period $period,
+                                              $initial_state,
+                                              $create_primary = true,
+                                              $create_aggregate = false,
+                                              $create_consolidate = false,
+                                              $create_indexes = false )
     {
         $allowprimary = false;
         $allowaggregate = false;
@@ -54,7 +62,30 @@ class DocumentCreate
                 }
                 if ($create_aggregate && $allowaggregate) {
                     $newdoc['dtype'] = 2;
-                    //Document::create($newdoc);
+                    try {
+                        Document::create($newdoc);
+                        $i++;
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        $errorCode = $e->errorInfo[0];
+                        if($errorCode == '23505'){
+                            $duplicate++;
+                        }
+                    }
+                }
+                if ($create_consolidate) {
+                    $newdoc['dtype'] = 3;
+                    try {
+                        Document::create($newdoc);
+                        $i++;
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        $errorCode = $e->errorInfo[0];
+                        if($errorCode == '23505'){
+                            $duplicate++;
+                        }
+                    }
+                }
+                if ($create_indexes) {
+                    $newdoc['dtype'] = 4;
                     try {
                         Document::create($newdoc);
                         $i++;

@@ -73,10 +73,10 @@ class DocumentConsolidationController extends Controller
         $scripts = [];
         $lists = [];
         $cell_affected = 0;
-        $unitlist_empty = 0;
+        $level_descent_units = \App\Unit::getDescendants($document->ou_id);
         // если "пустой" список - выбираем все МО с текущего уровня
-        $lists[0] = UnitTree::getIds($document->ou_id)->whereIn('node_type', [3,4])->pluck('id')->toArray();
-        asort($lists[0]);
+        //$lists[0] = UnitTree::getIds($document->ou_id)->whereIn('node_type', [3,4])->pluck('id')->toArray();
+        //asort($lists[0]);
         //dd($lists[0]);
         foreach ($rows as $r) {
             foreach($cols as $col) {
@@ -88,6 +88,9 @@ class DocumentConsolidationController extends Controller
                             $units = $lists[$list_using->list];
                         } else {
                             $units = json_decode($list_using->listscript->properties, true);
+                            if (count($level_descent_units) > 0) {
+                                $units = array_intersect($units, $level_descent_units);
+                            }
                             $lists[$list_using->list] = $units;
                         }
                     }

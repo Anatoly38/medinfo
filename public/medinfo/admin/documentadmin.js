@@ -142,7 +142,6 @@ getcheckedunits = function() {
     let ids = [];
     let checkedRows;
     let i;
-    console.log(filter_mode);
     if (filter_mode === 1) {
         checkedRows = motree.jqxTreeGrid('getCheckedRows');
         for (i = 0; i < checkedRows.length; i++) {
@@ -930,6 +929,8 @@ initnewdocumentwindow = function () {
     });
     $('#selectPrimary').jqxCheckBox({ width: '150px' });
     $('#selectAggregate').jqxCheckBox({ width: '150px' });
+    $('#selectConsolidate').jqxCheckBox({ width: '150px' });
+    $('#selectIndexes').jqxCheckBox({ width: '150px' });
     $("#selectMonitoring").jqxDropDownList({
         theme: theme,
         source: selectmon_dataAdapter,
@@ -982,6 +983,8 @@ initnewdocumentwindow = function () {
         let data;
         let primary;
         let aggregate;
+        let consolidate;
+        let indexes;
         let selectedunits = getcheckedunits();
         let selectedmonitoring = $("#selectMonitoring").jqxDropDownList('getSelectedItem').value;
         let selectedalbum = $("#selectAlbum").jqxDropDownList('getSelectedItem').value;
@@ -999,12 +1002,15 @@ initnewdocumentwindow = function () {
         //console.log(selectedstate);
         primary = $('#selectPrimary').jqxCheckBox('checked') ? 1 : 0 ;
         aggregate = $('#selectAggregate').jqxCheckBox('checked') ? 1 : 0;
-        if (primary === 0 && aggregate === 0) {
+        consolidate = $('#selectConsolidate').jqxCheckBox('checked') ? 1 : 0;
+        indexes = $('#selectIndexes').jqxCheckBox('checked') ? 1 : 0;
+        if (primary === 0 && aggregate === 0 && consolidate === 0 && indexes === 0) {
             raiseError("Не выбрано ни одного типа создаваемых документов (первичные, сводные");
             return false;
         }
         data = "&filter_mode=" + filter_mode + "&units=" + selectedunits + "&monitoring=" + selectedmonitoring + "&album=" + selectedalbum;
-        data += "&forms=" + selectedforms + "&period=" + selectedperiod + "&state=" + selectedstate + "&primary=" + primary + "&aggregate=" + aggregate;
+        data += "&forms=" + selectedforms + "&period=" + selectedperiod + "&state=" + selectedstate;
+        data += "&primary=" + primary + "&aggregate=" + aggregate + "&consolidate=" + consolidate + "&indexes=" + indexes;
         $.ajax({
             dataType: 'json',
             url: createdocuments_url,
