@@ -376,8 +376,9 @@ class ControlFunctionParser extends Parser {
     {
         $key = $node->content . '|' . $this->currentArgIndex;
         if (array_key_exists($key, $this->celladressStack)) {
-              throw new \Exception('Ссылка на одну и ту же ячейку дублируется в одном выражении');
-            }
+            // TODO: Записать дублирование в лог. В некоторых случаях, при рассчете показателей ячейки дублируются в выражении.
+            // throw new \Exception('Ссылка на одну и ту же ячейку дублируется в одном выражении');
+        }
         $node->content = $key;
         $this->celladressStack[$key]['node'] = $node;
         $this->celladressStack[$key]['arg'] = $this->currentArgIndex;
