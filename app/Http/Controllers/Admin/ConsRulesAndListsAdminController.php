@@ -143,7 +143,7 @@ class ConsRulesAndListsAdminController extends Controller
     protected function validateRuleRequest()
     {
         return [
-            'rule' => 'required|min:1|max:512',
+            'rule' => 'required|min:1|max:1024',
             'comment' => 'max:128',
             'cells' => 'required',
         ];
