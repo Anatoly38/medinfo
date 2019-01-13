@@ -45,13 +45,13 @@ class CalculationFunctionTestController extends Controller
 
     public function calculation()
     {
-        $rule = "показатель((Ф14Т2000С10.4.2Г8+Ф14Т2000С10.4.3Г8)/(Ф14Т2000С10.4.2Г4+Ф14Т2000С10.4.3Г4+Ф14Т2000С10.4.2Г8+Ф14Т2000С10.4.3Г8)*100)"; //
+        $rule = "показатель(Ф30Т2350С2.2Г3/Ф30Т2350С2Г3*100)"; //
         $list = "*";
         //$table = 2; // форма 47 таблица 0100
         $table = 1031; // форма 110-пр1 таблица 1000
         //$document = \App\Document::find(19251); // ф.47 2017 год
-        //$document = \App\Document::find(23753);  // ф. 110-пр1 2018 год Госуд.
-        $document = \App\Document::find(23756);  // ф. 110-пр1 2018 год Иркутск
+        $document = \App\Document::find(23753);  // ф. 110-пр1 2018 год Госуд.
+        //$document = \App\Document::find(23756);  // ф. 110-пр1 2018 год Иркутск
         $level_descent_units = \App\Unit::getDescendants($document->ou_id);
 
         $trimed = preg_replace('/,+\s+/u', ' ', $list);

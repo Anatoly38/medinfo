@@ -1392,8 +1392,37 @@ let inittoolbarbuttons = function () {
     });
 };
 
+let initConsolidateFormButton = function () {
+    let csd = $("#СonsolidateDocument");
+    let cst = $("#СonsolidateTable");
+    csd.click(function () {
+        csd.attr('disabled', true );
+        cst.attr('disabled', true );
+        $("#CalculationProgress").show();
+        $.get('/admin/consolidate/'+ doc_id, function( data ) {
+            if (typeof data.error !== 'undefined') {
+                raiseError(data.error);
+                return false;
+            }
+            raiseInfo("Произведен рассчет документа");
+            dgrid.jqxGrid('updatebounddata');
+            $("#CalculationProgress").hide();
+            csd.attr('disabled', false );
+            cst.attr('disabled', false );
+        }).fail(function () {
+            raiseError('При рассчете документа произошла ошибка');
+            csd.attr('disabled', false );
+            cst.attr('disabled', false );
+        });
+    });
+};
+
 let initConsolidateButton = function () {
-    $("#Сonsolidate").click(function () {
+    let cst = $("#СonsolidateTable");
+    let csd = $("#СonsolidateDocument");
+    cst.click(function () {
+        cst.attr('disabled', true );
+        csd.attr('disabled', true );
         $("#CalculationProgress").show();
         $.get('/admin/cons_by_rule_list/'+ doc_id +'/' + current_table, function( data ) {
             if (typeof data.error !== 'undefined') {
@@ -1403,9 +1432,14 @@ let initConsolidateButton = function () {
             raiseInfo("Произведен рассчет текущей таблицы");
             dgrid.jqxGrid('updatebounddata');
             $("#CalculationProgress").hide();
+            cst.attr('disabled', false );
+            csd.attr('disabled', false );
+        }).fail(function () {
+            raiseError('При рассчете таблицы произошла ошибка');
+            cst.attr('disabled', false );
+            csd.attr('disabled', false );
         });
     });
-
 };
 
 /*let firefullscreenevent = function() {

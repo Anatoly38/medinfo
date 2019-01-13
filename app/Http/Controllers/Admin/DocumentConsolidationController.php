@@ -29,7 +29,7 @@ class DocumentConsolidationController extends Controller
         $tables = $document->form->tables->sortBy('table_index');
         $cell_affected = 0;
         foreach ($tables as $table) {
-            $result = $this->consolidatePivotTable($document, $table);
+            $result = $this->consolidatePivoteTableByRuleAndUnitlist($document, $table);
             $cell_affected += $result['cell_affected'];
         }
         return ['consolidated' => true, 'cell_affected' => $cell_affected];
