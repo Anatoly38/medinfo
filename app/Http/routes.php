@@ -117,6 +117,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/forms/create', 'Admin\FormAdminController@store');
     Route::patch('admin/forms/update/{form}', 'Admin\FormAdminController@update');
     Route::delete('admin/forms/delete/{form}', 'Admin\FormAdminController@delete');
+    Route::get('admin/forms/export/{form}', 'ImportExport\ExportFormStructure@jsonFormExport');
+
     Route::get('admin/tables', 'Admin\TableAdminController@index');
     Route::get('admin/fetchtables', 'Admin\TableAdminController@fetchTables' );
     Route::post('admin/tables', 'Admin\TableAdminController@store');

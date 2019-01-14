@@ -176,6 +176,28 @@ initformactions = function() {
             }
         });
     });
+    $("#export").click(function () {
+        let row = fl.jqxGrid('getselectedrowindex');
+        if (row === -1) {
+            raiseError("Выберите запись для экспорта структуры");
+            return false;
+        }
+        let rowid = fl.jqxGrid('getrowid', row);
+        $.ajax({
+            dataType: 'json',
+            url: '/admin/forms/export/' + rowid,
+            method: "GET",
+            success: function (data, status, xhr) {
+                if (typeof data.error !== 'undefined') {
+                    raiseError(data.message);
+                } else {
+                    raiseInfo(data.message);
+                }
+                $("#formList").jqxGrid('updatebounddata');
+            },
+            error: xhrErrorNotificationHandler
+        });
+    });
 };
 
 function setQueryString() {

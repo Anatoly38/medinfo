@@ -19,10 +19,10 @@ use App\ConsUseList;
 class DocumentConsolidationController extends Controller
 {
     //
-    public function __construct()
+/*    public function __construct()
     {
         $this->middleware('admins');
-    }
+    }*/
 
     public function consolidateDocument(Document $document)
     {
