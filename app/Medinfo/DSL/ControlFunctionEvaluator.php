@@ -161,6 +161,11 @@ class ControlFunctionEvaluator
     public function setCellValuesArbitrary()
     {
         $dtype = $this->document->dtype;
+        if ($this->document->dtype === 1) {
+            $primary = true;
+        } else {
+            $primary = false;
+        }
         $ou_id = $this->document->ou_id;
         //$period_id = $this->document->period_id;
         //$form_id = $this->document->form_id;
@@ -180,9 +185,23 @@ class ControlFunctionEvaluator
                     if (isset($cell_adress['codes']['p'])) {
                         $period = $this->getDocumentPeriod($cell_adress['codes']['p']);
                         //dd($period);
-                        $period ? $document = Document::OfTUPF($dtype, $ou_id, $period->id, $cell_adress['ids']['f'])->first() : $document = null;
+                        if ($period) {
+                            if ($primary) {
+                                $document = Document::OfTUPF($dtype, $ou_id, $period->id, $cell_adress['ids']['f'])->first();
+                            } else {
+                                $document = Document::NotPrimary()->OfUPF($ou_id, $period->id, $cell_adress['ids']['f'])->first();
+                            }
+
+                        } else {
+                            $document = null;
+                        }
                     } else {
-                        $document = Document::OfTUPF($dtype, $ou_id, $this->period->id, $cell_adress['ids']['f'])->first();
+                        if ($primary) {
+                            $document = Document::OfTUPF($dtype, $ou_id, $this->period->id, $cell_adress['ids']['f'])->first();
+                        } else {
+                            $document = Document::NotPrimary()->OfUPF($ou_id, $this->period->id, $cell_adress['ids']['f'])->first();
+                        }
+
                         //dd($document);
                     }
                     if ($document) {

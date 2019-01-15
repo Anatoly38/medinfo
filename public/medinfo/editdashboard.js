@@ -72,9 +72,11 @@ let tabledatacheck = function(table_id, type) {
             return false;
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
+        tcheck.attr('disabled', false);
     });
 };
 let beforecheck = function( xhr ) {
+    tcheck.attr('disabled', true);
     $("#tableprotocol").html('');
     //$("#cellvalidationprotocol").html('');
     $('#protocolloader').show();
@@ -572,6 +574,7 @@ let checkform = function () {
         url: formdatacheck_url +"/" + forcereload,
         data: data,
         beforeSend: function( xhr ) {
+            formcheck.attr('disabled', true);
             $('#formprotocolloader').show();
             $("#formprotocol").html('');
             $(".inactual-protocol").hide();
@@ -685,6 +688,7 @@ let checkform = function () {
             protocol_control_created = true;
             fgrid.jqxDataTable('refresh');
             dgrid.jqxGrid('refresh');
+            formcheck.attr('disabled', false);
         }
     }).fail(function(xhr, textStatus, errorThrown) {
         $('#formprotocol').html('');
@@ -694,6 +698,7 @@ let checkform = function () {
             return false;
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
+        formcheck.attr('disabled', false);
     });
 };
 let markTableInvalid = function (id) {
@@ -870,6 +875,7 @@ let gettableprotocol = function (data, status, xhr) {
     current_protocol_source[current_table_code] = data;
     fgrid.jqxDataTable('refresh');
     dgrid.jqxGrid('refresh');
+    tcheck.attr('disabled', false);
 };
 // Экспорт данных текущей таблицы в эксель
 let tabledataexport = function(table_id) {
@@ -1211,6 +1217,8 @@ function simpleSaving(event) {
             }
             else if (data.error === 1001) {
                 raiseError(data.comment);
+                // возвращаем старое значение
+                //dgrid.jqxGrid('setcellvalue', rowBoundIndex, colid, oldvalue);
             }
             else {
                 if (data.cell_affected) {

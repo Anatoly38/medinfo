@@ -74,6 +74,11 @@ class Document extends Model
         return $query->where('dtype', 1);
     }
 
+    public function scopeNotPrimary($query)
+    {
+        return $query->where('dtype', '<>', 1);
+    }
+
     public function scopeAggregate($query)
     {
         return $query->where('dtype', 2);
