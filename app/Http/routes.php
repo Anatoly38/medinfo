@@ -50,8 +50,8 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Шаблоны на основе jQWidgets для администрирования
     Route::get('admin', 'Admin\AdminController@index');
-    Route::get('medstat_export/{document}', 'Admin\MedstatExportController@msExport');
-    Route::get('medstat_table_export/{document}/{table}', 'Admin\MedstatExportController@tableMedstatExport');
+    Route::get('medstat_export/{document}', 'ImportExport\MedstatExportController@msExport');
+    Route::get('medstat_table_export/{document}/{table}', 'ImportExport\MedstatExportController@tableMedstatExport');
 
     // Менеджер пользователей - администраторов, экспертов
     Route::get('users', 'Admin\UserAdminController@index');

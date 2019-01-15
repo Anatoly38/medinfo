@@ -20,14 +20,19 @@
         }
     </style>
     <title id="Description">@yield('headertitle')</title>
-    <!-- Bootstrap core CSS -->
+@if(config('medinfo.ssl_connection'))
+    <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=003') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+@else
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
-    <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
-    <!-- jQWidgets CSS -->
     <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=003') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-    @stack('loadcss')
+@endif
+
+@stack('loadcss')
 </head>
 
 <body>

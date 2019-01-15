@@ -71,7 +71,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/formadmin.js?v=012') }}"></script>
+    <script src="{{ asset('/medinfo/admin/formadmin.js?v=013') }}"></script>
 @endpush
 
 @section('inlinejs')
