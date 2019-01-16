@@ -17,7 +17,13 @@
 				</div>
 			@endif
 			<p class="login-box-msg">Авторизация пользователя - исполнителя отчета</p>
-				<form role="form" method="POST" action="{{ url('/workerlogin') }}">
+				<form role="form" method="POST"
+				@if(config('medinfo.ssl_connection'))
+					action="{{ secure_url('/workerlogin') }}"
+				@else
+					action="{{ url('/workerlogin') }}"
+				@endif
+				  	>
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="form-group has-feedback">
 						<input type="text" class="form-control" placeholder="Имя пользователя" name="name" value="{{ old('name') }}">

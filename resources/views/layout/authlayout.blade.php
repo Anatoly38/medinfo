@@ -10,8 +10,6 @@
         <link href="{{ secure_asset('/adminlte/AdminLTE.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ secure_asset('/plugins/iCheck/flat/blue.css') }}" rel="stylesheet" type="text/css" />
     @else
-
-
         <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('/adminlte/AdminLTE.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('/plugins/iCheck/flat/blue.css') }}" rel="stylesheet" type="text/css" />
