@@ -87,8 +87,12 @@ class DatainputAuthController extends Controller
         if (method_exists($this, 'authenticated')) {
             return $this->authenticated($request, $user);
         }
-
-        return redirect()->intended('datainput');
+        if (config('medinfo.ssl_connection', true)) {
+            return redirect()->secure('datainput');
+        } else {
+            return redirect()->intended('datainput');
+        }
+        
     }
 
     protected function logAccess($id)
