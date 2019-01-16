@@ -151,7 +151,11 @@
 @endsection
 
 @push('loadcss')
-<link href="{{ asset('/css/medinfodocuments.css') }}" rel="stylesheet" type="text/css" />
+    @if(config('medinfo.ssl_connection'))
+        <link href="{{ secure_asset('/css/medinfodocuments.css') }}" rel="stylesheet" type="text/css" />
+    @else
+        <link href="{{ asset('/css/medinfodocuments.css') }}" rel="stylesheet" type="text/css" />
+    @endif
 @endpush
 
 @push('loadjsscripts')

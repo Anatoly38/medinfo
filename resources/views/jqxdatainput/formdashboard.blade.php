@@ -41,11 +41,19 @@
 @endsection
 
 @push('loadcss')
-    <link href="{{ asset('/css/medinfoeditform.css?v=014') }}" rel="stylesheet" type="text/css" />
+    @if(config('medinfo.ssl_connection'))
+        <link href="{{ secure_asset('/css/medinfoeditform.css?v=014') }}" rel="stylesheet" type="text/css" />
+    @else
+        <link href="{{ asset('/css/medinfoeditform.css?v=014') }}" rel="stylesheet" type="text/css" />
+    @endif
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/editdashboard.js?v=193') }}"></script>
+    @if(config('medinfo.ssl_connection'))
+        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=193') }}"></script>
+    @else
+        <script src="{{ asset('/medinfo/editdashboard.js?v=193') }}"></script>
+    @endif
 @endpush('loadjsscripts')
 
 @section('inlinejs')
