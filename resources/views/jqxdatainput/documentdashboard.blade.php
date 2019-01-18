@@ -160,9 +160,9 @@
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=175') }}"></script>
+        <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=176') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/documentdashboard.js?v=175') }}"></script>
+        <script src="{{ asset('/medinfo/documentdashboard.js?v=176') }}"></script>
     @endif
 @endpush
 

@@ -20,6 +20,8 @@
         }
     </style>
     <title id="Description">@yield('headertitle')</title>
+    {{-- TODO: Перейти на CDN ресурсы--}}
+    {{--<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">--}}
 @if(config('medinfo.ssl_connection'))
     <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=003') }}" rel="stylesheet" type="text/css" />

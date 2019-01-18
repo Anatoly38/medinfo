@@ -92,7 +92,6 @@ class DatainputAuthController extends Controller
         } else {
             return redirect()->intended('datainput');
         }
-        
     }
 
     protected function logAccess($id)
@@ -157,7 +156,11 @@ class DatainputAuthController extends Controller
     public function logout()
     {
         Auth::guard('datainput')->logout();
-        return redirect('workerlogin');
+        if (config('medinfo.ssl_connection', true)) {
+            return redirect()->secure('workerlogin');
+        } else {
+            return redirect('workerlogin');
+        }
     }
 
     /**

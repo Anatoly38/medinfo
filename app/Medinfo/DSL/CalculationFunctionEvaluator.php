@@ -209,7 +209,7 @@ class CalculationFunctionEvaluator
                 case 'MULTIPLY' :
                     return $left * $right;
                 case 'DIVIDE' :
-                    if ($right === 0) {
+                    if (!$right) {
                         return 0;
                     }
                     return $left / $right;
