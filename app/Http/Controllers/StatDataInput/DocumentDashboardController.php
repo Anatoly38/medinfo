@@ -113,7 +113,7 @@ class DocumentDashboardController extends Controller
         $top_node = $request->ou;
         $filter_mode = $request->filter_mode;
         $dtypes[] = 2;
-        $states = array();
+        $states = [];
         $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);
         $periods = explode(",", $request->periods);
@@ -129,7 +129,7 @@ class DocumentDashboardController extends Controller
         $worker_scope = WorkerScope::where('worker_id', $worker->id)->first()->ou_id;
         $top_node = $request->ou;
         $filter_mode = $request->filter_mode;
-        $dtypes[] = 3;
+        $dtypes = [ 3, 4 ];
         $states = array();
         $monitorings = explode(",", $request->monitorings);
         $forms = explode(",", $request->forms);

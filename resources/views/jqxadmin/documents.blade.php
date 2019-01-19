@@ -97,15 +97,16 @@
     <div>
         <div id="rightPanel" style="height: 100%">
             <div class="row">
-                <div class="col-md-2"><h4 style="margin-left: 10px">Документы</h4></div>
-                <div style="padding-top: 7px" class="col-md-10" id="checkedDocumentsToolbar">
-                    <div style='float: left; margin-right: 4px;' id='statesDropdownList'></div>
-                    <i style='height: 14px' class="fa fa-eraser fa-lg" id='eraseData' title="Очистить данные"></i>
-                    <i style='height: 14px' class="fa fa-trash-o fa-lg" id='deleteDocuments' title="Удалить документы"></i>
-                    <i style='height: 14px' class="fa fa-product-hunt fa-lg" id='protectAggregates' title="Защитить сводный документ"></i>
-                    <i style='height: 14px' class="fa fa-calculator fa-lg" id='Сalculate' title="Расчет (консолидация) данных"></i>
-                    <i style='height: 14px' class="fa fa-leaf fa-lg" id='ValueEditingLog' title="Журнал изменения данных"></i>
-                    <i style='height: 14px' class="fa fa-clone fa-lg" id='CloneDocuments' title="Клонирование документов в новый отчетный период"></i>
+                <div class="col-md-1"><h4 style="margin-left: 10px">Документы</h4></div>
+                <div class="col-md-11">
+                    <div class="btn btn-default" id="statesDropdownList"></div>
+                    <button class="btn btn-default navbar-btn" id="eraseData" title="Очистить данныеы"><span class='fa fa-eraser fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="deleteDocuments" title="Удалить документы"><span class='fa fa-trash-o fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="protectAggregates" title="Защитить сводный документ"><span class='fa fa-product-hunt fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="Сalculate" title="Расчет (консолидация) данных"><span class='fa fa-calculator fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="ValueEditingLog" title="Журнал изменения данных"><span class='fa fa-leaf fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="CloneDocuments" title="Клонирование документов в новый отчетный период"><span class='fa fa-clone fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="MedstatExport" title="Экспорт в формат Медстат (ЦИИОИЗ)"> <span class='fa fa-download fa-lg'></span></button>
                 </div>
             </div>
             <div class="row" id="documentList"></div>
@@ -214,7 +215,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=058') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=068') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -235,6 +236,7 @@
         let checkedstates = [{{ $settings['states'] or '' }}];
         let checkedperiods = [{{ $settings['periods'] or '' }}];
         let checkedfilled = '{{  $settings['filleddocs'] or '-1' }}';
+        let filter_mode = '{{  $settings['filter_mode'] or '1' }}'; // 1 - по территориям; 2 - по группам
         initfilterdatasources();
         initDropdowns();
         initsplitters();

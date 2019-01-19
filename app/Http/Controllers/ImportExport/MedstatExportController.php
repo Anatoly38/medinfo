@@ -138,8 +138,8 @@ class MedstatExportController extends Controller
 
     public function initDBF($ucode, $mscode, $fcode)
     {
-        $a1_code = '17'; // код отчетного года
-        $a2_code = '1125'; // код Иркутской области
+        $a1_code = config('medinfo.year_code'); // код отчетного года
+        $a2_code = config('medinfo.terr_code'); // код территории
         $a4_code = $mscode . '00'; // код формы
         $offset = 4; // сдвиг до индекса массива, где начинаются данные ячеек
 

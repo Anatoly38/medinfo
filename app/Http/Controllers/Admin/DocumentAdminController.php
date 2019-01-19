@@ -84,9 +84,11 @@ class DocumentAdminController extends Controller
             $filled = false;
         }
         $scopes = compact('worker_scope',  'filter_mode', 'top_node', 'dtypes', 'states', 'monitorings', 'forms', 'periods', 'filled');
+        //dd($scopes);
+        StateHelper::saveUserDocListState($request, $user);
         $d = new DocumentTree($scopes);
         $data = $d->get_documents();
-        StateHelper::saveUserDocListState($request, $user);
+        //dd($data);
         return $data;
     }
 

@@ -26,11 +26,17 @@
     <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=003') }}" rel="stylesheet" type="text/css" />
     <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
+{{--    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-green.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}
     <link href="{{ secure_asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
 @else
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=003') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
+{{--    <link href="{{ asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/jqwidgets/styles/jqx.material-green.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}
     <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
 @endif
 
@@ -70,6 +76,9 @@
 @stack('loadjsscripts')
 <script type="text/javascript">
     var theme = 'bootstrap';
+    //var theme = 'material';
+    //var theme = 'material-purple';
+    //var theme = 'material-green';
     var current_user_id = '{{ $worker->id }}';
     var current_user_role = '{{ $worker->role }}';
     var messagefeed = $("#messageFeed");

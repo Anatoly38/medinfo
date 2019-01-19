@@ -10,8 +10,8 @@ let changestate_url = '/admin/documentstatechange';
 let protectaggregate_url = '/admin/protectaggregates';
 let calculate_url = '/admin/consolidate/';
 let log_form_url = '/admin/documents/valuechanginglog/';
+let msexport_url = '/medstat_export/';
 let current_top_level_node = 0;
-let filter_mode = 1; // 1 - по территориям; 2 - по группам
 let mondropdown = $("#monitoringSelector");
 let periodDropDown = $('#periodSelector');
 let stateDropDown = $('#statusSelector');
@@ -40,6 +40,7 @@ datasources = function() {
         datafields: [
             { name: 'id', type: 'int' },
             { name: 'doctype', type: 'string' },
+            { name: 'dtype', type: 'int' },
             { name: 'unit_name', type: 'string' },
             { name: 'period', type: 'string' },
             { name: 'album', type: 'string' },
@@ -150,7 +151,6 @@ getcheckedunits = function() {
         }
     } else if (filter_mode === 2) {
         checkedRows = grouptree.jqxTreeGrid('getCheckedRows');
-        console.log(checkedRows);
         for (i = 0; i < checkedRows.length; i++) {
             ids.push(checkedRows[i].uid);
         }
@@ -204,16 +204,21 @@ initdocumentactions = function() {
     let protect = $("#protectAggregates");
     let calc =  $("#Сalculate");
     let velog = $("#ValueEditingLog");
+    let msexport = $("#MedstatExport");
+
     state.jqxDropDownList({
         theme: theme,
         source: changestateDA,
         displayMember: "name",
         valueMember: "code",
-        placeHolder: "Статус документов:",
+        placeHolder: "Статус документов",
+        dropDownWidth: 300,
         //selectedIndex: 2,
         width: 150,
-        height: 23
+        height: 22
     });
+    //tdropdown.jqxDropDownButton({width: 120, height: 22, theme: theme});
+    //tdropdown.jqxDropDownButton('setContent', '<div style="margin-top: 3px">Таблицы</div>');
     state.on('select', function (event)
     {
         let args = event.args;
@@ -249,7 +254,6 @@ initdocumentactions = function() {
         });
         $(this).jqxDropDownList('clearSelection');
     });
-    del.jqxButton({ theme: theme });
     del.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа для удаления");
         if (!row_ids) {
@@ -279,7 +283,6 @@ initdocumentactions = function() {
             }
         });
     });
-    erase.jqxButton ({ theme: theme});
     erase.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа для удаления статданных");
         if (!row_ids) {
@@ -309,7 +312,6 @@ initdocumentactions = function() {
             }
         });
     });
-    protect.jqxButton ({ theme: theme});
     protect.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа защиты от повторного свода");
         if (!row_ids) {
@@ -338,9 +340,11 @@ initdocumentactions = function() {
             }
         });
     });
-    calc.jqxButton ({ theme: theme});
     calc.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа для расчета (консолидации)");
+        if (!row_ids) {
+            return false;
+        }
         if (row_ids.length > 1) {
             raiseError("Необходимо выбрать только один документ для выполнения консолидации");
             return false;
@@ -362,16 +366,28 @@ initdocumentactions = function() {
             }
         });
     });
-    velog.jqxButton ({ theme: theme});
     velog.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа");
+        if (!row_ids) {
+            return false;
+        }
         if (row_ids.length > 1) {
             raiseError("Необходимо выбрать только один документ");
             return false;
         }
         let editWindow = window.open(log_form_url + row_ids[0]);
     });
-
+    msexport.click(function () {
+        let row_ids = noselected_error("Не выбрано ни одного документа");
+        if (!row_ids) {
+            return false;
+        }
+        if (row_ids.length > 1) {
+            raiseError("Необходимо выбрать только один документ");
+            return false;
+        }
+        let editWindow = window.open(msexport_url + row_ids[0]);
+    });
     let newdoc_form = $('#cloneDocuments').jqxWindow({
         width: 600,
         height: 520,
@@ -444,8 +460,6 @@ initdocumentactions = function() {
             }
         });
     });
-
-    clone.jqxButton({ theme: theme });
     clone.click(function () {
         let row_ids = noselected_error("Не выбрано ни одного документа для клонирования");
         if (!row_ids) {
@@ -455,8 +469,20 @@ initdocumentactions = function() {
     });
 };
 linkrenderer = function (row, column, value) {
+    let rowdata = dlist.jqxGrid('getrowdata', row);
     let html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";
-    html += "<a href='/datainput/formdashboard/" + value + "' target='_blank' title='Открыть для редактирования'>" + value + "</a></div>";
+    switch (rowdata.dtype) {
+        case 1 :
+            html += "<a href='/datainput/formdashboard/" + value + "' target='_blank' title='Открыть для редактирования'>" + value + "</a></div>";
+            break;
+        case 2 :
+        case 4 :
+            html += "<a href='/datainput/aggregatedashboard/" + value + "' target='_blank' title='Открыть для просмотра'>" + value + "</a></div>";
+            break;
+        case 3 :
+            html += "<a href='/datainput/consolidatedashboard/" + value + "' target='_blank' title='Открыть для просмотра'>" + value + "</a></div>";
+            break;
+    }
     return html;
 };
 noselected_error = function(message) {
@@ -759,12 +785,7 @@ initMoTree = function() {
             current_top_level_node =  new_top_level_node;
             filter_mode = 1; // режим отбора документов по территориям
             updatedocumenttable();
-            //terr.jqxDropDownButton('close');
-            if (current_top_level_node === 0) {
-                terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
-            } else {
-                terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по территориям)</div>');
-            }
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по территориям)</div>');
             groups.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по группам)</div>');
             return true;
         }
@@ -789,7 +810,7 @@ motreeToolbar = function (toolbar) {
     toolbar.append("<button type='button' id='collapseAll' class='btn btn-default btn-sm'>Свернуть все</button>");
     toolbar.append("<button type='button' id='expandAll' class='btn btn-default btn-sm'>Развернуть все</button>");
     toolbar.append("<button type='button' id='uncheckAll' class='btn btn-default btn-sm'>Снять выбор</button>");
-    toolbar.append("<label style='margin-left: 10px; margin-right: 10px' class='checkbox-inline'><input type='checkbox' value=''>Выбирать входящие</label>");
+    /*toolbar.append("<label style='margin-left: 10px; margin-right: 10px' class='checkbox-inline'><input type='checkbox' value=''>Выбирать входящие</label>");*/
     toolbar.append("<button type='button' style='display: none' id='buttonplus' class='btn btn-default btn-sm'>Создать документы</button>");
     //let container = $("<div style='display: none' id='buttonplus'></div>");
     let newdocform = $('#newForm');
@@ -879,6 +900,8 @@ initGroupTree = function() {
             filter_mode = 2; // режим отбора документов по группам
             current_top_level_node =  new_top_level_node;
             updatedocumenttable();
+            terr.jqxDropDownButton('setContent', '<div style="margin: 9px">Медицинские организации (по территориям)</div>');
+            groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i> Медицинские организации (по группам)</div>');
             return true;
         }
     );
@@ -901,12 +924,10 @@ initGroupTree = function() {
 };
 rendergrouptreetoolbar = function() {
     let toolbar = $("#filtergroupTree");
-    var container = $("<div style='display: none' id='groupbuttonplus'></div>");
-    var newdoc_form = $('#newForm');
-    var newdocument = $("<i style='height: 14px' class='fa fa-wpforms fa-lg' title='Новый документ'></i>");
-    newdocument.jqxButton({ theme: theme });
+    let container = $("<div style='display: none' id='groupbuttonplus'></div>");
+    let newdoc_form = $('#newForm');
+    let newdocument = $("<button type='button' id='addgroupdocument' class='btn btn-default btn-sm'>Создать документы</button>");
     container.append(newdocument);
-    //var newdocument = $("#newdocument");
     newdocument.on('click', function() {
         $("#selectForm").jqxDropDownList('uncheckAll');
         $('#selectPrimary').jqxCheckBox('disable');
@@ -1043,9 +1064,9 @@ initnewdocumentwindow = function () {
 
 initFilterIcons = function () {
     if (current_top_level_node !== lasstscope) {
-        if (filter_mode === 1) {
+        if (filter_mode == 1) {
             terr.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по территориям)</div>');
-        } else if (filter_mode === 2) {
+        } else if (filter_mode == 2) {
             groups.jqxDropDownButton('setContent', '<div style="margin: 9px"><i class="fa fa-filter fa-lg pull-right" style="color: #337ab7;"></i>Медицинские организации (по группам)</div>');
         }
     }
