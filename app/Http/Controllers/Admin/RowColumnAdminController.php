@@ -422,8 +422,11 @@ class RowColumnAdminController extends Controller
                         //$errors[$table->id][] = 'Не совпадает код по строке' ;
                     }
                 }
+                //if ($table->id == 10) {
+                    //dd($rows);
+                    //dd($matching_array[10]);
+                //}
 
-                //dd($matching_array);
             } elseif ($table->transposed == 1) {
                 $q_medstat = "SELECT * FROM ms_grf WHERE a1 like '{$form->medstat_code}{$table->medstat_code}%' ORDER BY a1";
                 $ms_grfs = \DB::select($q_medstat);
@@ -478,14 +481,14 @@ class RowColumnAdminController extends Controller
             $errors[$table->id] = [];
             //if (!$table->medstat_code) break;
 
-            $columns = Column::OfTable($table->id)->OfDataType()->whereDoesntHave('excluded', function ($query) use($default_album) {
+            $columns = Column::OfTable($table->id)->OfDataType()->InMedstat()->whereDoesntHave('excluded', function ($query) use($default_album) {
                 $query->where('album_id', $default_album->id);
             })->orderBy('column_index')->get();
             $i = 0;
             $count_mi = count($columns);
             foreach($columns as $column) {
                 $matching_array[$table->id][$i][0] = $column->column_index;
-                $matching_array[$table->id][$i][1] = $column->column_index;
+                $matching_array[$table->id][$i][1] = $column->column_code;
                 $matching_array[$table->id][$i][2] = $column->column_name;
                 $matching_array[$table->id][$i][3] = $column->medstat_code;
                 $i++;
