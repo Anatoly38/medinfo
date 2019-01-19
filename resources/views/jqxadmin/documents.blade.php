@@ -215,7 +215,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=068') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=070') }}"></script>
 @endpush
 
 @section('inlinejs')

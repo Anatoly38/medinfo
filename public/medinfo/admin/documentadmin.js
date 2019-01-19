@@ -349,6 +349,11 @@ initdocumentactions = function() {
             raiseError("Необходимо выбрать только один документ для выполнения консолидации");
             return false;
         }
+        let confirm_text = 'Подтвердите выполнение расчета для документа № ' + row_ids[0] + '. \n';
+        confirm_text += 'Исходные данные будут перезаписаны без возможности дальнейшего восстановления!';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
         $.ajax({
             dataType: 'json',
             url: calculate_url + row_ids[0],
@@ -356,6 +361,8 @@ initdocumentactions = function() {
             success: function (data, status, xhr) {
                 if (data.consolidated === true) {
                     raiseInfo("Консолидация данных выполнена. Заполнено ячеек " + data.cell_affected + ".");
+                } else {
+                    raiseError(data.error);
                 }
                 dlist.jqxGrid('clearselection');
                 dlist.jqxGrid('updatebounddata');

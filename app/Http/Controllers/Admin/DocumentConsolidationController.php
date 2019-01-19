@@ -26,6 +26,9 @@ class DocumentConsolidationController extends Controller
 
     public function consolidateDocument(Document $document)
     {
+        if ($document->dtype === 1) {
+            return ['consolidated' => false, 'cell_affected' => 0, 'error' => 'Консолидация первичных документов в данный момент запрещена'];
+        }
         $tables = $document->form->tables->sortBy('table_index');
         $cell_affected = 0;
         foreach ($tables as $table) {
