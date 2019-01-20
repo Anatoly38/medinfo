@@ -1032,9 +1032,11 @@ function renderDgrid(rowid) {
     $("#extrabuttons").hide();
     tdropdown.jqxDropDownButton('close');
     splitter.jqxSplitter('collapse');
-    dgrid.jqxGrid('focus');
-    dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
-    dgrid.jqxGrid({ 'keyboardnavigation': true  });
+    dgrid.on("bindingcomplete", function (event) {
+        dgrid.jqxGrid('focus');
+        dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
+        dgrid.jqxGrid({ 'keyboardnavigation': true  });
+    });
 }
 
 // Инициализация вкладки протокола контроля формы
@@ -1112,9 +1114,12 @@ let initdatagrid = function() {
             columngroups: data_for_tables[current_table].columngroups
         });
     dgrid.on('cellvaluechanged', simpleSaving);
-    dgrid.jqxGrid('focus');
-    dgrid.jqxGrid({ 'keyboardnavigation': true  });
-    dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
+    dgrid.on("bindingcomplete", function (event) {
+        dgrid.jqxGrid('focus');
+        dgrid.jqxGrid({ 'keyboardnavigation': true  });
+        dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
+    });
+
     dgrid.on('cellselect', function (event) {
         let cell_protocol_panel = $("#cellprotocol");
         let header;
