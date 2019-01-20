@@ -10,7 +10,7 @@ namespace App\Medinfo\DSL;
 
 use App\UnitList;
 
-class UnitCountTranslator extends ControlPtreeTranslator
+class IntervalTranslator extends ControlPtreeTranslator
 {
 
 }

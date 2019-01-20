@@ -27,6 +27,13 @@ class Cell extends Model
         return $this->belongsTo('App\Column', 'col_id');
     }
 
+    public function scopeOfRC($query, $row, $column)
+    {
+        return $query
+            ->where('row_id', $row)
+            ->where('col_id', $column);
+    }
+
     public function scopeOfDTRC($query, $document, $table, $row, $column)
     {
         return $query
@@ -56,6 +63,12 @@ class Cell extends Model
     {
         return $query
             ->where('doc_id', $document);
+    }
+
+    public function scopeOfDocuments($query, array $documents)
+    {
+        return $query
+            ->whereIn('doc_id', $documents);
     }
 
     public function scopeOfDocumentTable($query, $document, $table)

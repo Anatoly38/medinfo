@@ -94,6 +94,13 @@ class Document extends Model
         return $query->where('dtype', 4);
     }
 
+    public function scopeOfPF($query, $period, $form)
+    {
+        return $query
+            ->where('period_id', $period)
+            ->where('form_id', $form);
+    }
+
     public function scopeOfUPF($query, $ou, $period, $form)
     {
         return $query
@@ -114,6 +121,11 @@ class Document extends Model
     public function scopeOfUnit($query, $ou)
     {
         return $query->where('ou_id', $ou);
+    }
+
+    public function scopeOfUnits($query, array $ou)
+    {
+        return $query->whereIn('ou_id', $ou);
     }
 
     public function scopeOfMonitoring($query, $monitoring)

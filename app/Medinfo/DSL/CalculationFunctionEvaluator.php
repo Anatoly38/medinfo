@@ -156,6 +156,11 @@ class CalculationFunctionEvaluator
         return $result;
     }
 
+    public function between($value, $lower_limit = 0, $upper_limit = -1)
+    {
+        return $value >= $lower_limit && $value <= $upper_limit;
+    }
+
     public function evaluateSubtree(ParseTree $node)
     {
         //dump(ControlFunctionLexer::$tokenNames[$node->type]);

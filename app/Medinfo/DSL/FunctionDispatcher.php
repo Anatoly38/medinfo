@@ -26,6 +26,7 @@ class FunctionDispatcher
     const IPDIAPAZON    = 19;
     const SECTION       = 20;
     const INDEXCALC     = 21;
+    const INTERVAL      = 22;
 
     const DSL = 'App\\Medinfo\\DSL\\';
 
@@ -52,6 +53,7 @@ class FunctionDispatcher
         "мпдиапазон"    => self::IPDIAPAZON,
         "разрез"        => self::SECTION,
         "показатель"    => self::INDEXCALC,
+        "интервал"      => self::INTERVAL,
     ];
 
     public static $functionIndexes = [
@@ -77,6 +79,7 @@ class FunctionDispatcher
         "мпдиапазон",
         "разрез",
         "показатель",
+        "интервал",
     ];
 
     public static $translators = [
@@ -92,6 +95,7 @@ class FunctionDispatcher
         19 => "IPdiapazonTranslator",
         20 => "SectionTranslator",
         21 => "IndexCalculationTranslator",
+        22 => "IntervalTranslator",
     ];
 
     public static $evaluators = [
@@ -107,6 +111,7 @@ class FunctionDispatcher
         19 => "IPdiapazonEvaluator",
         20 => "SectionEvaluator",
         21 => "IndexCalculationEvaluator",
+        22 => "IntervalEvaluator",
     ];
 
     public static $functionArgs = [
@@ -123,6 +128,7 @@ class FunctionDispatcher
         'мпдиапазон'    => ['subfunction|required|diapazon|iterator', 'boolean|required', 'subfunction|группы', 'factor'],
         'разрез'        => ['factor|required', 'factor|required','boolean|required'],
         'показатель'    => ['expression|required'],
+        'интервал'      => ['expression|required', 'factor|required', 'factor|required'],
     ];
 
     public static $algorithms = [
@@ -133,6 +139,7 @@ class FunctionDispatcher
         'мгдиапазон'    => '(a1p - a1c)/a1p * 100 > a2',
         'кратность'     => 'a1 % a2 == 0',
         'разрез'        => 'a1 a3 a2',
+        'интервал'      => 'a1 >= a2 && a1 =< a2',
     ];
 
     public static function getProperties($fname)
