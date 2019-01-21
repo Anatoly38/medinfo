@@ -84,7 +84,9 @@ class CFunctionAdminController extends Controller
         $newfunction->level = $request->level;
         $newfunction->script = $request->script;
         $newfunction->comment = $request->comment;
-        $newfunction->blocked = $request->blocked;
+        // новая функция по умолчанию деблокирована
+        $newfunction->blocked = false;
+        //$newfunction->blocked = $request->blocked;
         $newfunction->type = $cache['properties']['type'];
         $newfunction->function =  $cache['properties']['function_id'];
         $newfunction->ptree = $cache['ptree'];
