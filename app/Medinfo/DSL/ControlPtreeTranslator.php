@@ -59,14 +59,19 @@ class ControlPtreeTranslator
 
     public function setSection($section)
     {
-        if (count($this->relations) === 0) {
-            throw new \Exception("У формы нет разрезов по которым можно установить ограничение выполнения функции");
-        }
-        if ($section !== $this->form->id && !in_array($section, $this->relations)) {
+        //if (count($this->relations) === 0) {
+            //throw new \Exception("У формы нет разрезов по которым можно установить ограничение выполнения функции");
+        //}
+        if ($section == $this->form->id) {
+            $this->scopeOfSection = true;
+            $this->section = $section;
+        } elseif ($section !== $this->form->id && in_array($section, $this->relations)) {
+            $this->scopeOfSection = true;
+            $this->section = $section;
+        } else {
             throw new \Exception("У формы {$this->form->form_code} нет разрезов с id:$section");
         }
-        $this->scopeOfSection = true;
-        $this->section = $section;
+
     }
 
     public function setUnits(array $units, $merge = true)

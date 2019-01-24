@@ -22,7 +22,7 @@ class DocInfoController extends Controller
             ->with('table')
             ->with('row')
             ->with('column')
-            ->take(30)->get();
+            ->take(60)->get();
         $states = \App\StatechangingLog::OfDocument($document)->orderBy('occured_at', 'desc')
             ->with('worker')
             ->with('oldstate')

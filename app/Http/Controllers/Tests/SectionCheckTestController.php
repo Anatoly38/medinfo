@@ -19,20 +19,16 @@ class SectionCheckTestController extends Controller
     // Тестирование функции контроля разрезов форм
     public function SectionCheckTest()
     {
-        //$table = Table::find(111);     // Ф12 Т1000
+        $table = Table::find(111);     // Ф12 Т1000
         //$table = Table::find(384);     // Ф19 Т1000
-        $table = Table::find(958);     // Ф54 Т2310
+        //$table = Table::find(958);     // Ф54 Т2310
+        //$table = Table::find(994);     // Ф301 Т1001
 
-        $section = 107;  // разрез 01 формы 54
-        //$document = Document::find(4965); // 30 ф Все организации 3 кв. МСК
-        //$document = Document::find(47884); // 12 ф Все организации 3 кв. МСК
-        //$document = Document::find(48275); // 19 ф Салтыковский детский дом 3 кв. МСК
-        $document = Document::find(48273); // 5401 ф Салтыковский детский дом 3 кв. МСК
-        //$i = "разрез(12, 1201, >)";
+        //$document = Document::find(23297); // 301 ф Бодайбинская РБ 2018 год
+        $document = Document::find(20221); // 12 ф Бодайбинская РБ 2018 год - нулевой разрез
+        $i = "разрез(12, 1201, >)";
         //$i = "разрез(301, 30, <=)";
         //$i = "разрез(30, 301, >=)";
-        //$i = "сравнение(С09Г12+С10Г12, Ф5401Т2310С3Г3, =)";
-        $i = "сравнение(сумма(С2Г3:С3Г3), Ф19Т1000С09Г11+Ф19Т1000С10Г11, =)";
 
         $lexer = new ControlFunctionLexer($i);
         $tockenstack = $lexer->getTokenStack();
@@ -50,6 +46,39 @@ class SectionCheckTestController extends Controller
         //dd($parser->argStack);
 
         $translator = Translator::invoke($parser, $table);
+        //dd($translator);
+        $translator->prepareIteration();
+        //dd($translator->getProperties());
+        //dd($translator->parser->root);
+        $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        return $evaluator->makeControl();
+    }
+
+    public function setLimitByFormSection()
+    {
+        $table = Table::find(111);     // Ф12 Т1000
+        $section = 7;  // разрез 00 формы 12
+        //$section = 43;  // разрез 01 формы 12
+        $document = Document::find(20669); // 1201 ф Бодайбинская РБ 2018 год
+        //$document = Document::find(20221); // 12 ф Бодайбинская РБ 2018 год - нулевой разрез
+        $i = "сравнение(С6.1Г9, Ф11Т2000С01Г6, =)";
+        $lexer = new ControlFunctionLexer($i);
+        $tockenstack = $lexer->getTokenStack();
+        //dd($tockenstack);
+        //dd($lexer->normalizeInput());
+        //dd($lexer);
+
+        $parser = new ControlFunctionParser($tockenstack);
+        $parser->func();
+        //dd($parser);
+        //dd($parser->root);
+        //dd($parser->function_index);
+        //dd($parser->celladressStack);
+        //dd($parser->cellrangeStack);
+        //dd($parser->argStack);
+
+        $translator = Translator::invoke($parser, $table);
+        // устанавливаем ограничение по разрезу формф
         $translator->setSection($section);
         //dd($translator);
         $translator->prepareIteration();
@@ -57,21 +86,10 @@ class SectionCheckTestController extends Controller
         //dd($translator->parser->root);
 
         $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
-        //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
-        //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
-        //$evaluator->prepareCellValues();
-        //$evaluator->prepareCAstack();
-        //dd($evaluator->arguments);
-        //dd($evaluator->pTree);
-        //dd($evaluator->caStack);
-        //dd($evaluator->iterations);
+        //$evaluator->evaluate();
+        $evaluator->makeControl();
+        dump($evaluator);
         //return $evaluator->evaluate();
-
-        //dd($evaluator->makeControl());
-        //$evaluator->makeControl();
-        //dd($evaluator);
-        //return ($evaluator->iterations);
-        //return ($evaluator->properties);
-        return $evaluator->makeControl();
+        dd($evaluator->makeControl());
     }
 }

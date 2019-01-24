@@ -367,6 +367,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/vector', 'Tests\VectorTestController@index');
     // тестирование функций контроля
     Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
+    Route::get('tests/limitsection', 'Tests\SectionCheckTestController@setLimitByFormSection');
     Route::get('tests/foldcheck', 'Tests\ControlFunctionTestController@fold');
     // mail test
     Route::get('mailtest', 'Tests\MailerTestController@testmail');

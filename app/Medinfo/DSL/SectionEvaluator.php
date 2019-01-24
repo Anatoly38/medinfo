@@ -58,7 +58,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
     public function compareSection()
     {
         $result = [];
-        $errors = [];
+        //$errors = [];
         $valid = true;
         $album = Album::find($this->document->album_id);
         $exluded_rows = AlbumRowSet::OfAlbum($album->id)->pluck('id')->toArray();
@@ -68,6 +68,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
                 $query->where('album_id', $album->id);
             })->orderBy('table_index');
         }])->first();
+        //dd($form_left);
         $form_right = Form::OfCode($this->arguments[2]->content)->with(['tables' => function ($query) use ($album) {
             $query->whereDoesntHave('excluded', function ($query) use($album) {
                 $query->where('album_id', $album->id);
@@ -84,46 +85,96 @@ class SectionEvaluator extends ControlFunctionEvaluator
             $left_of_right = true;
             $related = true;
         }
-        $this->second_document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form_right->id)->first();
-        if ($related && $right_of_left) {
-            foreach($form_left->tables as $table) {
-                foreach ($table->rows as $row) {
-                    $columns = Column::OfTable($table->id)->OfDataType()->whereDoesntHave('excluded', function ($query) use($album) {
-                        $query->where('album_id', $album->id);
-                    })->get();
-                    //dd($columns);
-                    foreach ($columns as $column) {
-                        if (!in_array($row->id, $exluded_rows)) {
-                            $leftvalue = 0;
-                            $rightvalue = 0;
-                            $left_cell = Cell::OfDRC($this->document->id, $row->id, $column->id)->first();
-                            $right_cell = Cell::OfDRC($this->second_document->id, $row->id, $column->id)->first();
-                            if ($left_cell) {
-                                $leftvalue = (float)$left_cell->value;
-                            }
-                            if ($right_cell) {
-                                $rightvalue = (float)$right_cell->value;
-                            }
-                            $v = $this->compare($leftvalue, $rightvalue, $this->arguments[3]->content);
-                            $result[] = [
-                                'code' => ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code],
-                                'cells' => ['table' => $table->id, 'row' => $row->id, 'column' => $column->id],
-                                'left_part_value' => $leftvalue,
-                                'right_part_value' => $rightvalue,
-                                'deviation' => round(abs($leftvalue - $rightvalue),2),
-                                'valid' => $v
-                            ];
-                            //$v ?: $errors[] = ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code];
-                            $valid = $valid && $v;
-                        }
-                    }
 
+        $this->second_document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form_right->id)->first();
+        //dd($this->second_document);
+        //if ($related && $right_of_left) {
+            foreach($form_left->tables as $table) {
+                $ret = $this->compareTables($table, $exluded_rows, $exluded_columns);
+                $valid = $valid && $ret['valid'];
+                $result[] = $ret['result'];
+            }
+        //}
+        $this->valid = $ret['valid'];
+        return $result;
+    }
+
+    public function compareTables(Table $table, $exluded_rows, $exluded_columns)
+    {
+        $valid = true;
+        $result = [];
+        foreach ($table->rows as $row) {
+            foreach ($table->columns as $column) {
+                if (!in_array($row->id, $exluded_rows) && !in_array($column->id, $exluded_columns)) {
+                    if ($column->content_type !== 4) {
+                        continue;
+                    };
+                    $leftvalue = 0;
+                    $rightvalue = 0;
+                    $left_cell = Cell::OfDRC($this->document->id, $row->id, $column->id)->first();
+                    $right_cell = Cell::OfDRC($this->second_document->id, $row->id, $column->id)->first();
+                    if ($left_cell) {
+                        $leftvalue = (float)$left_cell->value;
+                    }
+                    if ($right_cell) {
+                        $rightvalue = (float)$right_cell->value;
+                    }
+                    $v = $this->compare($leftvalue, $rightvalue, $this->arguments[3]->content);
+                    $result[] = [
+                        'code' => ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code],
+                        'cells' => ['table' => $table->id, 'row' => $row->id, 'column' => $column->id],
+                        'left_part_value' => $leftvalue,
+                        'right_part_value' => $rightvalue,
+                        'deviation' => round(abs($leftvalue - $rightvalue),2),
+                        'valid' => $v
+                    ];
+                    //$v ?: $errors[] = ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code];
+                    $valid = $valid && $v;
                 }
             }
         }
-        $this->valid = $valid;
-        //dd($errors);
-        return $result;
+        return ['valid' => $valid, 'result' => $result ];
+    }
+
+    public function compareTablesByCodes(Table $table, $exluded_rows, $exluded_columns)
+    {
+        $valid = true;
+        $result = [];
+        $second_doc_table = Table::class;
+        foreach ($table->rows as $row) {
+
+            $second_doc_row = \App\Row::OfTableRowCode($table, $row->row_code);
+            foreach ($table->columns as $column) {
+                if (!in_array($row->id, $exluded_rows) && !in_array($column->id, $exluded_columns)) {
+                    if ($column->content_type !== 4) {
+                        continue;
+                    };
+
+                    $leftvalue = 0;
+                    $rightvalue = 0;
+                    $left_cell = Cell::OfDRC($this->document->id, $row->id, $column->id)->first();
+                    $right_cell = Cell::OfDRC($this->second_document->id, $row->id, $column->id)->first();
+                    if ($left_cell) {
+                        $leftvalue = (float)$left_cell->value;
+                    }
+                    if ($right_cell) {
+                        $rightvalue = (float)$right_cell->value;
+                    }
+                    $v = $this->compare($leftvalue, $rightvalue, $this->arguments[3]->content);
+                    $result[] = [
+                        'code' => ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code],
+                        'cells' => ['table' => $table->id, 'row' => $row->id, 'column' => $column->id],
+                        'left_part_value' => $leftvalue,
+                        'right_part_value' => $rightvalue,
+                        'deviation' => round(abs($leftvalue - $rightvalue),2),
+                        'valid' => $v
+                    ];
+                    //$v ?: $errors[] = ['table_code' => $table->table_code, 'row_code' => $row->row_code, 'column_code' => $column->column_code];
+                    $valid = $valid && $v;
+                }
+            }
+        }
+        return ['valid' => $valid, 'result' => $result ];
     }
 
     public function compareRelated()
