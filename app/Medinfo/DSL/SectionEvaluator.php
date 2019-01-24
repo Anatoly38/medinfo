@@ -95,7 +95,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
                 $result[] = $ret['result'];
             }
         //}
-        $this->valid = $ret['valid'];
+        $this->valid = $valid;
         return $result;
     }
 
