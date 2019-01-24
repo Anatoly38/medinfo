@@ -92,7 +92,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
             foreach($form_left->tables as $table) {
                 $ret = $this->compareTables($table, $exluded_rows, $exluded_columns);
                 $valid = $valid && $ret['valid'];
-                $result[] = $ret['result'];
+                $result = array_merge($result, $ret['result']);
             }
         //}
         $this->valid = $valid;
