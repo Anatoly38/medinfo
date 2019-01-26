@@ -167,11 +167,7 @@ let initactions = function() {
                 grid.jqxGrid('updatebounddata', 'data');
                 //grid.on("bindingcomplete", function (event) { });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#applylist").click(function () {
@@ -200,11 +196,7 @@ let initactions = function() {
                 grid.jqxGrid('updatebounddata', 'data');
                 //grid.on("bindingcomplete", function (event) { });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#clearrule").click(function () {
@@ -231,9 +223,7 @@ let initactions = function() {
                     raiseInfo(data.message);
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка сохранения данных на сервере', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#clearlist").click(function () {
@@ -260,9 +250,7 @@ let initactions = function() {
                     raiseInfo(data.message);
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка сохранения данных на сервере', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
 
@@ -278,15 +266,12 @@ let initactions = function() {
     let unitlistsdataAdapter = new $.jqx.dataAdapter(unitlistsource, { autoBind: true, loadComplete: function (data)
         {
             lists = data;
-/*            console.log(data);
-            for (let i = 0; i < data.length; i++) {
-                lists.push(data[i]);
-            }*/
         }
 
     });
     listinput.jqxInput({
         height: 50,
+        maxLength: 1024,
         source: function (query, response) {
             let item = query.split(/,\s*/).pop();
             listinput.jqxInput({ query: item });
