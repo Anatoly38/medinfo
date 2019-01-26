@@ -286,6 +286,7 @@ let initactions = function() {
 
     });
     listinput.jqxInput({
+        height: 50,
         source: function (query, response) {
             let item = query.split(/,\s*/).pop();
             listinput.jqxInput({ query: item });

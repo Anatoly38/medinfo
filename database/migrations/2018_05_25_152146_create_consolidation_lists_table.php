@@ -15,7 +15,7 @@ class CreateConsolidationListsTable extends Migration
         //
         Schema::create('consolidation_lists', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('script', 512)->unique();
+            $table->string('script', 1024)->unique();
             $table->char('hash', 10)->unique();
             $table->string('comment', 128)->nullable();
             $table->jsonb('properties')->nullable();
