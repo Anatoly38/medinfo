@@ -16,6 +16,7 @@
                 <thead>
                 <tr>
                     <th>№</th>
+                    <th>Id</th>
                     <th>Список</th>
                     <th>Старый хэш</th>
                     <th>Новый хэш</th>
@@ -26,6 +27,7 @@
                     @foreach( $protocol as $list )
                         <tr  class="@if ($list['error']) danger @endif @if ($list['updated']) warning @endif">
                             <td>{{ $list['i'] }}.</td>
+                            <td>{{ $list['id'] }}.</td>
                             <td>{{ $list['script'] }}</td>
                             <td>{{ $list['old_hash'] }}</td>
                             <td>{{ $list['new_hash'] }}</td>

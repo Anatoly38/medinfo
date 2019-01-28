@@ -108,6 +108,7 @@ class ConsRulesAndListsAdminController extends Controller
             $old_hash = $list_rule->hash;
             $result = [];
             $result['i'] = $i++;
+            $result['id'] = $list_rule->id;
             $result['updated'] = false;
             $result['error'] = false;
             $result['script'] = $list_rule->script;
@@ -122,25 +123,26 @@ class ConsRulesAndListsAdminController extends Controller
                 $prop = '[' . implode(',', $units) . ']';
                 $hashed  =  crc32($prop);
                 $result['new_hash'] = $hashed;
-                $list_exists = ConsolidationList::Hash($hashed)->first();
-                if ($list_exists ) {
-                    $result['updated'] = false;
-                    $result['comment'] = 'Ошибка обновления. После рекомпилляции список оказался идентентичным списку: ' . $list_exists->script ;
-                } else {
                     $list_rule->script = $glued;
                     $result['script'] = $glued;
                     $list_rule->properties = $prop;
                     $list_rule->hash = $hashed;
-                    $list_rule->save();
                     $result['count'] = count($units);
                     if ($old_hash !== (string)$hashed) {
-                        $result['updated'] = true;
-                        $result['comment'] = 'Состав списка обновлен' ;
+                        $list_exists = ConsolidationList::Hash($hashed)->first();
+                        if ($list_exists ) {
+                            $result['updated'] = false;
+                            $result['comment'] = 'Ошибка обновления. После рекомпилляции список оказался идентентичным списку: ' . $list_exists->script . 'Id: ' . $list_exists->id ;
+                        } else {
+                            $result['updated'] = true;
+                            $result['comment'] = 'Состав списка обновлен' ;
+                            $list_rule->save();
+                        }
                     } else {
                         $result['updated'] = false;
                         $result['comment'] = 'Состав списка остался прежним' ;
                     }
-                }
+
             } else {
                 $result['updated'] = false;
                 $result['error'] = true;
