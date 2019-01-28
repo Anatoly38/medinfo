@@ -881,6 +881,7 @@ let gettableprotocol = function (data, status, xhr) {
 let tabledataexport = function(table_id) {
     window.open(tableexport_url + table_id);
 };
+
 let initdatasources = function() {
     form_table_source = {
         dataType: "json",
@@ -1452,6 +1453,14 @@ let initConsolidateButton = function () {
             cst.attr('disabled', false );
             csd.attr('disabled', false );
         });
+    });
+};
+
+let initTableMedstatExportButton = function() {
+    let me = $("#tableMedstatExport");
+    me.click(function () {
+        let url = msexport_url + current_table ;
+        location.replace(url);
     });
 };
 

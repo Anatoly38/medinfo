@@ -107,7 +107,8 @@ class ConsRulesAndListsAdminController extends Controller
             $result['updated'] = false;
             $result['error'] = false;
             $result['script'] = $list_rule->script;
-            $result['old_hash'] = $old_hash;
+            $result['old_prophash'] = $old_hash;
+            $result['old_list_count'] = count(json_decode($list_rule->properties));
             $trimed = preg_replace('/,+\s+/u', ' ', $list_rule->script);
             $lists = array_unique(array_filter(explode(' ', $trimed)));
             array_multisort($lists, SORT_NATURAL);
@@ -118,13 +119,13 @@ class ConsRulesAndListsAdminController extends Controller
                 $prop = '[' . implode(',', $units) . ']';
                 $prophashed  =  crc32($prop);
                 $scripthashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
-                $result['new_hash'] = $scripthashed;
+                $result['new_prophash'] = $prophashed;
                 $list_rule->script = $glued;
                 $result['script'] = $glued;
                 $list_rule->properties = $prop;
                 $list_rule->scripthash = $scripthashed;
                 $list_rule->prophash = $prophashed;
-                $result['count'] = count($units);
+                $result['new_list_count'] = count($units);
                 $list_rule->save();
                 if (trim($old_hash) !== (string)$prophashed) {
                     $result['updated'] = true;

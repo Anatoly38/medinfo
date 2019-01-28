@@ -91,7 +91,7 @@ class MedstatExportController extends Controller
         }
         $table = \App\Table::find($table);
         $d = $this->initDBF($code, $form->medstat_code, $form->form_code);
-        $rows = \App\Row::OfTable($table->id)->InMedstat()->get();
+        $rows = \App\Row::OfTable($table->id)->InMedstat()->OrderBy('medstat_code')->get();
         if (!$table->transposed ) {
             foreach ($rows as $row) {
                 $insert_data = $d['pattern'];

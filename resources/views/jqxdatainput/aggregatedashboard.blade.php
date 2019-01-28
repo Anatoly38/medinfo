@@ -33,8 +33,21 @@
     </div>
 @endsection
 
+@section('tableAggregateButton')
+    {{-- Экспорт в Медстат ЦНИИОИЗ--}}
+    <button class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
+        <span class='fa fa-download fa-lg' ></span>
+        <span>МС</span>
+    </button>
+@endsection
+
+@section('initTableAggregateAction')
+    initTableMedstatExportButton();
+@endsection
+
 @section('content')
     @include('jqxdatainput.formeditsplitter')
+    @include('jqxdatainput.excelimport')
 @endsection
 
 @push('loadcss')
@@ -47,9 +60,9 @@
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=193') }}"></script>
+        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=195') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/editdashboard.js?v=193') }}"></script>
+        <script src="{{ asset('/medinfo/editdashboard.js?v=195') }}"></script>
     @endif
 @endpush('loadjsscripts')
 

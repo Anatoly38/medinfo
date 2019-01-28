@@ -39,6 +39,7 @@
                             <label class="radio-inline"><input type="radio" name="filterMember" value="2">Юридические лица</label>
                             <label class="radio-inline"><input type="radio" name="filterMember" value="3">Обособленные подразделения</label>
                             <label class="radio-inline"><input type="radio" name="filterMember" value="4">Образование и соцзащита</label>
+                            <label class="radio-inline"><input type="radio" name="filterMember" value="5">Сельская местность</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -58,6 +59,7 @@
                             <label class="radio-inline"><input type="radio" name="filterNonMember" value="2" checked>Юридические лица</label>
                             <label class="radio-inline"><input type="radio" name="filterNonMember" value="3">Обособленные подразделения</label>
                             <label class="radio-inline"><input type="radio" name="filterNonMember" value="4">Образование и соцзащита</label>
+                            <label class="radio-inline"><input type="radio" name="filterNonMember" value="5">Сельская местность</label>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -106,26 +108,7 @@
 @endsection
 
 @push('loadjsscripts')
-{{--    <script src="{{ asset('/jqwidgets/jqxdata.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxpanel.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxscrollbar.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxinput.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxbuttons.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxcheckbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxswitchbutton.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxlistbox.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdropdownlist.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.filter.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.columnsresize.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.selection.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.sort.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxgrid.edit.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/jqxdatatable.js') }}"></script>
-    <script src="{{ asset('/jqwidgets/localization.js') }}"></script>--}}
-    {{--<script src="{{ asset('/medinfo/admin/tablepicker.js?v=008') }}"></script>--}}
-    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=018') }}"></script>
+    <script src="{{ asset('/medinfo/admin/unitlistadmin.js?v=022') }}"></script>
 @endpush
 
 @section('inlinejs')

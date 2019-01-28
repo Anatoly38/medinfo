@@ -72,6 +72,7 @@
                                 </div>
                             </div>
                         </div>
+                        @yield('tableAggregateButton')
                         @yield('tableConsolidateButton')
                         <form class="navbar-form navbar-right">
                             <div class="input-group" style="margin-right: 5px">

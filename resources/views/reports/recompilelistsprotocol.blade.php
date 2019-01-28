@@ -20,6 +20,8 @@
                     <th>Список</th>
                     <th>Старый хэш</th>
                     <th>Новый хэш</th>
+                    <th>Старое кол-во МО</th>
+                    <th>Новое кол-во МО</th>
                     <th>Результат</th>
                 </tr>
                 </thead>
@@ -29,8 +31,10 @@
                             <td>{{ $list['i'] }}.</td>
                             <td>{{ $list['id'] }}.</td>
                             <td>{{ $list['script'] }}</td>
-                            <td>{{ $list['old_hash'] }}</td>
-                            <td>{{ $list['new_hash'] }}</td>
+                            <td>{{ $list['old_prophash'] }}</td>
+                            <td>{{ $list['new_prophash'] }}</td>
+                            <td>{{ $list['old_list_count'] }}</td>
+                            <td>{{ $list['new_list_count'] }}</td>
                             <td>{{ $list['comment'] }}</td>
                         </tr>
                     @endforeach

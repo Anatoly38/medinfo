@@ -64,7 +64,8 @@ let initListMembers = function () {
                 { name: 'unit_name', type: 'string' },
                 { name: 'unit_code', type: 'string' },
                 { name: 'parent', map: 'parent>unit_name', type: 'string' },
-                { name: 'node_type', type: 'int' }
+                { name: 'node_type', type: 'int' },
+                { name: 'countryside', type: 'bool' }
             ],
             id: 'id',
             url: member_url + currentlist
@@ -93,9 +94,10 @@ let initListMembers = function () {
                 },
                 //{ text: 'id', datafield: 'id' , width: '50px'},
                 { text: 'код', datafield: 'unit_code' , width: '50px'},
-                { text: 'МО', datafield: 'unit_name' , width: '550px'},
-                { text: 'Входит в', datafield: 'parent', width: '200px' },
-                { text: 'Тип', datafield: 'node_type' , width: '60px'}
+                { text: 'МО', datafield: 'unit_name' , width: '520px'},
+                { text: 'Входит в', datafield: 'parent', width: '190px' },
+                { text: 'Тип', datafield: 'node_type' , width: '40px'},
+                { text: 'Село', datafield: 'countryside', columntype: 'checkbox', width: '40px'}
             ]
         });
 };
@@ -116,7 +118,8 @@ let initUnitsNonmembers = function () {
                 { name: 'report', type: 'int' },
                 { name: 'aggregate', type: 'int' },
                 { name: 'blocked', type: 'int' },
-                { name: 'medinfo_id', type: 'int' }
+                { name: 'medinfo_id', type: 'int' },
+                { name: 'countryside', type: 'bool' }
             ],
             id: 'id',
             url: units_url + currentlist,
@@ -139,9 +142,10 @@ let initUnitsNonmembers = function () {
             columns: [
                 //{ text: 'Id', datafield: 'id', width: '30px' },
                 { text: 'Код', datafield: 'unit_code', width: '50px'  },
-                { text: 'Имя', datafield: 'unit_name' , width: '550px'},
-                { text: 'Входит в', datafield: 'parent', width: '220px' },
-                { text: 'Тип', datafield: 'node_type' , width: '60px'}
+                { text: 'Имя', datafield: 'unit_name' , width: '520px'},
+                { text: 'Входит в', datafield: 'parent', width: '200px' },
+                { text: 'Тип', datafield: 'node_type' , width: '50px'},
+                { text: 'Село', datafield: 'countryside', columntype: 'checkbox', width: '40px'}
                 //{ text: 'Блок', datafield: 'blocked', width: '50px' }
             ]
         });
@@ -458,25 +462,38 @@ applyfilter = function (u, option) {
     let filtergroup = new $.jqx.filter();
     let filter_or_operator = 1;
     let filtervalue = 0;
+    let filtercondition = 'equal';
+    let filter;
+    //let filtercondition = 'contains';
+    //let filter = filtergroup.createfilter('stringfilter', filtervalue, filtercondition);
     switch (option) {
         case '1' :
             return;
         case '2' :
             filtervalue = 3;
+            filter = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
+            filtergroup.addfilter(filter_or_operator, filter);
+            u.jqxGrid('addfilter', 'node_type', filtergroup );
             break;
         case '3' :
             filtervalue = 4;
+            filter = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
+            filtergroup.addfilter(filter_or_operator, filter);
+            u.jqxGrid('addfilter', 'node_type', filtergroup );
             break;
         case '4' :
             filtervalue = 6;
+            filter = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
+            filtergroup.addfilter(filter_or_operator, filter);
+            u.jqxGrid('addfilter', 'node_type', filtergroup );
+            break;
+        case '5' :
+            filtervalue = true;
+            filter = filtergroup.createfilter('booleanfilter', filtervalue, filtercondition);
+            filtergroup.addfilter(filter_or_operator, filter);
+            u.jqxGrid('addfilter', 'countryside', filtergroup );
             break;
     }
-    //let filtercondition = 'contains';
-    let filtercondition = 'equal';
-    //let filter = filtergroup.createfilter('stringfilter', filtervalue, filtercondition);
-    let filter = filtergroup.createfilter('numericfilter', filtervalue, filtercondition);
-    filtergroup.addfilter(filter_or_operator, filter);
-    u.jqxGrid('addfilter', 'node_type', filtergroup );
     u.jqxGrid('applyfilters');
 };
 

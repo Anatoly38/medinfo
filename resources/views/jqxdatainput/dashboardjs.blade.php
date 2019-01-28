@@ -100,6 +100,8 @@ let calculatedcells_url = "/datainput/calculate/" + doc_id + "/";
 let cons_protocol_url = "/datainput/fetchconsprotocol/" + doc_id + "/";
 let blocksection_url = "/datainput/blocksection/" + doc_id + "/";
 let excelupload_url = '/datainput/excelupload/' + doc_id + '/';
+let msexport_url = '/medstat_table_export/' + doc_id + '/';
+
 let formlabels =
     {
         compare: 1,
@@ -130,6 +132,7 @@ initdatagrid();
 init_fc_extarbuttons();
 initextarbuttons();
 initExcelUpload();
+@yield('initTableAggregateAction')
 @yield('initTableConsolidateAction')
 //firefullscreenevent();
 </script>

@@ -25,7 +25,10 @@
             <div class="col-md-3">
                 <button id="applylist" type="button" class="btn btn-primary">Применить</button>
                 <button id="clearlist" type="button" class="btn btn-danger">Очистить</button>
-                <button id="recompileLists" type="button" class="btn btn-default">Рекомпиляция</button>
+                <button id="recompileLists" type="button" class="btn btn-default"
+                        title="Рекомендуется провести если производилось изменение состава списков МО или списки МО переименовывались">
+                    Рекомпиляция
+                </button>
             </div>
             <div class="col-md-1">
                 <div id="Selection"></div>
