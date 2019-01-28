@@ -103,10 +103,10 @@ class CalculationFunctionTestController extends Controller
 
     public function valuecount()
     {
-        $rule = "счетзнач(Ф30Т1001С3Г4+Ф30Т1001С13Г4+Ф30Т1001С19Г4+Ф30Т1001С28Г4+Ф30Т1001С88Г4+Ф30Т1001С90Г4+Ф30Т1001С133Г4+Ф30Т1001С134Г4)"; //
+        $rule = "счетзнач(Ф14дсТ1010С3Г3+Ф14дсТ1010С6Г3)"; //
         $list = "областные_больницы";
         $table = 2; // форма 47 таблица 0100
-        $document = \App\Document::find(19251);
+        $document = \App\Document::find(23942); // Ф 47 за 2018 год
         $trimed = preg_replace('/,+\s+/u', ' ', $list);
         $lists = array_unique(array_filter(explode(' ', $trimed)));
         $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);

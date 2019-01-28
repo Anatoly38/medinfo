@@ -56,9 +56,14 @@ class FunctionCompiler
                     $addlists[] = $list;
             }
         }
-        $addunits = array_merge($addunits, self::getUnitsFromLists($addlists));
-        $subtractunits = array_merge($subtractunits, self::getUnitsFromLists($subtractlists));
-        $limitationunits = array_merge($limitationunits, self::getUnitsFromLists($limitationlists));
+        try {
+            $addunits = array_merge($addunits, self::getUnitsFromLists($addlists));
+            $subtractunits = array_merge($subtractunits, self::getUnitsFromLists($subtractlists));
+            $limitationunits = array_merge($limitationunits, self::getUnitsFromLists($limitationlists));
+        }
+        catch (\Exception $e) {
+            return null;
+        }
         $addunits = array_unique($addunits);
         $subtractunits = array_unique($subtractunits);
         $limitationunits = array_unique($limitationunits);

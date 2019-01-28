@@ -11,6 +11,8 @@ class UnitList extends Model
     // зарезервированные имена для "статических" групп
     public static $reserved_slugs = [
         'n/a',
+        '*',
+        'все',
         'первичные',
         'сводные',
         'оп',

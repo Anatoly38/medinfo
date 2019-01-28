@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 
+use App\ConsolidationList;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use League\Flysystem\Exception;
@@ -61,7 +62,6 @@ class ConsRulesAndListsAdminController extends Controller
 
     public function applyList(Request $request)
     {
-        $error = null;
         $this->validate($request, $this->validateListRequest());
         $coordinates = explode(',', $request->cells);
         $trimed = preg_replace('/,+\s+/u', ' ', $request->list);
@@ -77,7 +77,7 @@ class ConsRulesAndListsAdminController extends Controller
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
                 $hashed  =  crc32($prop);
-                $list = \App\ConsolidationList::firstOrNew(['hash' => $hashed]);
+                $list = ConsolidationList::firstOrNew(['hash' => $hashed]);
                 $list->script = $glued;
                 //$list->properties = $units->toJson();
                 $list->properties = $prop;
@@ -97,6 +97,46 @@ class ConsRulesAndListsAdminController extends Controller
             } catch (\Exception $e) {
                 return ['affected_cells' => 0, 'error' => $e->getMessage() ];
             }
+    }
+
+    public function recompileLists()
+    {
+        $list_rules = ConsolidationList::all();
+        $protocol = [];
+        foreach ($list_rules as $list_rule) {
+            $old_hash = $list_rule->hash;
+            $result = [];
+            $result['updated'] = false;
+            $result['error'] = false;
+            $result['script'] = $list_rule->script;
+            $trimed = preg_replace('/,+\s+/u', ' ', $list_rule->script);
+            $lists = array_unique(array_filter(explode(' ', $trimed)));
+            array_multisort($lists, SORT_NATURAL);
+            $glued = implode(', ', $lists);
+            $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+            if ($units) {
+                asort($units);
+                $prop = '[' . implode(',', $units) . ']';
+                $hashed  =  crc32($prop);
+                $list_rule->script = $glued;
+                $result['script'] = $glued;
+                $list_rule->properties = $prop;
+                $list_rule->hash = $hashed;
+                $list_rule->save();
+                $result['count'] = count($units);
+                if ($old_hash !== $hashed) {
+                    $result['updated'] = true;
+                    $result['comment'] = 'Состав списка обновлен' ;
+                }
+            } else {
+                $result['updated'] = false;
+                $result['error'] = true;
+                $result['comment'] = 'Ошибка перекомпилирования списка' ;
+            }
+            $protocol[] = $result;
+        }
+        return view('reports.recompilelistsprotocol', compact('protocol'));
+
     }
 
     public function clearRule(Request $request)
