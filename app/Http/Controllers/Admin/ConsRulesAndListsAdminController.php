@@ -121,19 +121,25 @@ class ConsRulesAndListsAdminController extends Controller
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
                 $hashed  =  crc32($prop);
-                $list_rule->script = $glued;
-                $result['script'] = $glued;
-                $list_rule->properties = $prop;
-                $list_rule->hash = $hashed;
-                $list_rule->save();
-                $result['count'] = count($units);
-                $result['new_hash'] = $hashed;
-                if ($old_hash !== (string)$hashed) {
-                    $result['updated'] = true;
-                    $result['comment'] = 'Состав списка обновлен' ;
-                } else {
+                $list_exists = ConsolidationList::Hash($hashed)->first();
+                if ($list_exists ) {
                     $result['updated'] = false;
-                    $result['comment'] = 'Состав списка остался прежним' ;
+                    $result['comment'] = 'Ошибка обновления. После рекомпилляции список оказался идентентичным списку: ' . $list_exists->script ;
+                } else {
+                    $list_rule->script = $glued;
+                    $result['script'] = $glued;
+                    $list_rule->properties = $prop;
+                    $list_rule->hash = $hashed;
+                    $list_rule->save();
+                    $result['count'] = count($units);
+                    $result['new_hash'] = $hashed;
+                    if ($old_hash !== (string)$hashed) {
+                        $result['updated'] = true;
+                        $result['comment'] = 'Состав списка обновлен' ;
+                    } else {
+                        $result['updated'] = false;
+                        $result['comment'] = 'Состав списка остался прежним' ;
+                    }
                 }
             } else {
                 $result['updated'] = false;
