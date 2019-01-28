@@ -122,6 +122,7 @@ class ConsRulesAndListsAdminController extends Controller
                 $list_rule->script = $glued;
                 $result['script'] = $glued;
                 $list_rule->properties = $prop;
+                $list_rule->scripthash = $scripthashed;
                 $list_rule->prophash = $prophashed;
                 $result['count'] = count($units);
                 $list_rule->save();
