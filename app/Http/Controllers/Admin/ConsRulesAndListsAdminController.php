@@ -121,6 +121,7 @@ class ConsRulesAndListsAdminController extends Controller
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
                 $hashed  =  crc32($prop);
+                $result['new_hash'] = $hashed;
                 $list_exists = ConsolidationList::Hash($hashed)->first();
                 if ($list_exists ) {
                     $result['updated'] = false;
@@ -132,7 +133,6 @@ class ConsRulesAndListsAdminController extends Controller
                     $list_rule->hash = $hashed;
                     $list_rule->save();
                     $result['count'] = count($units);
-                    $result['new_hash'] = $hashed;
                     if ($old_hash !== (string)$hashed) {
                         $result['updated'] = true;
                         $result['comment'] = 'Состав списка обновлен' ;
