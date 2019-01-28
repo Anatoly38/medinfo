@@ -76,7 +76,8 @@ class ConsRulesAndListsAdminController extends Controller
                 $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
-                $hashed  =  crc32($prop);
+                //$hashed  =  crc32($prop);
+                $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
                 $list = ConsolidationList::firstOrNew(['hash' => $hashed]);
                 $list->script = $glued;
                 //$list->properties = $units->toJson();
@@ -121,27 +122,27 @@ class ConsRulesAndListsAdminController extends Controller
             if ($units) {
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
-                $hashed  =  crc32($prop);
+                $hashed  =  $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));;
                 $result['new_hash'] = $hashed;
-                    $list_rule->script = $glued;
-                    $result['script'] = $glued;
-                    $list_rule->properties = $prop;
-                    $list_rule->hash = $hashed;
-                    $result['count'] = count($units);
-                    if ($old_hash !== (string)$hashed) {
-                        $list_exists = ConsolidationList::Hash($hashed)->first();
-                        if ($list_exists ) {
-                            $result['updated'] = false;
-                            $result['comment'] = 'Ошибка обновления. После рекомпилляции список оказался идентентичным списку: ' . $list_exists->script . 'Id: ' . $list_exists->id ;
-                        } else {
-                            $result['updated'] = true;
-                            $result['comment'] = 'Состав списка обновлен' ;
-                            $list_rule->save();
-                        }
-                    } else {
+                $list_rule->script = $glued;
+                $result['script'] = $glued;
+                $list_rule->properties = $prop;
+                $list_rule->hash = $hashed;
+                $result['count'] = count($units);
+                if (trim($old_hash) !== (string)$hashed) {
+                    $list_exists = ConsolidationList::Hash($hashed)->first();
+                    if ($list_exists ) {
                         $result['updated'] = false;
-                        $result['comment'] = 'Состав списка остался прежним' ;
+                        $result['comment'] = 'Ошибка обновления. После рекомпилляции список оказался идентентичным списку: ' . $list_exists->script . ' (Id: ' . $list_exists->id . ').' ;
+                    } else {
+                        $result['updated'] = true;
+                        $result['comment'] = 'Состав списка обновлен' ;
+                        $list_rule->save();
                     }
+                } else {
+                    $result['updated'] = false;
+                    $result['comment'] = 'Состав списка остался прежним' ;
+                }
 
             } else {
                 $result['updated'] = false;
