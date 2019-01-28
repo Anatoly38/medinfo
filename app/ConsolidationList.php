@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class ConsolidationList extends Model
 {
     //
-    protected $fillable = ['script', 'hash', 'comment'];
+    protected $fillable = ['script', 'scripthash', 'prophash', 'comment'];
     protected $hidden = ['properties'];
 
-    public function scopeHash($query, $hash)
+    public function scopePropHash($query, $hash)
     {
         return $query
-            ->where('hash', $hash);
+            ->where('prophash', $hash);
     }
 }

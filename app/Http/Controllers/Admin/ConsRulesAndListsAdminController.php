@@ -68,23 +68,17 @@ class ConsRulesAndListsAdminController extends Controller
         $lists = array_unique(array_filter(explode(' ', $trimed)));
         array_multisort($lists, SORT_NATURAL);
         $glued = implode(', ', $lists);
-        //$hashed  =  sprintf("%u", crc32(implode('', $lists)));
-        //dd($hashed);
-        //if ($list->script !== $glued) {
-        //dd($lists);
             try {
                 $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
-                //$hashed  =  crc32($prop);
-                $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
-                $list = ConsolidationList::firstOrNew(['hash' => $hashed]);
+                $prophashed  =  crc32($prop);
+                $scripthashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
+                $list = ConsolidationList::firstOrNew(['scripthash' => $scripthashed]);
                 $list->script = $glued;
-                //$list->properties = $units->toJson();
                 $list->properties = $prop;
-                $list->hash = $hashed;
-                //$list->properties = json_encode([ 'units' => [1,5,2,3] ]);
-                //dd($list->properties);
+                $list->scripthash = $scripthashed;
+                $list->prophash = $prophashed;
                 $list->save();
                 $i = 0;
                 foreach ($coordinates as $coordinate) {
@@ -106,7 +100,7 @@ class ConsRulesAndListsAdminController extends Controller
         $protocol = [];
         $i = 1;
         foreach ($list_rules as $list_rule) {
-            $old_hash = $list_rule->hash;
+            $old_hash = $list_rule->prophash;
             $result = [];
             $result['i'] = $i++;
             $result['id'] = $list_rule->id;
@@ -122,28 +116,27 @@ class ConsRulesAndListsAdminController extends Controller
             if ($units) {
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
-                $hashed  =  $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));;
-                $result['new_hash'] = $hashed;
+                $prophashed  =  crc32($prop);
+                $scripthashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
+                $result['new_hash'] = $scripthashed;
                 $list_rule->script = $glued;
                 $result['script'] = $glued;
                 $list_rule->properties = $prop;
-                $list_rule->hash = $hashed;
+                $list_rule->prophash = $prophashed;
                 $result['count'] = count($units);
-                if (trim($old_hash) !== (string)$hashed) {
-                    $list_exists = ConsolidationList::Hash($hashed)->first();
+                $list_rule->save();
+                if (trim($old_hash) !== (string)$prophashed) {
+                    $result['updated'] = true;
+                    $list_exists = ConsolidationList::PropHash($prophashed)->Where('id', '<>', $list_rule->id)->first();
                     if ($list_exists ) {
-                        $result['updated'] = false;
-                        $result['comment'] = 'Ошибка обновления. После рекомпилляции список оказался идентентичным списку: ' . $list_exists->script . ' (Id: ' . $list_exists->id . ').' ;
+                        $result['comment'] = 'Состав списка обновлен. После рекомпилляции список оказался идентентичным по составу списку: ' . $list_exists->script . ' (Id: ' . $list_exists->id . ').' ;
                     } else {
-                        $result['updated'] = true;
                         $result['comment'] = 'Состав списка обновлен' ;
-                        $list_rule->save();
                     }
                 } else {
                     $result['updated'] = false;
                     $result['comment'] = 'Состав списка остался прежним' ;
                 }
-
             } else {
                 $result['updated'] = false;
                 $result['error'] = true;
