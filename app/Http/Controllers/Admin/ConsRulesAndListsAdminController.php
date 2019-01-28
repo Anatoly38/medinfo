@@ -138,9 +138,14 @@ class ConsRulesAndListsAdminController extends Controller
                     $result['comment'] = 'Состав списка остался прежним' ;
                 }
             } else {
+
                 $result['updated'] = false;
                 $result['error'] = true;
-                $result['comment'] = 'Ошибка перекомпилирования списка' ;
+                if (is_array($units) && count($units) === 0) {
+                    $result['comment'] = 'список пуст' ;
+                } else {
+                    $result['comment'] = 'Ошибка перекомпилирования списка' ;
+                }
                 $result['new_hash'] = '';
             }
             $protocol[] = $result;
