@@ -17,14 +17,18 @@
                 <tr>
                     <th>№</th>
                     <th>Список</th>
+                    <th>Старый хэш</th>
+                    <th>Новый хэш</th>
                     <th>Результат</th>
                 </tr>
                 </thead>
                 <tbody>
                     @foreach( $protocol as $list )
-                        <tr  @if (!$list['error']) class="danger" @endif>
+                        <tr  class="@if ($list['error']) danger @endif @if ($list['updated']) warning @endif">
                             <td>{{ $list['i'] }}.</td>
                             <td>{{ $list['script'] }}</td>
+                            <td>{{ $list['old_hash'] }}</td>
+                            <td>{{ $list['new_hash'] }}</td>
                             <td>{{ $list['comment'] }}</td>
                         </tr>
                     @endforeach

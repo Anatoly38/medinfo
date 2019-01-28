@@ -253,6 +253,9 @@ let initactions = function() {
             error: xhrErrorNotificationHandler
         });
     });
+    $("#recompileLists").click(function () {
+        window.open(recompilelist_url);
+    });
 
     let unitlistsource = {
         datatype: "json",

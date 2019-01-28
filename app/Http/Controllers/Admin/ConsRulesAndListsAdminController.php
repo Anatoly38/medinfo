@@ -103,12 +103,15 @@ class ConsRulesAndListsAdminController extends Controller
     {
         $list_rules = ConsolidationList::all();
         $protocol = [];
+        $i = 1;
         foreach ($list_rules as $list_rule) {
             $old_hash = $list_rule->hash;
             $result = [];
+            $result['i'] = $i++;
             $result['updated'] = false;
             $result['error'] = false;
             $result['script'] = $list_rule->script;
+            $result['old_hash'] = $old_hash;
             $trimed = preg_replace('/,+\s+/u', ' ', $list_rule->script);
             $lists = array_unique(array_filter(explode(' ', $trimed)));
             array_multisort($lists, SORT_NATURAL);
@@ -124,14 +127,19 @@ class ConsRulesAndListsAdminController extends Controller
                 $list_rule->hash = $hashed;
                 $list_rule->save();
                 $result['count'] = count($units);
-                if ($old_hash !== $hashed) {
+                $result['new_hash'] = $hashed;
+                if ($old_hash !== (string)$hashed) {
                     $result['updated'] = true;
                     $result['comment'] = 'Состав списка обновлен' ;
+                } else {
+                    $result['updated'] = false;
+                    $result['comment'] = 'Состав списка остался прежним' ;
                 }
             } else {
                 $result['updated'] = false;
                 $result['error'] = true;
                 $result['comment'] = 'Ошибка перекомпилирования списка' ;
+                $result['new_hash'] = '';
             }
             $protocol[] = $result;
         }

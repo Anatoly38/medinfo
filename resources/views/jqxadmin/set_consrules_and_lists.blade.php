@@ -22,11 +22,12 @@
                 {{--<input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" spellcheck="false" placeholder="Списки медицинских организаций">--}}
                 <textarea class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" spellcheck="false" style="height: 50px; padding: 10px;"></textarea>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <button id="applylist" type="button" class="btn btn-primary">Применить</button>
                 <button id="clearlist" type="button" class="btn btn-danger">Очистить</button>
+                <button id="recompileLists" type="button" class="btn btn-default">Рекомпиляция</button>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <div id="Selection"></div>
             </div>
         </div>
@@ -37,7 +38,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=018') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=019') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -54,6 +55,7 @@
         let getscripts_url = '/admin/cons';
         let applyrule_url = '/admin/cons/applyrule';
         let applylist_url = '/admin/cons/applylist';
+        let recompilelist_url = '/admin/cons/reompilellits';
         let fetchlists_url = '/admin/units/fetchlists_w_reserved';
         let cellbeginedit = null;
         gridEventsInit();
