@@ -29,10 +29,10 @@
                     @foreach( $protocol as $list )
                         <tr  class="@if ($list['error']) danger @endif @if ($list['updated']) warning @endif">
                             <td>{{ $list['i'] }}.</td>
-                            <td>{{ $list['id'] }}.</td>
+                            <td>{{ $list['id'] }}</td>
                             <td>{{ $list['script'] }}</td>
-                            <td>{{ $list['old_prophash'] }}</td>
-                            <td>{{ $list['new_prophash'] }}</td>
+                            <td>{{ $list['old_hash'] }}</td>
+                            <td>{{ $list['new_hash'] }}</td>
                             <td>{{ $list['old_list_count'] }}</td>
                             <td>{{ $list['new_list_count'] }}</td>
                             <td>{{ $list['comment'] }}</td>

@@ -130,7 +130,8 @@ function fetchcells() {
 function setquerystring(cell_diapazon) {
     return "&rule=" + encodeURIComponent(ruleinput.val()) +
         "&list=" + encodeURIComponent(listinput.val()) +
-        "&cells=" + cell_diapazon;
+        "&cells=" + cell_diapazon +
+        "&table=" + picked_table;
 }
 
 function setcelldiapazon() {
@@ -160,12 +161,11 @@ let initactions = function() {
             data: setquerystring(cell_diapazon),
             success: function (data, status, xhr) {
                 if (typeof data.error !== 'undefined') {
-                    raiseError(data.message);
+                    raiseError('Ошибка применения правила:' + data.error);
                 } else {
                     raiseInfo("Правило расчета сохранено. Затронуто ячеек " + data.affected_cells);
                 }
                 grid.jqxGrid('updatebounddata', 'data');
-                //grid.on("bindingcomplete", function (event) { });
             },
             error: xhrErrorNotificationHandler
         });
@@ -256,7 +256,9 @@ let initactions = function() {
     $("#recompileLists").click(function () {
         window.open(recompilelist_url);
     });
-
+    $("#recompileRules").click(function () {
+        window.open(recompilerule_url);
+    });
     let unitlistsource = {
         datatype: "json",
         //datafields: [

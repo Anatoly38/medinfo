@@ -202,7 +202,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('admin/cons/applylist', 'Admin\ConsRulesAndListsAdminController@applyList');
     Route::delete('admin/cons/applylist', 'Admin\ConsRulesAndListsAdminController@clearList');
     Route::get('admin/cons/{row}/{column}', 'Admin\ConsRulesAndListsAdminController@getRule');
-    Route::get('admin/cons/reompilellits', 'Admin\ConsRulesAndListsAdminController@recompileLists');
+    Route::get('admin/cons/recompilelist', 'Admin\ConsRulesAndListsAdminController@recompileLists');
+    Route::get('admin/cons/recompilerule', 'Admin\ConsRulesAndListsAdminController@recompileRules');
 
     // Расчет консолидированных документов
     Route::get('admin/consolidate/{document}', 'Admin\DocumentConsolidationController@consolidateDocument' );

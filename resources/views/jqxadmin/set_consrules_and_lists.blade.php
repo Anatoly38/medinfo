@@ -11,9 +11,13 @@
             <div class="col-md-8">
                 <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="Rule" spellcheck="false" placeholder="Правило расчета">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <button id="applyrule" type="button" class="btn btn-primary">Применить</button>
                 <button id="clearrule" type="button" class="btn btn-danger">Очистить</button>
+                <button id="recompileRules" type="button" class="btn btn-default"
+                        title="Рекомендуется провести если производилось изменение в структуре форм и таблиц">
+                    Рекомпиляция
+                </button>
             </div>
         </div>
         <div class="form-group row">
@@ -41,7 +45,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=019') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=020') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -58,7 +62,8 @@
         let getscripts_url = '/admin/cons';
         let applyrule_url = '/admin/cons/applyrule';
         let applylist_url = '/admin/cons/applylist';
-        let recompilelist_url = '/admin/cons/reompilellits';
+        let recompilelist_url = '/admin/cons/recompilelist';
+        let recompilerule_url = '/admin/cons/recompilerule';
         let fetchlists_url = '/admin/units/fetchlists_w_reserved';
         let cellbeginedit = null;
         gridEventsInit();

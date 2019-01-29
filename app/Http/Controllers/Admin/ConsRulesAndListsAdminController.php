@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\ConsolidationCalcrule;
 use Illuminate\Http\Request;
 
 use App\ConsolidationList;
@@ -39,25 +40,26 @@ class ConsRulesAndListsAdminController extends Controller
         $this->validate($request, $this->validateRuleRequest());
         $coordinates = explode(',', $request->cells);
         $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->rule)));
-        $table = \App\Table::find(2);
-        $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($request->rule, $table);
-        //dd($compiled['properties']);
-        //dd($request->rule);
-        //dd($hashed);
-        $rule = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
-        $rule->script = $request->rule;
-        $rule->ptree = $compiled['ptree'];
-        $rule->properties = json_encode($compiled['properties']);
-        $rule->save();
-        $i = 0;
-        foreach ($coordinates as $coordinate) {
-            list($row, $column) = explode('_', $coordinate);
-            $apply_rule = \App\ConsUseRule::firstOrNew(['row_id' => $row, 'col_id' => $column]);
-            $apply_rule->script = $rule->id;
-            $apply_rule->save();
-            $i++;
+        $table = \App\Table::find($request->table);
+        try {
+            $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($request->rule, $table);
+            $rule = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
+            $rule->script = $request->rule;
+            $rule->ptree = $compiled['ptree'];
+            $rule->properties = json_encode($compiled['properties']);
+            $rule->save();
+            $i = 0;
+            foreach ($coordinates as $coordinate) {
+                list($row, $column) = explode('_', $coordinate);
+                $apply_rule = \App\ConsUseRule::firstOrNew(['row_id' => $row, 'col_id' => $column]);
+                $apply_rule->script = $rule->id;
+                $apply_rule->save();
+                $i++;
+            }
+            return ['affected_cells' => $i ];
+        } catch (\Exception $e) {
+            return ['affected_cells' => 0, 'error' => $e->getMessage() ];
         }
-        return ['affected_cells' => $i ];
     }
 
     public function applyList(Request $request)
@@ -68,30 +70,64 @@ class ConsRulesAndListsAdminController extends Controller
         $lists = array_unique(array_filter(explode(' ', $trimed)));
         array_multisort($lists, SORT_NATURAL);
         $glued = implode(', ', $lists);
-            try {
-                $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
-                asort($units);
-                $prop = '[' . implode(',', $units) . ']';
-                $prophashed  =  crc32($prop);
-                $scripthashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
-                $list = ConsolidationList::firstOrNew(['scripthash' => $scripthashed]);
-                $list->script = $glued;
-                $list->properties = $prop;
-                $list->scripthash = $scripthashed;
-                $list->prophash = $prophashed;
-                $list->save();
-                $i = 0;
-                foreach ($coordinates as $coordinate) {
-                    list($row, $column) = explode('_', $coordinate);
-                    $apply_list = \App\ConsUseList::firstOrNew(['row_id' => $row, 'col_id' => $column]);
-                    $apply_list->list = $list->id;
-                    $apply_list->save();
-                    $i++;
-                }
-                return ['affected_cells' => $i ];
-            } catch (\Exception $e) {
-                return ['affected_cells' => 0, 'error' => $e->getMessage() ];
+        try {
+            $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+            asort($units);
+            $prop = '[' . implode(',', $units) . ']';
+            $prophashed  =  crc32($prop);
+            $scripthashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $glued)));
+            $list = ConsolidationList::firstOrNew(['scripthash' => $scripthashed]);
+            $list->script = $glued;
+            $list->properties = $prop;
+            $list->scripthash = $scripthashed;
+            $list->prophash = $prophashed;
+            $list->save();
+            $i = 0;
+            foreach ($coordinates as $coordinate) {
+                list($row, $column) = explode('_', $coordinate);
+                $apply_list = \App\ConsUseList::firstOrNew(['row_id' => $row, 'col_id' => $column]);
+                $apply_list->list = $list->id;
+                $apply_list->save();
+                $i++;
             }
+            return ['affected_cells' => $i ];
+        } catch (\Exception $e) {
+            return ['affected_cells' => 0, 'error' => $e->getMessage() ];
+        }
+    }
+
+    public function recompileRules()
+    {
+        $rules = ConsolidationCalcrule::all();
+        $protocol = [];
+        $i = 1;
+        foreach ($rules as $rule) {
+            $old_hash = $rule->hash;
+            $result = [];
+            $result['i'] = $i++;
+            $result['id'] = $rule->id;
+            $result['updated'] = false;
+            $result['error'] = false;
+            $result['script'] = $rule->script;
+            $result['old_hash'] = $old_hash;
+            $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $rule->script)));
+            $table = \App\Table::find(2); // Нужна какая либо таблица для запуска транслятора
+
+            try {
+                $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($rule->script, $table);
+                $rule->ptree = $compiled['ptree'];
+                $rule->properties = json_encode($compiled['properties']);
+                $result['new_hash'] = $hashed;
+                $rule->save();
+                $result['error'] = false;
+                $result['comment'] = 'Успешно' ;
+            } catch (\Exception $e) {
+                $result['error'] = true;
+                $result['comment'] = 'Ошибка рекомпиляции правила расчета ' . $rule->script . ': ' . $e->getMessage();
+            }
+            $protocol[] = $result;
+        }
+        return view('reports.recompilerulesprotocol', compact('protocol'));
     }
 
     public function recompileLists()
@@ -140,7 +176,6 @@ class ConsRulesAndListsAdminController extends Controller
                     $result['comment'] = 'Состав списка остался прежним' ;
                 }
             } else {
-
                 $result['updated'] = false;
                 $result['error'] = true;
                 if (is_array($units) && count($units) === 0) {
