@@ -73,10 +73,14 @@ let tabledatacheck = function(table_id, type) {
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
         tcheck.attr('disabled', false);
+        idtcheck.attr('disabled', false);
+        iptcheck.attr('disabled', false);
     });
 };
 let beforecheck = function( xhr ) {
     tcheck.attr('disabled', true);
+    idtcheck.attr('disabled', true);
+    iptcheck.attr('disabled', true);
     $("#tableprotocol").html('');
     //$("#cellvalidationprotocol").html('');
     $('#protocolloader').show();
@@ -689,6 +693,9 @@ let checkform = function () {
             fgrid.jqxDataTable('refresh');
             dgrid.jqxGrid('refresh');
             formcheck.attr('disabled', false);
+            tcheck.attr('disabled', false);
+            idtcheck.attr('disabled', false);
+            iptcheck.attr('disabled', false);
         }
     }).fail(function(xhr, textStatus, errorThrown) {
         $('#formprotocol').html('');
@@ -875,7 +882,11 @@ let gettableprotocol = function (data, status, xhr) {
     current_protocol_source[current_table_code] = data;
     fgrid.jqxDataTable('refresh');
     dgrid.jqxGrid('refresh');
+    dgrid.jqxGrid('focus');
+    dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
     tcheck.attr('disabled', false);
+    idtcheck.attr('disabled', false);
+    iptcheck.attr('disabled', false);
 };
 // Экспорт данных текущей таблицы в эксель
 let tabledataexport = function(table_id) {
@@ -1132,10 +1143,13 @@ let initdatagrid = function() {
         let colindex = dgrid.jqxGrid('getcolumnproperty', column_id, 'text');
         let analitic_header = "<b>Строка " + row_code + ", Графа " + colindex +  ": </b><br/>";
         cell_protocol_panel.html('');
-        if (current_protocol_source.length === 0) {
-            cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля формы не найден. Выполните контроль текущей таблицы</p></div>");
-        } else if (typeof current_protocol_source[current_table_code] === 'undefined') {
+        //if (current_protocol_source.length === 0) {
+          //  cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля формы не найден. Выполните контроль текущей таблицы</p></div>");
+            //console.log('Длина массива current_protocol_source равна нулю');
+        //} else
+        if (typeof current_protocol_source[current_table_code] === 'undefined') {
             cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль текущей таблицы</p></div>");
+            //console.log('В массива current_protocol_source отсутствует ключ текущей таблицы');
         } else {
             let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
             let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
