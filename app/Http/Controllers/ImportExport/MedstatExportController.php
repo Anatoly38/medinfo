@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ImportExport;
 
+use App\Form;
 use App\Table;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,8 @@ class MedstatExportController extends Controller
         } else {
             $code = $unit->unit_code;
         }
-        $tables = $form->tables->sortBy('table_index')->filter(function ($table) {
+        $real = Form::getRealForm($form->id);
+        $tables = $real->tables->sortBy('table_index')->filter(function ($table) {
             return !is_null($table->medstat_code);
         });
 

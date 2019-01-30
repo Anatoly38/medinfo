@@ -56,7 +56,7 @@ class Document extends Model
 
     public function unitgroup()
     {
-        return $this->belongsTo('App\UnitGroup', 'ou_id');
+        return $this->belongsTo('App\UnitList', 'ou_id');
     }
 
     public function unitsview()

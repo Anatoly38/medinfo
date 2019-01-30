@@ -367,6 +367,8 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/calc_valuecount', 'Tests\CalculationFunctionTestController@valuecount'); // "Новый" вариант рассчета для консолидации
     Route::get('tests/calc_interval', 'Tests\CalculationFunctionTestController@interval'); // "Новый" вариант рассчета для консолидации
     Route::get('tests/vector', 'Tests\VectorTestController@index');
+    // тестирование компиляции списков МО для расчетов
+    Route::get('tests/lists', 'Tests\ListsCompileTestController@listCompile'); // "Новый" вариант рассчета для консолидации
     // тестирование функций контроля
     Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
     Route::get('tests/limitsection', 'Tests\SectionCheckTestController@setLimitByFormSection');

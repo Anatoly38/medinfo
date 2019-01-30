@@ -59,17 +59,21 @@ class FunctionCompiler
         try {
             $addunits = array_merge($addunits, self::getUnitsFromLists($addlists));
             $subtractunits = array_merge($subtractunits, self::getUnitsFromLists($subtractlists));
-            $limitationunits = array_merge($limitationunits, self::getUnitsFromLists($limitationlists));
+            foreach($limitationlists as $limitationlist) {
+                $limitationunits[] = self::getUnitsFromLists([$limitationlist]);
+            }
         }
         catch (\Exception $e) {
-            return null;
+            return ['error' => $e->getMessage()];
         }
         $addunits = array_unique($addunits);
         $subtractunits = array_unique($subtractunits);
-        $limitationunits = array_unique($limitationunits);
+        //$limitationunits = array_unique($limitationunits);
+        //dd($limitationlists);
+        //dd($limitationunits);
         $units = array_diff($addunits, $subtractunits);
-        if (count($limitationunits) > 0) {
-            $units = array_intersect($units, $limitationunits);
+         foreach ($limitationunits as $limit) {
+            $units = array_intersect($units, $limit);
         }
         // Если список учреждений полученнный от уровня консолидированного документа не пуст - ограничиваем вывод и по нему тоже
         if (count($levelunits) > 0) {
@@ -83,22 +87,28 @@ class FunctionCompiler
     {
         $units = [];
         foreach ($lists as $list) {
-            if (in_array($list, config('medinfo.reserved_unitlist_slugs'))) {
-                $units = self::getUnitsFromReserved($list);
-            } else {
-                $u = \App\UnitList::Slug($list)->first();
-                if (is_null($u)) {
-                    throw new \Exception("Список '$list' не существует");
-                }
-                $units = array_merge($units, $u->members->pluck('ou_id')->toArray());
+            switch (true) {
+                case $list[0] === 'u':
+                    $unitcode = substr($list, 1);
+                    $units = array_merge($units, self::getUnitsFromTree($unitcode));
+                    break;
+                case in_array($list, config('medinfo.reserved_unitlist_slugs')):
+                    $units = array_merge($units, self::getUnitsFromReserved($list));
+                    break;
+                default:
+                    $u = \App\UnitList::Slug($list)->first();
+                    if (is_null($u)) {
+                        throw new \Exception("Список '$list' не существует");
+                    }
+                    $units = array_merge($units, $u->members->pluck('ou_id')->toArray());
             }
+
         }
         return $units;
     }
 
     public static function getUnitsFromReserved(string $staticlist)
     {
-        $units = [];
         switch ($staticlist) {
             case '*' :
             case 'все' :
@@ -119,6 +129,18 @@ class FunctionCompiler
                 throw new \Exception("Статический список/группа '$staticlist' не существует");
         }
         return $units;
+    }
+
+    public static function getUnitsFromTree(string $unitcode) {
+        $unit = \App\Unit::Code($unitcode)->first();
+        if (!$unit) {
+            throw new \Exception("Не найдена ОЕ с кодом $unitcode" );
+        }
+        if ($unit->node_type === 3 || $unit->node_type === 4) {
+            return [$unit->id];
+        }
+        $units = \App\Unit::getPrimaryDescendants($unit->id);
+        return collect($units)->pluck('id')->toArray();
     }
 
 }

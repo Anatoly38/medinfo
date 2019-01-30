@@ -15,7 +15,7 @@
                 <button id="applyrule" type="button" class="btn btn-primary">Применить</button>
                 <button id="clearrule" type="button" class="btn btn-danger">Очистить</button>
                 <button id="recompileRules" type="button" class="btn btn-default"
-                        title="Рекомендуется провести если производилось изменение в структуре форм и таблиц">
+                        title="Рекомендуется провести если производились изменения в структуре форм и таблиц">
                     Рекомпиляция
                 </button>
             </div>

@@ -36,6 +36,11 @@ class Unit extends Model
     {
         return $query->where('id', 0);
     }
+    // Выбор ОЕ по коду
+    public function scopeCode($query, $unit_code)
+    {
+        return $query->where('unit_code', $unit_code);
+    }
     // Выбор Территорий
     public function scopeTerritory($query)
     {

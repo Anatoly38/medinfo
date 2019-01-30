@@ -72,6 +72,9 @@ class ConsRulesAndListsAdminController extends Controller
         $glued = implode(', ', $lists);
         try {
             $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+            if (array_key_exists('error', $units)) {
+                throw new \Exception($units['error']);
+            }
             asort($units);
             $prop = '[' . implode(',', $units) . ']';
             $prophashed  =  crc32($prop);
