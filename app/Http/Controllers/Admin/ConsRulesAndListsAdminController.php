@@ -186,10 +186,12 @@ class ConsRulesAndListsAdminController extends Controller
                 } else {
                     $result['comment'] = 'Ошибка перекомпилирования списка' ;
                 }
-                $result['new_hash'] = '';
+                $result['new_prophash'] = '';
+                $result['new_list_count'] = 0;
             }
             $protocol[] = $result;
         }
+        //dd($protocol);
         return view('reports.recompilelistsprotocol', compact('protocol'));
 
     }

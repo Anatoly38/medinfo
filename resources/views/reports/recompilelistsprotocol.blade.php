@@ -18,8 +18,8 @@
                     <th>№</th>
                     <th>Id</th>
                     <th>Список</th>
-{{--                    <th>Старый хэш</th>
-                    <th>Новый хэш</th>--}}
+                    <th>Старый хэш</th>
+                    <th>Новый хэш</th>
                     <th>Старое кол-во МО</th>
                     <th>Новое кол-во МО</th>
                     <th>Результат</th>
@@ -31,8 +31,8 @@
                             <td>{{ $list['i'] }}.</td>
                             <td>{{ $list['id'] }}</td>
                             <td>{{ $list['script'] }}</td>
-{{--                            <td></td>
-                            <td></td>--}}
+                            <td>{{ $list['old_prophash'] }}</td>
+                            <td>{{ $list['new_prophash'] }}</td>
                             <td>{{ $list['old_list_count'] }}</td>
                             <td>{{ $list['new_list_count'] }}</td>
                             <td>{{ $list['comment'] }}</td>
