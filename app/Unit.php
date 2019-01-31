@@ -129,9 +129,9 @@ class Unit extends Model
         return $units;
     }
 
-    public static function getPrimaryDescendants($parent) {
+    public static function getPrimaryDescendants($parent, int $with_blocked = 0) {
         $units = [];
-        $lev_query = "SELECT * FROM mo_hierarchy WHERE parent_id = $parent";
+        $lev_query = "SELECT * FROM mo_hierarchy WHERE parent_id = $parent AND blocked = $with_blocked";
         $res = \DB::select($lev_query);
         if (count($res) > 0) {
             foreach ($res as $r) {

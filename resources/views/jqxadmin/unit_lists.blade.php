@@ -25,7 +25,7 @@
         </div>
         <div class="col-lg-6">
             <button id="AddSelected" type="button" class="btn btn-info">Добавить</button>
-            <label class="checkbox-inline"><input id="includeSubLegals" type="checkbox" >Включить входящие подразделения при добавлении в список юрлиц</label>
+            <label class="checkbox-inline"><input id="includeSubLegals" type="checkbox" >Включить входящие обособленные подразделения при добавлении в список юрлиц</label>
         </div>
     </div>
     <div class="row">

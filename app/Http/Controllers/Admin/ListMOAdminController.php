@@ -127,7 +127,11 @@ class ListMOAdminController extends Controller
         } elseif ($request->inclusive === '1') {
             $units_with_subs = [];
             foreach($units as $unit) {
-                $list_with_subs = \App\Unit::getDescendants($unit);
+                //$list_with_subs = \App\Unit::getDescendants($unit);
+                // выбираем только 3 и 4 уровень
+                $subs = \App\Unit::getPrimaryDescendants($unit);
+                $subs[] = \App\Unit::find($unit);
+                $list_with_subs = collect($subs)->pluck('id')->toArray();
                 $units_with_subs = array_merge($units_with_subs, $list_with_subs);
             }
             $units_with_subs = array_unique($units_with_subs);
