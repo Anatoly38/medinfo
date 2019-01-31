@@ -167,7 +167,8 @@ function initPusher() {
 function initStateChangeChannel() {
     channel.bind('state-change-event', function(data) {
         if (String(data.worker_id) !== current_user_id) {
-            raiseEventMessage(data.message + data.worker + data.form + data.unit + data.period );
+            console.log();
+            show_websocket_notification ? raiseEventMessage(data.message + data.worker + data.form + data.unit + data.period) : console.log("Отображение поплавков для ивентов отключено в конфиге");
         } else {
             console.log("Сообщение скрыто от текущего пользователя - он автор события");
         }
@@ -178,7 +179,7 @@ function initStateChangeChannel() {
 function initMessageSentChannel() {
     channel.bind('message-sent-event', function(data) {
         if (String(data.worker_id) !== current_user_id) {
-            raiseEventMessage(data.message_header + data.message_body );
+            show_websocket_notification ? raiseEventMessage(data.message_header + data.message_body) : console.log("Отображение поплавков для ивентов отключено в конфиге");
         } else {
             console.log("Сообщение скрыто от текущего пользователя - он автор события");
         }

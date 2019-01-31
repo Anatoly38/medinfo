@@ -68,7 +68,7 @@
     <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @else
     <script src="{{ asset('/jqwidgets/jqx-all.js?v=004') }}"></script>
-    <script src="{{ asset('/medinfo/dashboard.js?v=090') }}"></script>
+    <script src="{{ asset('/medinfo/dashboard.js?v=091') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js?v=002') }}"></script>
     <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
     <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -89,11 +89,17 @@
     var pusher;
     var channel;
     initnotifications();
+@if(config('medinfo.show_websocket_notification'))
+    var show_websocket_notification = true;
+@else
+    var show_websocket_notification = false;
+@endif
+
 @if(config('medinfo.websocket'))
     initPusher();
+    initMessageFeed();
     initStateChangeChannel();
     initMessageSentChannel();
-    initMessageFeed();
 @endif
     inituserprofilewindow();
     initSendMessage();
