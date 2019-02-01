@@ -291,7 +291,8 @@ let initactions = function() {
             return terms.join(", ");
         }
     });
-    $("#updateData").click(function () {
+    $("#refreshGrid").click(function () {
+        console.log("запущен рефреш");
         grid.jqxGrid('updatebounddata');
     });
 

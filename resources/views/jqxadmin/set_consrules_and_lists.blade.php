@@ -18,7 +18,7 @@
                         title="Рекомендуется провести если производились изменения в структуре форм и таблиц">
                     Рекомпиляция
                 </button>
-                <button class="btn btn-default" id="updateData" title="Обновить таблицу"> <span class='fa fa-refresh'></span></button>
+                <button id="refreshGrid" class="btn btn-default" type="button" title="Обновить таблицу"> <span class='fa fa-refresh'></span></button>
             </div>
         </div>
         <div class="form-group row">
@@ -46,7 +46,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=022') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=023') }}"></script>
 @endpush
 
 @section('inlinejs')
