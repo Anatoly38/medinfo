@@ -165,7 +165,7 @@ let initactions = function() {
                 } else {
                     raiseInfo("Правило расчета сохранено. Затронуто ячеек " + data.affected_cells);
                 }
-                grid.jqxGrid('updatebounddata', 'data');
+                //grid.jqxGrid('updatebounddata', 'data');
             },
             error: xhrErrorNotificationHandler
         });
@@ -193,10 +193,10 @@ let initactions = function() {
                     m = 'Список субъектов отчетности сохранен. Затронуто ячеек: ' + data.affected_cells;
                     raiseInfo(m);
                 }
-                grid.jqxGrid('updatebounddata', 'data');
+                //grid.jqxGrid('updatebounddata', 'data');
                 //grid.on("bindingcomplete", function (event) { });
             },
-            error: xhrErrorNotificationHandler
+            //error: xhrErrorNotificationHandler
         });
     });
     $("#clearrule").click(function () {
@@ -291,4 +291,8 @@ let initactions = function() {
             return terms.join(", ");
         }
     });
+    $("#updateData").click(function () {
+        grid.jqxGrid('updatebounddata');
+    });
+
 };
