@@ -25,7 +25,7 @@
             <label class="sr-only"  for="List">Списки МО:</label>
             <div class="col-md-8">
                 {{--<input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" spellcheck="false" placeholder="Списки медицинских организаций">--}}
-                <textarea class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" spellcheck="false" style="height: 80px; padding: 10px;"></textarea>
+                <textarea class="form-control" id="List" spellcheck="false"></textarea>
             </div>
             <div class="col-md-3">
                 <button id="applylist" type="button" class="btn btn-primary">Применить</button>
