@@ -69,6 +69,12 @@ class DocumentConsolidationController extends Controller
     public function consolidatePivoteTableByRuleAndUnitlist(Document $document, Table $table)
     {
         set_time_limit(240);
+        $aggregate = \App\Aggregate::find($document->id); // Вызываем модель, где хранятся свойства "сводного" документа
+        $protected = is_null($aggregate) ? false : $aggregate->protected; // Свойство документа "защищен". True, если является защищенным перерасчета
+        // Если документ защищен от свода - завершаем выполнение метода aggregateData с ошибкой
+        if ($protected) {
+            return ['consolidated' => false, 'cell_affected' => 0, 'cell_truncated' => 0 ];
+        }
         // очищаем таблицу перед заполнением
         $cell_truncated = Cell::where('doc_id', $document->id)->where('table_id', $table->id)->delete();
         $rows = $table->rows->sortBy('row_index');
