@@ -46,7 +46,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=023') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=024') }}"></script>
 @endpush
 
 @section('inlinejs')
