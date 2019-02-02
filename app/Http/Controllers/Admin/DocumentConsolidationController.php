@@ -73,7 +73,7 @@ class DocumentConsolidationController extends Controller
         $protected = is_null($aggregate) ? false : $aggregate->protected; // Свойство документа "защищен". True, если является защищенным перерасчета
         // Если документ защищен от свода - завершаем выполнение метода aggregateData с ошибкой
         if ($protected) {
-            return ['consolidated' => false, 'cell_affected' => 0, 'cell_truncated' => 0 ];
+            return ['consolidated' => false, 'cell_affected' => 0, 'cell_truncated' => 0, 'comment' => 'Документ защищен от повторного свода/консолидации' ];
         }
         // очищаем таблицу перед заполнением
         $cell_truncated = Cell::where('doc_id', $document->id)->where('table_id', $table->id)->delete();
