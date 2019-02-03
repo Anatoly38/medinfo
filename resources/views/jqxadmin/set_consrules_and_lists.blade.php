@@ -27,11 +27,10 @@
                 </form>
             </div>
         </div>
-        <div class="row" style="margin-top: 10px">
+        <div class="row" style="margin-top: 10px; margin-bottom: 5px">
             <label class="sr-only"  for="List">Списки МО:</label>
             <div class="col-md-8">
-                {{--<input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="List" spellcheck="false" placeholder="Списки медицинских организаций">--}}
-                <textarea class="form-control" id="List" spellcheck="false"></textarea>
+                <textarea class="form-control" id="List" spellcheck="false" style="padding: 5px"></textarea>
             </div>
             <div class="col-md-3">
                 <button id="applylist" type="button" class="btn btn-primary">Применить</button>
@@ -74,7 +73,7 @@
         let cellbeginedit = null;
         let autorefresh = true;
         let initialViewport = $(window).height();
-        let topOffset = 240;
+        let topOffset = 245;
         onResizeEventLitener();
         gridEventsInit();
         initactions();

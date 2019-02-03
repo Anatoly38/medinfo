@@ -39,7 +39,7 @@
     <button class="btn btn-default navbar-btn" id="СonsolidateDocument" title="Расчет таблицы">Расчет формы</button>
     <button class="btn btn-default navbar-btn" id="СonsolidateTable" title="Расчет таблицы">Расчет таблицы</button>
     {{-- Плейсхолдер отображения процесса рассчета --}}
-    <div id="CalculationProgress" class="btn-group" style="display: none">Производится рассчет <img src='/jqwidgets/styles/images/loader-small.gif' /></div>
+    <div id="CalculationProgress" class="btn-group" style="display: none">Производится расчет <img src='/jqwidgets/styles/images/loader-small.gif' /></div>
 @endsection
 
 @section('initTableConsolidateAction')

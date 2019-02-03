@@ -1432,13 +1432,13 @@ let initConsolidateFormButton = function () {
                 raiseError(data.error);
                 return false;
             }
-            raiseInfo("Произведен рассчет документа");
+            raiseInfo("Произведен расчет документа");
             dgrid.jqxGrid('updatebounddata');
             $("#CalculationProgress").hide();
             csd.attr('disabled', false );
             cst.attr('disabled', false );
         }).fail(function () {
-            raiseError('При рассчете документа произошла ошибка');
+            raiseError('При расчете документа произошла ошибка');
             csd.attr('disabled', false );
             cst.attr('disabled', false );
         });
@@ -1457,13 +1457,13 @@ let initConsolidateButton = function () {
                 raiseError(data.error);
                 return false;
             }
-            raiseInfo("Произведен рассчет текущей таблицы");
+            raiseInfo("Произведен расчет текущей таблицы");
             dgrid.jqxGrid('updatebounddata');
             $("#CalculationProgress").hide();
             cst.attr('disabled', false );
             csd.attr('disabled', false );
         }).fail(function () {
-            raiseError('При рассчете таблицы произошла ошибка');
+            raiseError('При расчете таблицы произошла ошибка');
             cst.attr('disabled', false );
             csd.attr('disabled', false );
         });
