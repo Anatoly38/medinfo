@@ -14,7 +14,10 @@ class ExportConsolidationRulesAndListsController extends Controller
     //
     public function jsonRulesExport(Table $table)
     {
-        $result = ['table' => ['id' => $table->id], 'rules' => [] ];
+        $result = [
+            'table' => ['id' => $table->id, 'table_code' => $table->table_code ],
+            'form' => ['id' => $table->form->id, 'form_code' => $table->form->id],
+            'rules' => [] ];
         $rows = $table->rows->sortBy('row_index');
         $cols = $table->columns->sortBy('column_index');
 
