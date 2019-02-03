@@ -51,7 +51,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=027') }}"></script>
+    <script src="{{ asset('/medinfo/admin/consrulesandlists.js?v=030') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -73,6 +73,9 @@
         let fetchlists_url = '/admin/units/fetchlists_w_reserved';
         let cellbeginedit = null;
         let autorefresh = true;
+        let initialViewport = $(window).height();
+        let topOffset = 240;
+        onResizeEventLitener();
         gridEventsInit();
         initactions();
     </script>

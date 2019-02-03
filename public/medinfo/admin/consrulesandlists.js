@@ -5,7 +5,7 @@ function updateRelated() {
     selectionlog.html('');
     grid.jqxGrid({
         width: '100%',
-        height: 700,
+        height: initGridSize(),
         editable: false,
         selectionmode: 'multiplecellsadvanced',
         localization: localize()
@@ -302,4 +302,15 @@ let initactions = function() {
     $("#autorefresh").click(function () {
         autorefresh = $("#autorefresh").prop('checked');
     })
+};
+
+let initGridSize = function () {
+    return initialViewport - topOffset;
+};
+
+let onResizeEventLitener = function () {
+    $(window).resize(function() {
+        grid.jqxGrid({ height: $(window).height()-topOffset });
+
+    });
 };
