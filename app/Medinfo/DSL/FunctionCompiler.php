@@ -112,7 +112,8 @@ class FunctionCompiler
         switch ($staticlist) {
             case '*' :
             case 'все' :
-                $units = \App\Unit::Active()->pluck('id')->toArray();
+                // Выбирает только МО юрлица и ОП, учреждения соц. защиты и образования не включаются
+                $units = \App\Unit::Active()->MedicalUnits()->pluck('id')->toArray();
                 break;
             case 'юл' :
             case 'юрлица' :
