@@ -16,7 +16,7 @@ class ExportConsolidationRulesAndListsController extends Controller
     {
         $result = [
             'table' => ['id' => $table->id, 'table_code' => $table->table_code ],
-            'form' => ['id' => $table->form->id, 'form_code' => $table->form->id],
+            'form' => ['id' => $table->form->id, 'form_code' => $table->form->form_code],
             'rules' => [] ];
         $rows = $table->rows->sortBy('row_index');
         $cols = $table->columns->sortBy('column_index');
@@ -38,10 +38,17 @@ class ExportConsolidationRulesAndListsController extends Controller
         }
         $data = json_encode($result, JSON_UNESCAPED_UNICODE, JSON_PRETTY_PRINT);
         $fileName = time() . '_consolidation_rules_' . $table->id . '.json';
-        \Storage::put(
+/*        \Storage::put(
             'exports/structures/forms/' . $fileName,
             $data
-        );
-        return response()->download(storage_path('app/exports/structures/forms/').$fileName);
+        );*/
+        //return response()->download(storage_path('app/exports/structures/forms/').$fileName)->deleteFileAfterSend();
+        //return response()->download(storage_path('app/exports/structures/forms/').$fileName);
+
+        $headers = [
+            'Content-type'        => 'text/json',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ];
+        return \Response::make($data, 200, $headers);
     }
 }

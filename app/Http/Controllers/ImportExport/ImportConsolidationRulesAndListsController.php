@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\ImportExport;
 
+use App\Column;
 use App\ConsUseRule;
+use App\Form;
 use App\Table;
+use App\Row;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -14,16 +17,17 @@ class ImportConsolidationRulesAndListsController extends Controller
     //
     public function jsonRulesImport(Table $table)
     {
-        $content = file_get_contents(storage_path('app/imports/rules/1549095239_consolidation_rules_284.json'));
-        $rules = json_decode($content);
+        $file = file_get_contents(storage_path('app/imports/rules/rules.json'));
+        $data = json_decode($file);
         $errors = [];
         $i = 0;
-        //dd($table->id);
-        if ($table->id !== $rules->table->id) {
+        $form = Form::OfCode($data->form->form_code)->first();
+        $source_table = Table::OfFormTableCode($form->id, $data->table->table_code)->first();
+        if ($table->table_code !== $source_table->table_code) {
             throw new \Exception("В загружаемом файле ссылка на таблицу с другим кодом");
         }
-        foreach ($rules->rules as $rule) {
-            $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $rule->script)));
+        foreach ($data->rules as $rule) {
+            $hashed = sprintf("%u", crc32(preg_replace('/\s+/u', '', $rule->script)));
             try {
                 $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($rule->script, $table);
                 $stored = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
@@ -31,7 +35,9 @@ class ImportConsolidationRulesAndListsController extends Controller
                 $stored->ptree = $compiled['ptree'];
                 $stored->properties = json_encode($compiled['properties']);
                 $stored->save();
-                $apply_rule = ConsUseRule::firstOrNew(['row_id' => $rule->row, 'col_id' => $rule->column ]);
+                $row = Row::OfTableRowCode($table->id, $rule->row_code)->first();
+                $column = Column::OfTableColumnCode($table->id, $rule->column_code)->first();
+                $apply_rule = ConsUseRule::firstOrNew(['row_id' => $row->id, 'col_id' => $column->id ]);
                 $apply_rule->script = $stored->id;
                 $apply_rule->save();
                 $i++;
