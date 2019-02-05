@@ -10,7 +10,7 @@ namespace App\Medinfo;
 
 use App\Period;
 use App\Unit;
-use App\UnitGroupMember;
+use App\UnitListMember;
 use App\Form;
 use App\Table;
 use App\Document;
@@ -29,19 +29,18 @@ class ReportMaker
     private $population_rows;
     private $population_column;
 
-    public function __construct(int $level = 1, int $period_id = 4, int $sort_order = 1, $group_id = null)
+    public function __construct(int $level = 1, int $period_id = 4, int $sort_order = 1, $list_id = null)
     {
         $this->period = Period::find($period_id);
         $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $this->dtype = 1; // Только первичные документв
-        if ($group_id === null) {
-            config('medinfo.report_group') === 0 ? $group_id = null : $group_id = config('medinfo.report_group');
+        if ($list_id === null) {
+            config('medinfo.report_group') === 0 ? $list_id = null : $list_id = config('medinfo.report_group');
 
         }
-        if ($group_id !== null) {
-            $this->included = UnitGroupMember::OfGroup($group_id)->select('ou_id')->pluck('ou_id')->toArray();
+        if ($list_id !== null) {
+            $this->included = UnitListMember::List($list_id)->select('ou_id')->pluck('ou_id')->toArray();
         }
-
         switch ($sort_order) {
             case 1:
                 $order = 'territory_type';
@@ -119,7 +118,7 @@ class ReportMaker
                 foreach ($populationmatches as $populationmatch) {
                     $populationgroup = $populationmatch[1];
                     try {
-                        $population = $this->getPopulation($populationgroup, $unit);
+                        $population = $this->getPopulation($unit, $populationgroup);
                         $formula = str_replace($populationmatch[0], $population, $formula);
                     } catch (\Exception $e) {
                         $calculation_errors[] = ['formula' => $formula, 'error' => $e->getMessage(), 'unit' => $unit];
@@ -220,17 +219,18 @@ class ReportMaker
         return $v;
     }
 
-    public function getPopulation($population_group = 1, $unit)
+    public function getPopulation($unit, $population_group = 1)
     {
         // Если данные группируются по-территориально, то население берем из таблицы 100 соответствующей территории
         // Если id юнита равно нулю, берем все население Иркутской области из выбранной категории
         $population = 0;
+        $document_type = 4; // Тип документа для формы населения - "показатели"
         switch (true) {
             case $unit->id === 0 :
             case $unit->node_type == 2 :
                 //dd($unit);
                 //dd($this->population_form);
-                $document = Document::OfTUPF( 2, $unit->id, $this->period->id, $this->population_form->id)->first();
+                $document = Document::OfTUPF( $document_type, $unit->id, $this->period->id, $this->population_form->id)->first();
                 if (!$document) {
                     throw new \Exception("Форма \"(100) Население\" не найдена");
                 }
@@ -240,7 +240,7 @@ class ReportMaker
                     $this->population_column->where('column_index', 3)->first()->id
                 )->first();
                 if (!$cell) {
-                    throw new \Exception("В форма \"(100) Население\" не найдена запрошенная группа населения ($population_group)");
+                    throw new \Exception("В форме \"(100) Население\" не найдена запрошенная группа населения ($population_group)");
                 }
                 $population = $cell->value;
                 break;

@@ -23,4 +23,9 @@ class WorkerScope extends Model
     {
         return $query->where('worker_id', $worker);
     }
+
+    public function scopeUnit($query, $unit)
+    {
+        return $query->where('ou_id', $unit);
+    }
 }
