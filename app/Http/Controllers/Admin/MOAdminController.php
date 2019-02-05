@@ -124,9 +124,14 @@ class MOAdminController extends Controller
     {
         $doc_count = Document::countInUnit($unit->id);
         if ($doc_count === 0) {
+            // Перед удалением ОЕ удаяем привязки пользователей:
             $worker_scopes = \App\WorkerScope::OfUnit($unit->id)->delete();
+            // Удаление ОЕ из спиков юнитов
+            $list_members = \App\UnitListMember::OfUnit($unit->id)->delete();
             $unit->delete();
-            return ['message' => "Удалено привязок пользователей $worker_scopes. Удалена организационная единица Id $unit->id" ];
+            return ['message' =>
+                "Удалено привязок - пользователей $worker_scopes, к спискам - $list_members. Удалена организационная единица Id $unit->id"
+            ];
         } else {
             return ['error' => 422, 'message' => 'БД содержит документы связанные с ОЕ Id' . $unit->id . '. Удаление невозможно.' ];
         }

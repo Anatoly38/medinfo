@@ -24,7 +24,9 @@ class ReportMaker
     private $states;
     private $dtype;
     private $units;
-    private $included = [];
+    private $tree_scope = []; // ограничение по дереву МО
+    private $list_scope = []; // ограничение по списку
+    private $all_scope = [];
     private $population_form;
     private $population_rows;
     private $population_column;
@@ -34,12 +36,21 @@ class ReportMaker
         $this->period = Period::find($period_id);
         $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $this->dtype = 1; // Только первичные документв
-        if ($list_id === null) {
-            config('medinfo.report_group') === 0 ? $list_id = null : $list_id = config('medinfo.report_group');
-
+        if (config('medinfo.report_tree')) {
+            $this->tree_scope = Unit::getDescendants(config('medinfo.report_tree'));
         }
+        if ($list_id === null) {
+            config('medinfo.report_list') === 0 ? $list_id = null : $list_id = config('medinfo.report_list');
+        }
+
         if ($list_id !== null) {
-            $this->included = UnitListMember::List($list_id)->select('ou_id')->pluck('ou_id')->toArray();
+            $this->list_scope = UnitListMember::List($list_id)->select('ou_id')->pluck('ou_id')->toArray();
+        }
+
+        if (count($this->list_scope) > 0) {
+            $this->all_scope = array_intersect($this->tree_scope, $this->list_scope);
+        } else {
+            $this->all_scope = $this->tree_scope;
         }
         switch ($sort_order) {
             case 1:
@@ -53,6 +64,7 @@ class ReportMaker
                 break;
         }
 
+
         switch ($level) {
             case 0:
                 $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
@@ -63,9 +75,12 @@ class ReportMaker
             case 2:
                 $this->units = Unit::territory()->active()->orderBy('unit_name')->get();
                 // Добавляем в коллекцию "Всего"
-                $all = Unit::find(0);
+                $all = Unit::find(config('medinfo.report_tree'));
                 $this->units->push($all);
                 break;
+        }
+        if (count($this->all_scope) > 0) {
+            $this->units = $this->units->whereIn('id', $this->all_scope);
         }
         Session::put('report_progress', 0);
         Session::put('current_unit', '');
@@ -87,7 +102,8 @@ class ReportMaker
         $calculation_errors = [];
         $u = 0;
         foreach ($this->units as $unit) {
-            if (count($this->included) > 0 && !in_array($unit->id, $this->included) && ($unit->node_type == 3 || $unit->node_type == 4)) {
+            //if (count($this->list_scope) > 0 && !in_array($unit->id, $this->list_scope) && ($unit->node_type == 3 || $unit->node_type == 4)) {
+            if ($unit->node_type == 3 || $unit->node_type == 4) {
                 continue;
             }
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
@@ -157,9 +173,9 @@ class ReportMaker
         // Проверка, нужно ли сводить данные по текущему юниту.
         // Если вдруг сводить не нужно, в слюбом случае возвращаем значение для упрощения обработки сводного отчета
         $wherein = '';
-        if (count($this->included) > 0 ) {
+        if (count($this->all_scope) > 0 ) {
             //dd($this->included);
-            $glued = implode(',', $this->included);
+            $glued = implode(',', $this->all_scope);
             $wherein = " AND d.ou_id IN ( $glued )";
         }
         //dd($wherein);

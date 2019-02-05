@@ -24,8 +24,13 @@ class UnitListMember extends Model
         return $query->where('list_id', $list);
     }
 
-    public function scopeNotOfGroup($query, $group)
+    public function scopeNotOfList($query, $list)
     {
-        return $query->where('group_id','<>', $group);
+        return $query->where('list_id','<>', $list);
+    }
+
+    public function scopeOfUnit($query, $unit)
+    {
+        return $query->where('ou_id', $unit);
     }
 }
