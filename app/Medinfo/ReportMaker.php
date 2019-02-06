@@ -63,8 +63,6 @@ class ReportMaker
                 $order = 'unit_code';
                 break;
         }
-
-
         switch ($level) {
             case 0:
                 $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
@@ -103,9 +101,10 @@ class ReportMaker
         $u = 0;
         foreach ($this->units as $unit) {
             //if (count($this->list_scope) > 0 && !in_array($unit->id, $this->list_scope) && ($unit->node_type == 3 || $unit->node_type == 4)) {
-            if ($unit->node_type == 3 || $unit->node_type == 4) {
-                continue;
-            }
+            //if ($unit->node_type == 3 || $unit->node_type == 4) {
+                //continue;
+            //}
+
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             //$report_units[$unit->id]['inn'] = $unit->inn;
             $i = 0;
@@ -123,7 +122,7 @@ class ReportMaker
                     $table_code = $c_addr[2];
                     $row_code = $c_addr[3];
                     $col_index = $c_addr[4];
-                    $form = Form::where('form_code', $form_code)->first();
+                    $form = Form::OfCode($form_code)->first();
                     //if ($unit->id === 115 && $c_addr[0] == 'Ф30Т1001С13Г4') {
                         //dd($col_index);
                     //}
