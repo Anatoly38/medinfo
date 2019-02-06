@@ -40,7 +40,7 @@ class DocumentConsolidationController extends Controller
 
     public function consolidatePivotTableByRule(Document $document, Table $table)
     {
-        set_time_limit(240);
+        set_time_limit(600);
         $rules = ConsolidationRuleHelper::getTableRules($table);
         //dd($rules);
         $cell_affected = 0;
