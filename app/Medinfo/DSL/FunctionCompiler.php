@@ -98,7 +98,7 @@ class FunctionCompiler
                 default:
                     $u = \App\UnitList::Slug($list)->first();
                     if (is_null($u)) {
-                        throw new \Exception("Список '$list' не существует");
+                        throw new \Exception("Список <$list> не существует");
                     }
                     $units = array_merge($units, $u->members->pluck('ou_id')->toArray());
             }
@@ -127,7 +127,7 @@ class FunctionCompiler
                 $units = \App\Unit::Active()->Country()->get()->pluck('id')->toArray();
                 break;
             default :
-                throw new \Exception("Статический список/группа '$staticlist' не существует");
+                throw new \Exception("Статический список/группа <$staticlist> не существует");
         }
         return $units;
     }
