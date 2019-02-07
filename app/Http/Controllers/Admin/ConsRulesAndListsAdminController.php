@@ -153,6 +153,7 @@ class ConsRulesAndListsAdminController extends Controller
             array_multisort($lists, SORT_NATURAL);
             $glued = implode(', ', $lists);
             $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+            //dump($units);
             if ($units) {
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
