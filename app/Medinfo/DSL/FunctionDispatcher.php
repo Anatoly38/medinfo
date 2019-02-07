@@ -124,7 +124,7 @@ class FunctionDispatcher
         //'счетмо'        => ['subfunction|required|unitlist', 'bool'],
         'счетмо'        => ['bool'],
         'расчет'        => ['expression|required'],
-        'счетзнач'      => ['expression|required'],
+        'счетзнач'      => ['expression|required', 'factor|default:0'],
         'мпдиапазон'    => ['subfunction|required|diapazon|iterator', 'boolean|required', 'subfunction|группы', 'factor'],
         'разрез'        => ['factor|required', 'factor|required','boolean|required'],
         'показатель'    => ['expression|required'],

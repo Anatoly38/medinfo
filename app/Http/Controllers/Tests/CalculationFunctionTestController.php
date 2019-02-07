@@ -103,8 +103,8 @@ class CalculationFunctionTestController extends Controller
 
     public function valuecount()
     {
-        $rule = "счетзнач(Ф14дсТ1010С3Г3+Ф14дсТ1010С6Г3)"; //
-        $list = "областные_больницы";
+        $rule = "счетзнач(Ф30Т1010С1Г3, 1)"; //
+        $list = "l0100_03_горбольницы";
         $table = 2; // форма 47 таблица 0100
         $document = \App\Document::find(23942); // Ф 47 за 2018 год
         $trimed = preg_replace('/,+\s+/u', ' ', $list);
@@ -112,7 +112,6 @@ class CalculationFunctionTestController extends Controller
         $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
         asort($units);
         $prop = '[' . implode(',', $units) . ']';
-
         $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($rule);
         $tockenstack = $lexer->getTokenStack();
         $parser = new \App\Medinfo\DSL\ControlFunctionParser($tockenstack);
@@ -127,6 +126,7 @@ class CalculationFunctionTestController extends Controller
         //dd($props);
         //$evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $props, $document);
+        //dd($evaluator->arguments);
         $evaluator->makeConsolidation();
         //dd($evaluator->calculationLog);
         //echo $evaluator->evaluate();

@@ -137,7 +137,7 @@ class FunctionCompiler
         if (!$unit) {
             throw new \Exception("\"Не найдена ОЕ с кодом $unitcode\"" );
         }
-        if ($unit->node_type === 3 || $unit->node_type === 4) {
+        if (($unit->node_type === 3 && $unit->aggregate === 0) || $unit->node_type === 4) {
             return [$unit->id];
         }
         $units = \App\Unit::getPrimaryDescendants($unit->id);

@@ -18,6 +18,7 @@ class ArgProperties
     protected $propstack;
     public $argType; // Первое свойство условно принимаем как Тип аргумента
     public $argRequired = false;
+    public $argDefaultValue = null;
 
     const EXPRESSION    = 2;
     const SUBFUNCTION   = 3;
@@ -34,6 +35,7 @@ class ArgProperties
     const PREVYEAR      = 14;
     const UNITLIST      = 15;
     const BOOL          = 16; // true or false
+    const DEFAULT       = 17;
 
     public static $propNames = [
         "n/a",
@@ -53,6 +55,7 @@ class ArgProperties
         "prevyear",
         "unitlist",
         "bool",
+        "default",
     ];
 
     public function __construct($input) {
@@ -129,6 +132,10 @@ class ArgProperties
                     break;
                 case 'bool' :
                     $this->propstack[] = self::BOOL;
+                    break;
+                case explode(':', $prop)[0] === 'default' :
+                    $this->argDefaultValue =  explode(':', $prop)[1];
+                    $this->propstack[] = self::DEFAULT;
                     break;
                 default :
                     throw new \Exception("Неизвестное ствойство аргумента: " . $prop);

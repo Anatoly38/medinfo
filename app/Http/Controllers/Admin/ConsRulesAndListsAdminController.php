@@ -154,7 +154,7 @@ class ConsRulesAndListsAdminController extends Controller
             $glued = implode(', ', $lists);
             $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
             //dump($units);
-            if ($units) {
+            if (count($units) > 0 && !isset($units['erroe'])) {
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
                 $prophashed  =  crc32($prop);
@@ -185,7 +185,12 @@ class ConsRulesAndListsAdminController extends Controller
                 if (is_array($units) && count($units) === 0) {
                     $result['comment'] = 'список пуст' ;
                 } else {
-                    $result['comment'] = 'Ошибка перекомпилирования списка' ;
+                    if (isset($units['error'])) {
+                        $result['comment'] = 'Ошибка перекомпилирования списка' . $units['error'];
+                    } else {
+                        $result['comment'] = 'Ошибка перекомпилирования списка';
+                    }
+
                 }
                 $result['new_prophash'] = '';
                 $result['new_list_count'] = 0;

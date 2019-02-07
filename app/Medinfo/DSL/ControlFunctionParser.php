@@ -353,6 +353,8 @@ class ControlFunctionParser extends Parser {
                 $arg_node->addChild($exp_node);
             } elseif ($arguments->lookahead->argRequired) {
                 throw  new \Exception("Аргумент {$i} <$arg_type> является обязательным для функции <{$this->function_name}>");
+            } elseif (!is_null($arguments->lookahead->argDefaultValue)) {
+                $arg_node->addChild( new ControlFunctionParseTree(ControlFunctionLexer::NUMBER, $arguments->lookahead->argDefaultValue));
             }
             $this->root->addChild($arg_node);
             $this->currentArgIndex++;
