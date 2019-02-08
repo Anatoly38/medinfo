@@ -141,7 +141,9 @@ class FunctionCompiler
             return [$unit->id];
         }
         $units = \App\Unit::getPrimaryDescendants($unit->id);
-        $units[] = $unit;
+        if ($unit->node_type === 3) {
+            $units[] = $unit;
+        }
         return collect($units)->pluck('id')->toArray();
     }
 
