@@ -141,6 +141,7 @@ class FunctionCompiler
             return [$unit->id];
         }
         $units = \App\Unit::getPrimaryDescendants($unit->id);
+        $units[] = $unit;
         return collect($units)->pluck('id')->toArray();
     }
 
