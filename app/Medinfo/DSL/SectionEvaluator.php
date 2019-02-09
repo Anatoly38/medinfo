@@ -44,14 +44,13 @@ class SectionEvaluator extends ControlFunctionEvaluator
         if (!$this->document) {
             throw new \Exception("Документ для проведения контроля не определен");
         }
+        $this->not_in_scope = $this->validateDocumentScope();
         $result = [];
-/*        $this->not_in_scope = $this->validateDocumentScope();
-        dd($this->not_in_scope);
         if ($this->not_in_scope) {
             $result[0]['valid'] = true;
             $this->valid = true;
             return $result;
-        }*/
+        }
         return $this->compareSection();
     }
 
@@ -87,14 +86,21 @@ class SectionEvaluator extends ControlFunctionEvaluator
         }
 
         $this->second_document = Document::OfTUPF($this->document->dtype, $this->document->ou_id, $this->document->period_id, $form_right->id)->first();
+        //dd($this->document);
+        //dd($related);
         //dd($this->second_document);
-        //if ($related && $right_of_left) {
-            foreach($form_left->tables as $table) {
+
+        foreach($form_left->tables as $table) {
+            //if ($related && $right_of_left) {
+            if ($related) {
                 $ret = $this->compareTables($table, $exluded_rows, $exluded_columns);
-                $valid = $valid && $ret['valid'];
-                $result = array_merge($result, $ret['result']);
+            //} elseif (!$related) {
+            } else {
+                $ret = $this->compareTablesByCodes($table, $exluded_rows, $exluded_columns);
             }
-        //}
+            $valid = $valid && $ret['valid'];
+            $result = array_merge($result, $ret['result']);
+        }
         $this->valid = $valid;
         return $result;
     }
@@ -140,20 +146,20 @@ class SectionEvaluator extends ControlFunctionEvaluator
     {
         $valid = true;
         $result = [];
-        $second_doc_table = Table::class;
-        foreach ($table->rows as $row) {
 
-            $second_doc_row = \App\Row::OfTableRowCode($table, $row->row_code);
+        $second_doc_table = Table::OfFormTableCode($this->second_document->form->id, $table->table_code)->first();
+        foreach ($table->rows as $row) {
+            $second_doc_row = \App\Row::OfTableRowCode($second_doc_table->id, $row->row_code)->first();
             foreach ($table->columns as $column) {
-                if (!in_array($row->id, $exluded_rows) && !in_array($column->id, $exluded_columns)) {
+                $second_doc_column = \App\Column::OfTableColumnCode($second_doc_table->id, $column->column_code)->first();
+                if (!in_array($second_doc_row->id, $exluded_rows) && !in_array($column->id, $exluded_columns)) {
                     if ($column->content_type !== 4) {
                         continue;
                     };
-
                     $leftvalue = 0;
                     $rightvalue = 0;
                     $left_cell = Cell::OfDRC($this->document->id, $row->id, $column->id)->first();
-                    $right_cell = Cell::OfDRC($this->second_document->id, $row->id, $column->id)->first();
+                    $right_cell = Cell::OfDRC($this->second_document->id, $second_doc_row->id, $second_doc_column->id)->first();
                     if ($left_cell) {
                         $leftvalue = (float)$left_cell->value;
                     }

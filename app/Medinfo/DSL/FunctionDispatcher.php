@@ -126,7 +126,7 @@ class FunctionDispatcher
         'расчет'        => ['expression|required'],
         'счетзнач'      => ['expression|required', 'factor|default:0'],
         'мпдиапазон'    => ['subfunction|required|diapazon|iterator', 'boolean|required', 'subfunction|группы', 'factor'],
-        'разрез'        => ['factor|required', 'factor|required','boolean|required'],
+        'разрез'        => ['factor|required', 'factor|required','boolean|required', 'subfunction|группы'],
         'показатель'    => ['expression|required'],
         'интервал'      => ['expression|required', 'factor|required', 'factor|required'],
     ];

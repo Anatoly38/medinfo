@@ -19,15 +19,17 @@ class SectionCheckTestController extends Controller
     // Тестирование функции контроля разрезов форм
     public function SectionCheckTest()
     {
-        $table = Table::find(111);     // Ф12 Т1000
+        //$table = Table::find(111);     // Ф12 Т1000
         //$table = Table::find(384);     // Ф19 Т1000
         //$table = Table::find(958);     // Ф54 Т2310
-        //$table = Table::find(994);     // Ф301 Т1001
+        $table = Table::find(994);     // Ф301 Т1001
 
-        //$document = Document::find(23297); // 301 ф Бодайбинская РБ 2018 год
-        $document = Document::find(20221); // 12 ф Бодайбинская РБ 2018 год - нулевой разрез
-        $i = "разрез(12, 1201, >)";
+        //$document = Document::find(20464); // 301 ф Гос учр. за 2018 год
+        $document = Document::find(23490); // 301 ф Обл. б-ца №2 за 2018 год
+        //$document = Document::find(20221); // 12 ф Бодайбинская РБ 2018 год - нулевой разрез
+        //$i = "разрез(12, 1201, >)";
         //$i = "разрез(301, 30, <=)";
+        $i = "разрез(301, 30, =, группы(село))";
         //$i = "разрез(30, 301, >=)";
 
         $lexer = new ControlFunctionLexer($i);
