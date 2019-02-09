@@ -92,6 +92,7 @@ class Table extends Model
             ->where('album_tables.album_id', $album)
             //->where('tables.deleted', 0)
             ->groupBy('statdata.table_id')
+            ->havingRaw(' SUM("statdata"."value") > 0 ')
             ->pluck('statdata.table_id');
         return $editedtables;
     }
