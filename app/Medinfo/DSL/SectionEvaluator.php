@@ -139,7 +139,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
                 }
             }
         }
-        return ['valid' => $valid, 'result' => $result ];
+        return ['valid' => $valid, 'result' => $result, 'errors' => [] ];
     }
 
     public function compareTablesByCodes(Table $table, $exluded_rows, $exluded_columns)
@@ -188,7 +188,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
                 }
             }
         }
-        return compact($valid, $result, $errors);
+        return ['valid' => $valid, 'result' => $result, 'errors' => $errors ];
     }
 
     public function compareRelated()
