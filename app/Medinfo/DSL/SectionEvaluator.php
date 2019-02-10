@@ -146,12 +146,20 @@ class SectionEvaluator extends ControlFunctionEvaluator
     {
         $valid = true;
         $result = [];
-
+        $errors = [];
         $second_doc_table = Table::OfFormTableCode($this->second_document->form->id, $table->table_code)->first();
         foreach ($table->rows as $row) {
             $second_doc_row = \App\Row::OfTableRowCode($second_doc_table->id, $row->row_code)->first();
+            if (!$second_doc_row) {
+                $errors[] = "В таблице {$second_doc_table->table_code} не найдена строка {$row->row_code}";
+                continue;
+            }
             foreach ($table->columns as $column) {
                 $second_doc_column = \App\Column::OfTableColumnCode($second_doc_table->id, $column->column_code)->first();
+                if (!$second_doc_column) {
+                    $errors[] = "В таблице {$second_doc_table->table_code} не найдена графа {$column->column_code}";
+                    continue;
+                }
                 if (!in_array($second_doc_row->id, $exluded_rows) && !in_array($column->id, $exluded_columns)) {
                     if ($column->content_type !== 4) {
                         continue;
@@ -180,7 +188,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
                 }
             }
         }
-        return ['valid' => $valid, 'result' => $result ];
+        return compact($valid, $result, $errors);
     }
 
     public function compareRelated()
