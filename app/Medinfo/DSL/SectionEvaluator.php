@@ -120,7 +120,7 @@ class SectionEvaluator extends ControlFunctionEvaluator
                     $left_cell = Cell::OfDRC($this->document->id, $row->id, $column->id)->first();
                     $right_cell = Cell::OfDRC($this->second_document->id, $row->id, $column->id)->first();
                     if ($left_cell) {
-                        $leftvalue = (float)$left_cell->value;u
+                        $leftvalue = (float)$left_cell->value;
                     }
                     if ($right_cell) {
                         $rightvalue = (float)$right_cell->value;
