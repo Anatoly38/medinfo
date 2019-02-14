@@ -32,6 +32,18 @@
     </li>
 @endsection
 
+@section('tableAggregateButton')
+    {{-- Экспорт в Медстат ЦНИИОИЗ--}}
+    <button class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
+        <span class='fa fa-download fa-lg' ></span>
+        <span>МС</span>
+    </button>
+@endsection
+
+@section('initTableAggregateAction')
+    initTableMedstatExportButton();
+@endsection
+
 @section('headertitle', 'Просмотр/редактирование первичного отчетного документа')
 
 @section('content')
