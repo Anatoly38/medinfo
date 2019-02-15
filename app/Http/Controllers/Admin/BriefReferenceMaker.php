@@ -120,7 +120,9 @@ class BriefReferenceMaker extends Controller
             // Добавляем аггрегаты группы областных и федеральных учреждений - коды 10002 и 10003
             // TODO: перенести коды в конфиг
             $regional = Unit::where('unit_code', '10002')->first();
-            $federal = Unit::where('unit_code', '10003')->first();
+            //dd($regional);
+            $federal = Unit::where('unit_code', '00010')->first();
+            //dd($federal);
             $units->push($regional);
             $units->push($federal);
             //dd($units);
@@ -211,7 +213,6 @@ class BriefReferenceMaker extends Controller
         //}
         //$rows = Row::whereIn('id', $rows)->get();
         //$columns = Column::whereIn('id', $columns)->get();
-        //dd($units);
         foreach ($units as $unit) {
             //if ($unit->aggregate) {
             $rcontroller = new ReportMaker($level = 1, $period->id, $sort_order = 1);
