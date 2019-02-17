@@ -34,7 +34,7 @@ let initSplitter = function () {
         theme: theme,
         splitBarSize: 10,
         panels: [
-            { size: '60%', min: 100, collapsible: false }, {collapsed:true}
+            { size: '70%', min: 100, collapsible: false }, {collapsed:true}
         ]
     });
     $("#ControlTabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
