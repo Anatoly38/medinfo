@@ -962,12 +962,9 @@ let fetchconsolidationprotocol = function(row, column) {
     $.getJSON( fetch_url, function( data ) {
         //console.log(data);
         $.each(data, function (i, layer) {
-
+            //+ "<td><a href='/datainput/formdashboard/" + layer.unit_id + "' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
             let row = $("<tr class='rowdocument' ><td>" + layer.unit_code + "</td>"
-                //+ "<td><a href='/datainput/formdashboard/" + layer.unit_id + "' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
-                + "<td>" + layer.unit_name +
-                + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value
-                + "</td></tr>");
+                + "<td>" + layer.unit_name + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value + "</td></tr>");
             layer_container.append(row);
         });
     });

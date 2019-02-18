@@ -74,9 +74,9 @@ initTableMedstatExportButton();
 @push('loadjsscripts')
 @include('jqxdatainput.jsstack')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=207') }}"></script>
+        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=208') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/editdashboard.js?v=207') }}"></script>
+        <script src="{{ asset('/medinfo/editdashboard.js?v=208') }}"></script>
     @endif
 @endpush('loadjsscripts')
 
