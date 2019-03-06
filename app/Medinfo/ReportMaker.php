@@ -242,6 +242,7 @@ class ReportMaker
         $document_type = 4; // Тип документа для формы населения - "показатели"
         switch (true) {
             case $unit->id === 0 :
+            case $unit->node_type == 1 :
             case $unit->node_type == 2 :
                 //dd($unit);
                 //dd($this->population_form);
@@ -262,11 +263,10 @@ class ReportMaker
             case $unit->node_type == 3 || $unit->node_type == 4 :
                 $this->getServicedPopulation();
                 break;
-            case $unit->node_type == 1 :
+            default :
                 $population = 0;
                 break;
         }
-
         return $population;
     }
 
