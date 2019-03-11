@@ -117,13 +117,15 @@ class BriefReferenceMaker extends Controller
         } elseif ($aggregate_level == 3) {
             //$units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
             $units = Unit::Territory()->active()->orderBy('unit_code')->get();
-            // Добавляем аггрегаты группы областных и федеральных учреждений - коды 10002 и 10003
+            // Добавляем аггрегаты группы областных и федеральных учреждений - коды берем из конфига
             // TODO: перенести коды в конфиг
-            $regional = Unit::where('unit_code', '10002')->first();
-            //dd($regional);
-            $federal = Unit::where('unit_code', '00010')->first();
-            //dd($federal);
+            $regional = Unit::where('unit_code', config('medinfo.regional_state_units_code'))->first();
+            $special = Unit::where('unit_code', config('medinfo.special_types_units_code'))->first();
+            $orphan = Unit::where('unit_code', config('medinfo.orphan_house_units_code'))->first();
+            $federal = Unit::where('unit_code', config('medinfo.federal_state_units_code'))->first();
             $units->push($regional);
+            $units->push($special);
+            $units->push($orphan);
             $units->push($federal);
             //dd($units);
             $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
