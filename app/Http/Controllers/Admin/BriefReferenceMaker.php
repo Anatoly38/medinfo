@@ -50,7 +50,7 @@ class BriefReferenceMaker extends Controller
                 'columns' => 'required',
                 'mode' => 'required|in:1,2',
                 'level' => 'integer',
-                'type' => 'required|in:1,2,5',
+                'type' => 'required|in:1,2,100',
                 'aggregate' => 'required|in:1,2,3',
                 'output' => 'required|in:1,2',
             ]
@@ -113,22 +113,31 @@ class BriefReferenceMaker extends Controller
             $values = self::getValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $document_type, $output);
         } elseif ($aggregate_level == 2) {
             $units = Unit::legal()->active()->orderBy('unit_code')->get();
-            $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
+            $ret = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
+            $values = $ret['values'];
+            $units = $ret['units'];
         } elseif ($aggregate_level == 3) {
             //$units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
             $units = Unit::Territory()->active()->orderBy('unit_code')->get();
             // Добавляем аггрегаты группы областных и федеральных учреждений - коды берем из конфига
             // TODO: перенести коды в конфиг
-            $regional = Unit::where('unit_code', config('medinfo.regional_state_units_code'))->first();
+/*            $regional = Unit::where('unit_code', config('medinfo.regional_state_units_code'))->first();
             $special = Unit::where('unit_code', config('medinfo.special_types_units_code'))->first();
             $orphan = Unit::where('unit_code', config('medinfo.orphan_house_units_code'))->first();
             $federal = Unit::where('unit_code', config('medinfo.federal_state_units_code'))->first();
             $units->push($regional);
             $units->push($special);
             $units->push($orphan);
-            $units->push($federal);
+            $units->push($federal);*/
+            //dd(config('medinfo.report_grouping'));
+            foreach (config('medinfo.report_grouping') as $gr) {
+                $units->push(Unit::where('unit_code', $gr)->first());
+            }
             //dd($units);
-            $values = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
+            $ret = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
+            $values = $ret['values'];
+            $units = $ret['units'];
+
         }
         $tablewidth = count($column_titles) + 2;
         $tableheight = count($units) + 7;
@@ -215,9 +224,12 @@ class BriefReferenceMaker extends Controller
         //}
         //$rows = Row::whereIn('id', $rows)->get();
         //$columns = Column::whereIn('id', $columns)->get();
+        $rcontroller = new ReportMaker($level = 1, $period->id, $sort_order = 1);
+        $units = $units->whereIn('id', $rcontroller->all_scope);
+        //dd($units);
         foreach ($units as $unit) {
             //if ($unit->aggregate) {
-            $rcontroller = new ReportMaker($level = 1, $period->id, $sort_order = 1);
+
                 if ($mode == 1) {
                     $i = 0;
                     foreach ($columns as $column) {
@@ -245,6 +257,6 @@ class BriefReferenceMaker extends Controller
             }
         //}
         //dd($values);
-        return $values;
+        return compact('units', 'values');
     }
 }

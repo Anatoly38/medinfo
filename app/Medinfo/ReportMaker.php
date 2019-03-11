@@ -26,7 +26,7 @@ class ReportMaker
     private $units;
     private $tree_scope = []; // ограничение по дереву МО
     private $list_scope = []; // ограничение по списку
-    private $all_scope = [];
+    public  $all_scope = [];
     private $population_form;
     private $population_rows;
     private $population_column;
@@ -42,7 +42,6 @@ class ReportMaker
         if ($list_id === null) {
             config('medinfo.report_list') === 0 ? $list_id = null : $list_id = config('medinfo.report_list');
         }
-
         if ($list_id !== null) {
             $this->list_scope = UnitListMember::List($list_id)->select('ou_id')->pluck('ou_id')->toArray();
         }
