@@ -65,7 +65,6 @@ class BriefReferenceMaker extends Controller
         $columns = Column::whereIn('id', explode(',', $request->columns))->orderBy('column_index')->get();
         $level = (int)$request->level;
         $type = (int)$request->type;
-        //dd($type);
         $aggregate_level = (int)$request->aggregate;
         $output = $request->output;
         $group_title = '';
@@ -76,36 +75,26 @@ class BriefReferenceMaker extends Controller
         } else {
             if ($type == 1 || $type == 2) {
                 $units = collect(Unit::getPrimaryDescendants($level));
-                //dd($units);
-                //$top = $units->shift();
                 $top = Unit::find($level);
             } elseif ($type == 100) {
                 $top = UnitList::find($level);
                 $members = UnitListMember::OfGroup($level)->get(['ou_id']);
                 $units = Unit::whereIn('id', $members)->get();
-                //dd($members);
             }
-
         }
         $column_titles = [];
         if ($mode == 1) {
             $group_title = 'По строке: ';
-            //$grouping_row = Row::find($rows[0]);
             $grouping_row = $rows[0];
             $el_name = $grouping_row->row_code . ' "' . $grouping_row->row_name . '"';
             foreach ($columns as $column) {
-                //$c = Column::find($column);
-                //$column_titles[] = $c->column_index . ': ' .$c->column_name;
                 $column_titles[] = $column->column_index . ': ' . $column->column_name;
             }
         } elseif ($mode == 2) {
             $group_title = 'По графе: ';
-            //$grouping_column = Column::find($columns[0]);
             $grouping_column = $columns[0];
             $el_name = $grouping_column->column_index . ' "' . $grouping_column->column_name . '"';
             foreach ($rows as $row) {
-                //$r = Row::find($row);
-                //$column_titles[] = $r->row_code . ': '  . $r->row_name;
                 $column_titles[] = $row->row_code . ': '  . $row->row_name;
             }
         }
@@ -117,23 +106,11 @@ class BriefReferenceMaker extends Controller
             $values = $ret['values'];
             $units = $ret['units'];
         } elseif ($aggregate_level == 3) {
-            //$units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
             $units = Unit::Territory()->active()->orderBy('unit_code')->get();
             // Добавляем аггрегаты группы областных и федеральных учреждений - коды берем из конфига
-            // TODO: перенести коды в конфиг
-/*            $regional = Unit::where('unit_code', config('medinfo.regional_state_units_code'))->first();
-            $special = Unit::where('unit_code', config('medinfo.special_types_units_code'))->first();
-            $orphan = Unit::where('unit_code', config('medinfo.orphan_house_units_code'))->first();
-            $federal = Unit::where('unit_code', config('medinfo.federal_state_units_code'))->first();
-            $units->push($regional);
-            $units->push($special);
-            $units->push($orphan);
-            $units->push($federal);*/
-            //dd(config('medinfo.report_grouping'));
             foreach (config('medinfo.report_grouping') as $gr) {
                 $units->push(Unit::where('unit_code', $gr)->first());
             }
-            //dd($units);
             $ret = self::getAggregatedValues($units, $period, $form, $table, $column_titles, $columns, $rows, $mode, $output, $aggregate_level);
             $values = $ret['values'];
             $units = $ret['units'];
@@ -175,7 +152,6 @@ class BriefReferenceMaker extends Controller
                 if ($mode == 1) {
                     $i = 0;
                     foreach ($columns as $column) {
-                        //$cell = Cell::ofDTRC($d->id, $table->id, $rows[0], $column)->first();
                         $cell = Cell::ofDTRC($d->id, $table->id, $rows[0]->id, $column->id)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
                         //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
@@ -186,7 +162,6 @@ class BriefReferenceMaker extends Controller
                 } elseif ($mode == 2) {
                     $i = 0;
                     foreach ($rows as $row) {
-                        //$cell = Cell::ofDTRC($d->id, $table->id, $row, $columns[0])->first();
                         $cell = Cell::ofDTRC($d->id, $table->id, $row->id, $columns[0]->id)->first();
                         is_null($cell) ? $value = 0 : $value = $cell->value;
                         //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
@@ -195,8 +170,6 @@ class BriefReferenceMaker extends Controller
                         $i++;
                     }
                 }
-                //$output == 1 ? $values[999999][$i] = number_format($values[999999][$i], 2, ',', '') : $values[999999][$i] = (float)$values[999999][$i];
-                //dd($values[999999][$i]);
             } else {
                 $i = 0;
                 foreach ($column_titles as $c) {
@@ -214,30 +187,15 @@ class BriefReferenceMaker extends Controller
     {
         $values = [];
         $values[999999] = []; // Сумма в итоговую строку
-        $level = 1; // для передачи  в репорт ммейкер
-        $sort_order = 3; // для передачи  в репорт ммейкер
-        //$i = 0;
-        //if ($aggregate_level == 2) {
-          //  $units = Unit::legal()->active()->orderBy('unit_code')->get();
-        //} elseif ($aggregate_level == 3) {
-          //  $units = Unit::upperLevels()->active()->orderBy('unit_code')->get();
-        //}
-        //$rows = Row::whereIn('id', $rows)->get();
-        //$columns = Column::whereIn('id', $columns)->get();
+        $level = 1; // для передачи  в репортмейкер
+        $sort_order = 3; // для передачи  в репортмейкер
         $rcontroller = new ReportMaker($level = 1, $period->id, $sort_order = 1);
         $units = $units->whereIn('id', $rcontroller->all_scope);
-        //dd($units);
         foreach ($units as $unit) {
-            //if ($unit->aggregate) {
-
                 if ($mode == 1) {
                     $i = 0;
                     foreach ($columns as $column) {
-                        //$value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $rows[0]->row_code, $column->column_index);
                         $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $rows[0]->row_code, $column->column_index);
-                        //var_dump($value);
-                        //is_null($cell) ? $value = 0 : $value = $cell->value;
-                        //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
                         $values[$unit->id][$i] = (float)$value;
                         isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
@@ -245,18 +203,13 @@ class BriefReferenceMaker extends Controller
                 } elseif ($mode == 2) {
                     $i = 0;
                     foreach ($rows as $row) {
-                        //$value = ReportMaker::getAggregatedValue($unit, $form, $period, $table->table_code, $row->row_code, $columns[0]->column_index);
                         $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $row->row_code, $columns[0]->column_index);
-                        //is_null($cell) ? $value = 0 : $value = $cell->value;
-                        //$output == 1 ? $values[$unit->id][$i] = number_format($value, 2, ',', '') : $values[$unit->id][$i] = (float)$value;
                         $values[$unit->id][$i] = (float)$value;
                         isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
                     }
                 }
             }
-        //}
-        //dd($values);
         return compact('units', 'values');
     }
 }
