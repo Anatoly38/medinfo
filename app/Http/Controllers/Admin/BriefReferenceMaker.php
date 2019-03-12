@@ -74,7 +74,7 @@ class BriefReferenceMaker extends Controller
             $top = Unit::find(0);
         } else {
             if ($type == 1 || $type == 2) {
-                $units = collect(Unit::getPrimaryDescendants($level));
+                $units = collect(Unit::getPrimaryDescendants($level))->sortBy('unit_code');
                 $top = Unit::find($level);
             } elseif ($type == 100) {
                 $top = UnitList::find($level);

@@ -34,7 +34,7 @@
             </tr>
         @endforeach
         <tr>
-            <td colspan="2"><strong>{{ $top->unit_name or $top->group_name }}</strong></td>
+            <td colspan="2"><strong>Итого</strong></td>
             @foreach($values[999999] as $aggregate)
                 <td>{{ $aggregate }}</td>
             @endforeach
