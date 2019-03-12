@@ -36,16 +36,14 @@ class ReportMaker
         $this->period = Period::find($period_id);
         $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
         $this->dtype = 1; // Только первичные документв
-        if (config('medinfo.report_tree')) {
-            $this->tree_scope = Unit::getDescendants(config('medinfo.report_tree'));
-        }
+        $this->tree_scope = Unit::getDescendants(config('medinfo.report_tree'));
         if ($list_id === null) {
             config('medinfo.report_list') === 0 ? $list_id = null : $list_id = config('medinfo.report_list');
         }
         if ($list_id !== null) {
             $this->list_scope = UnitListMember::List($list_id)->select('ou_id')->pluck('ou_id')->toArray();
         }
-
+        //dd($this->tree_scope);
         if (count($this->list_scope) > 0) {
             $this->all_scope = array_intersect($this->tree_scope, $this->list_scope);
         } else {
