@@ -108,7 +108,7 @@ class BriefReferenceMaker extends Controller
         } elseif ($aggregate_level == 3) {
             $units = Unit::Territory()->active()->orderBy('unit_code')->get();
             // Добавляем аггрегаты группы областных и федеральных учреждений - коды берем из конфига
-            dd(config('medinfo.report_grouping'));
+            //dd(config('medinfo.report_grouping'));
             foreach (config('medinfo.report_grouping') as $gr) {
                 $units->push(Unit::where('unit_code', $gr)->first());
             }
