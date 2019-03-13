@@ -215,7 +215,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=070') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=075') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -236,7 +236,7 @@
         let checkedstates = [{{ $settings['states'] or '' }}];
         let checkedperiods = [{{ $settings['periods'] or '' }}];
         let checkedfilled = '{{  $settings['filleddocs'] or '-1' }}';
-        let filter_mode = '{{  $settings['filter_mode'] or '1' }}'; // 1 - по территориям; 2 - по группам
+        let filter_mode = parseInt('{{  $settings['filter_mode'] or '1' }}'); // 1 - по территориям; 2 - по группам
         initfilterdatasources();
         initDropdowns();
         initsplitters();
