@@ -62,8 +62,75 @@ class DashboardController extends Controller
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
         return view($this->dashboardView(), compact(
             'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
-            'form', 'period', 'editedtables', 'noteditablecells', 'forformtable', 'renderingtabledata',
+            'form', 'period', 'editedtables', 'noteditablecells', 'renderingtabledata',
             'laststate', 'formsections', 'disabled_states'
+        ));
+    }
+
+    // Версия для доработки дашборда
+    public function index_v2(Document $document)
+    {
+        $worker = Auth::guard('datainput')->user();
+        //$album = Album::Default()->first(['id']);
+        $album = Album::find($document->album_id);
+        if (!$album) {
+            $album = Album::find(config('medinfo.default_album'));
+        }
+        $statelabel = Document::$state_labels[$document->state];
+        $monitoring = Monitoring::find($document->monitoring_id);
+        $form = Form::find($document->form_id);
+        $realform = Form::getRealForm($document->form_id);
+        $current_unit = Unit::find($document->ou_id);
+        if (!$current_unit) {
+            $current_unit = UnitList::find($document->ou_id);
+        }
+        if ($worker->role === 0 ) {
+            $editpermission = true;
+        } else {
+            //$editpermission = $this->isEditPermission($worker->permission, $document->state);
+            $editpermission = TableEditing::isEditPermission($worker->permission, $document->state);
+        }
+        $disabled_states = config('medinfo.disabled_states.' . $worker->role);
+        $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
+        $period = Period::find($document->period_id);
+        $editedtables = Table::editedTables($document->id, $album->id);
+        //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
+        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $realform->id);
+        $laststate = $this->getLastState($worker, $document, $form, $album);
+        $renderingtabledata = $this->composeDataForTable($laststate['currenttable'], $album);
+        $for_form_tables = $this->composeTableList($realform, $album, $editedtables);
+        $tablelist = json_encode($for_form_tables['forformtable']);
+        $maxtableindex = $for_form_tables['max_index'];
+        $tableproperties = $renderingtabledata['tableproperties'];
+        $datafields = $renderingtabledata['datafields'];
+        $calcfields = $renderingtabledata['calcfields'];
+        $columns = $renderingtabledata['columns'];
+        $columngroups = $renderingtabledata['columngroups'];
+        $formsections = $this->getFormSections($realform->id, $album->id, $document->id);
+
+        \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
+        return view('jqxdatainput.formdashboard_v2', compact(
+            'current_unit', 'document',
+            'worker',
+            'album',
+            'statelabel',
+            'editpermission',
+            'editmode',
+            'monitoring',
+            'form',
+            'period',
+            'editedtables',
+            'noteditablecells',
+            'tablelist',
+            'maxtableindex',
+            'tableproperties',
+            'datafields',
+            'calcfields',
+            'columns',
+            'columngroups',
+            'laststate',
+            'formsections',
+            'disabled_states'
         ));
     }
 
@@ -96,6 +163,33 @@ class DashboardController extends Controller
         return $composedata;
     }
 
+    protected function composeDataForTable(Table $table, Album $album)
+    {
+        $table_props = [ 'id' => $table->id , 'code' => $table->table_code, 'name' => $table->table_name, 'index' => $table->table_index ];
+        $datafortable = TableEditing::fetchDataForTableRenedering($table, $album);
+        $composedata['tableproperties'] = json_encode($table_props);
+        $composedata['datafields'] = json_encode($datafortable['datafields']);
+        $composedata['calcfields'] = json_encode($datafortable['calcfields']);
+        $composedata['columns'] = json_encode($datafortable['columns']);
+        $composedata['columngroups'] =json_encode($datafortable['columngroups']);
+        return $composedata;
+    }
+    // данные для таблицы-фильтра для навигации по отчетным таблицам в форме
+    protected function composeTableList(Form $form, Album $album, $editedtables)
+    {
+        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album->id);
+        })->orderBy('table_index')->get();
+        $max_index = $tables->last()->table_index;
+        $forformtable = [];
+        foreach ($tables as $table) {
+            in_array($table->id, $editedtables) ? $edited = 1 : $edited = 0;
+            $forformtable[] = [ "id" => $table->id, "tindex" => $table->table_index, "code" => $table->table_code, "name" => $table->table_name, "edited" => $edited ];
+            //$forformtable[] = '{ "id": ' . $table->id . ', "code": "' . $table->table_code . '", "name": "' . $table->table_name . '", "edited": ' . $edited . ' }';
+        }
+        return compact('forformtable', 'max_index');
+    }
+
     public function getRealForm(Form $form)
     {
         if ($form->relation) {
@@ -103,6 +197,11 @@ class DashboardController extends Controller
         } else {
             return $form;
         }
+    }
+
+    public function fetchDataForDataGrid(Album $album, Table $table)
+    {
+        return $this->composeDataForTable($table, $album);
     }
 
     public function fetchValues(int $document, int $album, Table $table)
@@ -259,15 +358,9 @@ class DashboardController extends Controller
     // TODO: Доработать сохранение настроек редактирования отчета (таблица, фильтры, ширина колонок и т.д.)
     protected function getLastState($worker, Document $document, Form $form, $album)
     {
-        $realform = null;
-        if ($form->relation) {
-            $realform = Form::find($form->relation);
-            $form_id = $realform->id;
-        } else {
-            $form_id = $form->id;
-        }
-        $laststate = array();
-        $current_table = Table::OfForm($form_id)->whereDoesntHave('excluded', function ($query) use($album) {
+        $laststate = [];
+        $realform = Form::getRealForm($document->form_id);
+        $current_table = Table::OfForm($realform->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->orderBy('table_index')->first();
         $laststate['currenttable'] = $current_table;

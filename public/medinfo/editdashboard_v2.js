@@ -38,7 +38,7 @@ let initSplitter = function () {
         ]
     });
     $("#ControlTabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
-    $("#TableTitle").html('Таблица ' + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+    $("#TableTitle").html('Таблица ' + data_for_table.code + ', "' + data_for_table.name + '"');
 
 };
 // Контроль таблицы - вывод протокола контроля на страницу и для печати
@@ -539,16 +539,16 @@ function cellfound(cells, column_id, row_id) {
     return found;
 }
 
-function searchTableByIndex(index) {
+function searchTableByIndex(table_index) {
     let found = false;
-    $.each(data_for_tables, function(table, content) {
-        //console.log(content);
-        if (content.index === index) {
-            found = table;
+    for (let i = 0; i < form_tables_data.length; i++ ) {
+        if (form_tables_data[i].tindex === table_index) {
+            return form_tables_data[i].id
         }
-    });
-    return found;
+    }
+    return false;
 }
+
 function set_navigation_buttons_status(index) {
     switch (true) {
         case 1 == max_table_index :
@@ -722,73 +722,6 @@ let markTableValid = function (id) {
     //console.log(invalidTables);
     //console.log(index);
 };
-/*
-// Не используется в текущей версии
-let checktable = function (table_id) {
-    invalidCells[table_id] = [];
-    alertedCells[table_id] = [];
-    let data = "";
-    $.ajax({
-        dataType: "json",
-        url: validate_table_url + table_id + "/" + forcereload,
-        data: data,
-        beforeSend: beforecheck,
-        success: gettableprotocol
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        $("#tableprotocol").html('');
-        $('#formprotocolloader').hide();
-        $('#protocolloader').hide();
-        if (jqXHR.status == 401) {
-            raiseError('Пользователь не авторизован.', jqXHR );
-            return false;
-        }
-        raiseError("Ошибка получения протокола контроля с сервера.");
-    });
-};
-// Не используется в текущей версии
-let compare_with_prev = function () {
-    let data ="";
-    $.ajax({
-        dataType: "json",
-        url: compare_period_url + '&table=' + current_table,
-        data: data,
-        beforeSend: function( xhr ) {
-            $("#tableprotocol").html('');
-            $("#cellvalidationprotocol").html('');
-            loader = "Выполнение проверки и загрузка данных сравнения периодов <img src='plugins/jqwidgets/styles/images/loader-small.gif' />";
-            $('#tableprotocol').html(loader);
-            comparedCells.length = 0;
-            $('#DataGrid').jqxGrid('render');
-        },
-        success: function (data, status, xhr) {
-            $("#currentInfoMessage").text("Протокол сравнения периодов загружен");
-            $("#infoNotification").jqxNotification("open");
-            if (data.responce.error == 2002) {
-                var legend = "<div>Отсутстует данные в соответствующей таблице прошлого периода</div>";
-                $("#tableprotocol").html(legend);
-            }
-            else {
-                var legend = "<div>Отклонения от данных предыдущего периода</div>";
-                legend += "<div class='equality'>Данные совпадают</div>";
-                legend += "<div class='approximate'>Отклонение в пределах 10%</div>";
-                legend += "<div class='moderate'>Отклонение в пределах 10-30%</div>";
-                legend += "<div class='significant'>Отклонение более 30%</div>";
-                $("#tableprotocol").html(legend);
-                marking_mode = 'compareperiods';
-                $.each(data.responce, function(cellindex, cellcontent) {
-                    comparedCells.push({t: current_table, r: cellcontent.row_id, c: cellcontent.col_id, degree: cellcontent.validation});
-                });
-                $('#DataGrid').jqxGrid('render');
-            }
-        }
-    }).fail(function() {
-        $("#tableprotocol").html('');
-        raiseError("Ошибка получения протокола контроля с сервера.");
-        //$("#currentError").text("Ошибка получения протокола контроля с сервера.");
-        //$("#serverErrorNotification").jqxNotification("open");
-    });
-};
-*/
 
 let gettableprotocol = function (data, status, xhr) {
     let protocol_wrapper;
@@ -883,7 +816,7 @@ let gettableprotocol = function (data, status, xhr) {
     fgrid.jqxDataTable('refresh');
     dgrid.jqxGrid('refresh');
     dgrid.jqxGrid('focus');
-    dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
+    dgrid.jqxGrid('selectcell', 0, columns.firstdatacolumn);
     tcheck.attr('disabled', false);
     idtcheck.attr('disabled', false);
     iptcheck.attr('disabled', false);
@@ -910,22 +843,6 @@ let initdatasources = function() {
         localdata: form_tables_data
     };
     tableListDataAdapter = new $.jqx.dataAdapter(form_table_source);
-    tablesource =
-    {
-        datatype: "json",
-        datafields: data_for_tables[current_table].datafields,
-        autoBind: true,
-        id: 'id',
-        url: source_url + current_table,
-        root: null
-    };
-    dataAdapter = new $.jqx.dataAdapter(tablesource, {
-        loadError: function(jqXHR, status, error) {
-            if (jqXHR.status == 401) {
-                raiseError('Пользователь не авторизован.', jqXHR );
-            }
-        }
-    });
 };
 // Получение читабельных координат ячейки - код строки, индекс графы
 let getreadablecelladress = function(row, column) {
@@ -1010,50 +927,82 @@ let inittablelist = function() {
     });
     fgrid.on('rowSelect', function (event) {
         if (event.args.row.id === current_table) {
-            return false;
+            return true;
         }
-        renderDgrid(event.args.row.id);
+        fetchDataForDataGrid(event.args.row.id);
     });
-
 };
 
-function renderDgrid(rowid) {
+function fetchDataForDataGrid(tableid) {
+    $.get(tableprops_url + tableid, function (data) {
+        datafields = $.parseJSON(data.datafields);
+        calculatedfields = $.parseJSON(data.calcfields);
+        data_for_table = $.parseJSON(data.tableproperties);
+        columns = $.parseJSON(data.columns);
+        columngroups = $.parseJSON(data.columngroups);
+        there_is_calculated = calculatedfields.length > 0;
+        there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
+        current_table = tableid;
+        current_table_code = data_for_table.code;
+        current_table_index = data_for_table.index;
+        set_navigation_buttons_status(current_table_index);
+        current_row_name_datafield = columns[1].dataField;
+        current_row_number_datafield = columns[2].dataField;
+        renderColumnFunctions();
+        renderDgrid();
+    });
+}
+
+function renderColumnFunctions() {
+    $.each(columns, function(column, properties) {
+        if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
+            properties.cellclassname = cellclass;
+        }
+        //if (typeof properties.createeditor !== 'undefined') {
+        //  properties.createeditor =  eval(properties.createeditor);
+        //}
+        if (typeof properties.initeditor !== 'undefined') {
+            properties.initeditor = eval(properties.initeditor);
+        }
+        if (typeof properties.validation !== 'undefined') {
+            properties.validation = validation;
+        }
+        if (typeof properties.cellbeginedit !== 'undefined') {
+            properties.cellbeginedit = cellbeginedit;
+        }
+        if (typeof properties.cellsrenderer !== 'undefined') {
+            properties.cellsrenderer = cellsrenderer;
+        }
+    });
+    $.each(columngroups, function(group, properties) {
+        if (typeof properties.rendered !== 'undefined')
+            properties.rendered = tooltiprenderer;
+    });
+}
+
+function renderDgrid() {
     dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
     dgrid.jqxGrid('clearselection');
     dgrid.jqxGrid('clearfilters');
-    current_table = rowid;
-    current_table_code = data_for_tables[current_table].tablecode;
-    current_table_index = data_for_tables[current_table].index;
-    set_navigation_buttons_status(current_table_index);
-    current_row_name_datafield = data_for_tables[current_table].columns[1].dataField;
-    current_row_number_datafield = data_for_tables[current_table].columns[2].dataField;
     dgrid.jqxGrid('beginupdate');
-        tablesource.datafields = data_for_tables[current_table].datafields;
+        tablesource.datafields = datafields;
         tablesource.url = source_url + current_table;
-        data_for_tables[current_table].calcfields.length > 0 ? there_is_calculated = true : there_is_calculated = false;
-        there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
-
-        dgrid.jqxGrid( { columns: data_for_tables[current_table].columns } );
-        dgrid.jqxGrid( { columngroups: data_for_tables[current_table].columngroups } );
+        dgrid.jqxGrid( { columns: columns } );
+        dgrid.jqxGrid( { columngroups: columngroups } );
         dgrid.jqxGrid('updatebounddata');
     dgrid.jqxGrid('endupdate');
-    $("#TableTitle").html("Таблица " + data_for_tables[current_table].tablecode + ', "' + data_for_tables[current_table].tablename + '"');
+    $("#TableTitle").html("Таблица " + data_for_table.code + ', "' + data_for_table.name + '"');
     $("#tableprotocol").html('');
     $("#extrabuttons").hide();
     tdropdown.jqxDropDownButton('close');
     splitter.jqxSplitter('collapse');
-    dgrid.on("bindingcomplete", function (event) {
-        dgrid.jqxGrid('focus');
-        dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
-        dgrid.jqxGrid({ 'keyboardnavigation': true  });
-    });
 }
 
 // Инициализация вкладки протокола контроля формы
 let initcheckformtab = function() {
     //$("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
     $("#checkform").click(function () { checkform() });
-    var refresh_protocol = $("<i style='margin-left: 2px;height: 14px; float: left' class='fa  fa-lg fa-circle-o' title='Обновить/пересоздать протокол контроля'></i>");
+    var refresh_protocol = $("<i style='margin-left: 2px;height: 14px; float: left' class='fa fa-lg fa-circle-o' title='Обновить/пересоздать протокол контроля'></i>");
     refresh_protocol.jqxToggleButton({ theme: theme, toggled: false });
     refresh_protocol.on('click', function () {
         var toggled = $(this).jqxToggleButton('toggled');
@@ -1102,6 +1051,18 @@ let initfilters = function() {
 };
 
 let initdatagrid = function() {
+    tablesource =
+        {
+            datatype: "json",
+            datafields: datafields,
+            autoBind: true,
+            id: 'id',
+            url: source_url + current_table,
+            root: null
+        };
+    dataAdapter = new $.jqx.dataAdapter(tablesource, {
+        loadError: xhrErrorNotificationHandler
+    });
     dgrid.jqxGrid(
         {
             width: '100%',
@@ -1120,14 +1081,14 @@ let initdatagrid = function() {
             //showtoolbar: true,
             //rendertoolbar: rendertoolbar,
             filterable: false,
-            columns: data_for_tables[current_table].columns,
-            columngroups: data_for_tables[current_table].columngroups
+            columns: columns,
+            columngroups: columngroups
         });
     dgrid.on('cellvaluechanged', simpleSaving);
     dgrid.on("bindingcomplete", function (event) {
         dgrid.jqxGrid('focus');
         dgrid.jqxGrid({ 'keyboardnavigation': true  });
-        dgrid.jqxGrid('selectcell', 0, data_for_tables[current_table].firstdatacolumn);
+        dgrid.jqxGrid('selectcell', 0, columns.firstdatacolumn);
     });
 
     dgrid.on('cellselect', cellSelecting);
@@ -1244,14 +1205,6 @@ function simpleSaving(event) {
             }
             else {
                 if (data.cell_affected) {
-/*              timestamp = new Date();
-                log_str = $("#log").html();
-                if (log_str === "Изменений не было") {
-                    log_str = "";
-                }
-                $("#log").html(log_str + timestamp.toLocaleString() + " Изменена ячейка т ." + data_for_tables[current_table].tablecode +", с."+ readable_coordinates.row
-                    + ", г." + readable_coordinates.column + ". (" + oldvalue +
-                    " >> " + value + ").</br>");*/
                     editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
                     if (protocol_control_created) {
                         $(".inactual-protocol").show();
@@ -1260,13 +1213,7 @@ function simpleSaving(event) {
                 }
             }
         },
-        error: function (xhr, status, errorThrown) {
-            if (xhr.status === 401) {
-                raiseError('Пользователь не авторизован.', xhr );
-                return false;
-            }
-            raiseError("Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.");
-        }
+        error: xhrErrorNotificationHandler
     });
 }
 
@@ -1281,8 +1228,9 @@ let inittoolbarbuttons = function () {
         let next = ++current_table_index;
         do {
             found = searchTableByIndex(next);
+            console.log(found);
             if (found) {
-                renderDgrid(found);
+                fetchDataForDataGrid(found);
                 return true;
             }
             next++;
@@ -1300,7 +1248,7 @@ let inittoolbarbuttons = function () {
         do {
             found = searchTableByIndex(prev);
             if (found) {
-                renderDgrid(found);
+                fetchDataForDataGrid(found);
                 return true;
             }
             prev--;
