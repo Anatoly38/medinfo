@@ -538,6 +538,88 @@ function initChangeState() {
             stateWindow.jqxWindow('open');
         })
     }
-
 }
 
+// Инициализация окна с информацией о документе (последние исправления, смены статуса, принятие разделов документа)
+initDocumentInfoWindow = function() {
+    let docinfoWindow = $('#DocumentInfoWindow');
+    if (docinfoWindow.length) {
+        let changestate_input = $('#openDocumentInfoWindow');
+        docinfoWindow.jqxWindow({
+            width: 850,
+            height: 800,
+            position: 'center',
+            resizable: true,
+            isModal: false,
+            autoOpen: false,
+            theme: theme
+        });
+        docinfoWindow.on('open', function () {
+            setDocInfo();
+        });
+        changestate_input.click(function () {
+            if (current_user_role === '3' || current_user_role === '4') {
+                docinfoWindow.jqxWindow('open');
+            }
+        });
+    }
+};
+function setDocInfo() {
+    let docinfo_url = '/datainput/fetchdocinfo/';
+    let docinfoWindow = $('#DocumentInfoWindow');
+    docinfoWindow.jqxWindow('setTitle', 'Сводная информация по документу №' + doc_id);
+    $.getJSON( docinfo_url + doc_id, function( data ) {
+        let rec = data.records;
+        let st = data.states;
+        let sec = data.sections;
+        let rec_tbody = $("#valueChangingRecords");
+        let st_tbody = $("#stateChangingRecords");
+        let sec_tbody = $("#sectionChangingRecords");
+        let rec_rows = '';
+        let st_rows = '';
+        let sec_rows = '';
+
+        if (rec.length === 0) {
+            rec_rows = '<tr><td colspan="7"><p class="text-danger text-center">Нет данных</p></td></tr>';
+        } else {
+            for (let i = 0; i < rec.length; i++ ) {
+                rec_rows += '<tr>';
+                rec_rows += '<td>'+ rec[i].occured_at +'</td>';
+                rec_rows += '<td>'+ rec[i].worker.description +'</td>';
+                rec_rows += '<td>'+ rec[i].table.table_code +'</td>';
+                rec_rows += '<td>'+ rec[i].row.row_code +'</td>';
+                rec_rows += '<td>'+ rec[i].column.column_code +'</td>';
+                rec_rows += '<td>'+ rec[i].oldvalue +'</td>';
+                rec_rows += '<td>'+ rec[i].newvalue +'</td>' + '</tr>';
+                rec_rows += '</tr>';
+            }
+        }
+        rec_tbody.html(rec_rows);
+        if (st.length === 0) {
+            st_rows = '<tr><td colspan="4"><p class="text-danger text-center">Нет данных</p></td></tr>';
+        } else {
+            for (let i = 0; i < st.length; i++ ) {
+                st_rows += '<tr>';
+                st_rows += '<td>'+ st[i].occured_at +'</td>';
+                st_rows += '<td>'+ st[i].worker.description +'</td>';
+                st_rows += '<td>'+ st[i].oldstate.name +'</td>';
+                st_rows += '<td>'+ st[i].newstate.name +'</td>';
+                st_rows += '</tr>';
+            }
+        }
+        st_tbody.html(st_rows);
+        if (sec.length === 0) {
+            sec_rows = '<tr><td colspan="4"><p class="text-danger text-center">Нет данных</p></td></tr>';
+        } else {
+            for (let i = 0; i < sec.length; i++ ) {
+                sec_rows += '<tr>';
+                sec_rows += '<td>'+ sec[i].occured_at +'</td>';
+                sec_rows += '<td>'+ sec[i].worker.description +'</td>';
+                sec_rows += '<td>'+ sec[i].section.section_name +'</td>';
+                sec_rows += '<td>'+ (sec[i].blocked === true ? 'Принят' : 'Отклонен') +'</td>';
+                sec_rows += '</tr>';
+            }
+        }
+        sec_tbody.html(sec_rows);
+    });
+}

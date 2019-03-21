@@ -106,6 +106,8 @@ class DashboardController extends Controller
         $calcfields = $renderingtabledata['calcfields'];
         $columns = $renderingtabledata['columns'];
         $columngroups = $renderingtabledata['columngroups'];
+        $firstdatacolumn = $renderingtabledata['firstdatacolumn'];
+
         $formsections = $this->getFormSections($realform->id, $album->id, $document->id);
 
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
@@ -128,6 +130,7 @@ class DashboardController extends Controller
             'calcfields',
             'columns',
             'columngroups',
+            'firstdatacolumn',
             'laststate',
             'formsections',
             'disabled_states'
@@ -171,7 +174,8 @@ class DashboardController extends Controller
         $composedata['datafields'] = json_encode($datafortable['datafields']);
         $composedata['calcfields'] = json_encode($datafortable['calcfields']);
         $composedata['columns'] = json_encode($datafortable['columns']);
-        $composedata['columngroups'] =json_encode($datafortable['columngroups']);
+        $composedata['columngroups'] = json_encode($datafortable['columngroups']);
+        $composedata['firstdatacolumn'] = $datafortable['firstdatacolumn'];
         return $composedata;
     }
     // данные для таблицы-фильтра для навигации по отчетным таблицам в форме

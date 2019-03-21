@@ -39,24 +39,19 @@ let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! json_encode($noteditablecells) !!};
 let edit_permission = {{ $editpermission ? 'true' : 'false' }};
 let control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
-
-
 let datafields = $.parseJSON('{!!  $datafields !!}');
 let calculatedfields = $.parseJSON('{!!  $calcfields !!}');
 let data_for_table = $.parseJSON('{!!  $tableproperties !!}');
 let columns = $.parseJSON('{!!  $columns !!}');
 let columngroups = $.parseJSON('{!!  $columngroups !!}');
+let firstdatacolumn = '{{ $firstdatacolumn }}';
 let there_is_calculated = calculatedfields.length > 0;
 let current_row_name_datafield = columns[1].dataField;
 let current_row_number_datafield = columns[2].dataField;
-
 $.each(columns, function(column, properties) {
     if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
         properties.cellclassname = cellclass;
     }
-    //if (typeof properties.createeditor !== 'undefined') {
-    //  properties.createeditor =  eval(properties.createeditor);
-    //}
     if (typeof properties.initeditor !== 'undefined') {
         properties.initeditor = eval(properties.initeditor);
     }
@@ -70,13 +65,10 @@ $.each(columns, function(column, properties) {
         properties.cellsrenderer = cellsrenderer;
     }
 });
-
 $.each(columngroups, function(group, properties) {
     if (typeof properties.rendered !== 'undefined')
         properties.rendered = tooltiprenderer;
 });
-
-
 let form_tables_data = $.parseJSON('{!! $tablelist !!}');
 
 let protocol_control_created = false;

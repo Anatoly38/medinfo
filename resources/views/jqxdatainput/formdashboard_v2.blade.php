@@ -27,14 +27,16 @@
         <ul class="dropdown-menu">
             <li><a href="#" id="openSendMessageWindow"><span class="fa fa-commenting-o"></span> Сообщение</a></li>
            <li><a href="#" id="openChangeStateWindow"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
-            {{-- <li><a href="#"><span class="fa fa-info-circle"></span> Информация</a></li>--}}
+           @if (Auth::guard('datainput')->user()->role === 3 or Auth::guard('datainput')->user()->role === 4)
+            <li><a href="#" id="openDocumentInfoWindow"><span class="fa fa-info-circle"></span> Информация о документе</a></li>
+           @endif
         </ul>
     </li>
 @endsection
 
 @section('tableAggregateButton')
     {{-- Экспорт в Медстат ЦНИИОИЗ--}}
-    <button class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
+    <button style="display: none" class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
         <span class='fa fa-download fa-lg' ></span>
         <span>МС</span>
     </button>
@@ -62,9 +64,9 @@
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=007') }}"></script>
+        <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=008') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/editdashboard_v2.js?v=007') }}"></script>
+        <script src="{{ asset('/medinfo/editdashboard_v2.js?v=008') }}"></script>
     @endif
 @endpush('loadjsscripts')
 

@@ -4,7 +4,6 @@ let group_tree_url = 'datainput/fetch_ugroups';
 let docsource_url = 'datainput/fetchdocuments?';
 let recentdocs_url = 'datainput/fetchrecent?';
 let docmessages_url = 'datainput/fetchmessages?';
-let docinfo_url = 'datainput/fetchdocinfo/';
 let changestate_url = 'datainput/changestate';
 let changeaudition_url = 'datainput/changeaudition';
 //let docmessagesend_url = 'datainput/sendmessage';
@@ -35,7 +34,6 @@ let groups = $('#moSelectorByGroups');
 let periodDropDown = $('#periodSelector');
 let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
-let docinfoWindow = $('#DocumentInfoWindow');
 let doc_id;
 let docstate_id;
 let current_document_form_code;
@@ -534,7 +532,7 @@ renderdoctoolbar = function (toolbar) {
         }
     });
     doc_info.click(function () {
-        docinfoWindow.jqxWindow('open');
+        $("#DocumentInfoWindow").jqxWindow('open');
     });
     refresh_list.click(function () {
         docsource.url = docsource_url + filtersource();
@@ -1053,7 +1051,6 @@ initdocumentstabs = function() {
         if (typeof row === 'undefined') {
             return false;
         }
-        let murl = docmessages_url + 'document=' + row.id;
         doc_id = row.id;
         docstate_id = row.stateid;
         current_document_form_code = row.form_code;
@@ -1062,90 +1059,10 @@ initdocumentstabs = function() {
         doc_state = row.state;
         bc = makeMOBreadcrumb(row.ou_id);
         primary_mo_bc.html(bc);
-        $.ajax({
-            dataType: 'json',
-            url: murl,
-            method: 'GET',
-            beforeSend: function (xhr) {
-                let loadmessage = "<div class='row' style='margin: 0 0 -15px -15px'>" +
-                    "   <div class='col-md-12' style='padding: 20px'>" +
-                    "       <h5>Загрузка сообщений <img src='/jqwidgets/styles/images/loader-small.gif' /></h5>" +
-                    "   </div>" +
-                    "</div>";
-                $("#DocumentMessages").html(loadmessage);
-            },
-            success: function (data, status, xhr) {
-                if (data.length === 0) {
-                    let message = "<div class='row' style='margin: 0 0 -15px -15px'>" +
-                        "   <div class='col-md-12' style='padding: 20px'>" +
-                        "       <p class='text text-info'>Нет сообщений для данного документа</p>" +
-                        "   </div>" +
-                        "</div>";
-                    $("#DocumentMessages").html(message);
-                }
-                else {
-                    let items = [];
-                    $.each( data, function( key, val ) {
-                        let worker = 'н/д';
-                        let description = '';
-                        let wtel = 'н/д';
-                        let ctel = 'н/д';
-                        let fn = '';
-                        let pn = '';
-                        let ln = '';
-                        if (val.worker !== null) {
-                            let pr = val.worker.profiles;
-                            for (let i = 0; i < pr.length; i++) {
-                                switch (true) {
-                                    case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
-                                        wtel = pr[i].value;
-                                        break;
-                                    case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
-                                        ctel = pr[i].value;
-                                        break;
-                                    case (pr[i].tag === 'firstname') :
-                                        fn = pr[i].value;
-                                        break;
-                                    case (pr[i].tag === 'patronym') :
-                                        pn = pr[i].value;
-                                        break;
-                                    case (pr[i].tag === 'lastname') :
-                                        ln = pr[i].value;
-                                        break;
-                                }
-                            }
-                            description = val.worker.description === '' ? ln + ' ' + fn + ' ' + pn : val.worker.description;
-                        }
-                        let mark_as_unread = val.is_read_count === 1 ? "" : "info";
-                        //let m = "<tr class='"+ mark_as_unread + "'>";
-                        let m = "<tr class='"+ "'>";
-                        m += "<td style='width: 120px'><p class='text-info'>" + formatDate(val.created_at) + "</p></td>";
-                        m += '<td style="width: 20%">' +
-                            '<div class="dropdown">' +
-                            '  <button class="btn btn-sm btn-link dropdown-toggle" style="padding: 0" type="button" id="menu1" data-toggle="dropdown">' + description + '</button>' +
-                            '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
-                            '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
-                            '       <small>e-mail: ' + val.worker.email + '</small></a></li>' +
-                            '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'"><small>Рабочий телефон: '+ wtel +'</small></a></li>' +
-                            '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'"><small>Сотовый телефон: '+ ctel +'</small></a></li>' +
-                            '  </ul>' +
-                            '</div>' +
-                            '</td>';
-                        m += "<td><p class='text-info'>" + val.message + "</p></td>";
-                        m +="</tr>";
-                        items.push(m);
-                    });
-                    $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
-                }
-            },
-            error: xhrErrorNotificationHandler
-        });
+        getDocumentMessages(doc_id);
 
-/*        $.getJSON( murl, function( data ) {
-
-        });*/
-        if (docinfoWindow.jqxWindow('isOpen')) {
-            setDocInfo(event.args.rowindex);
+        if ($("#DocumentInfoWindow").jqxWindow('isOpen')) {
+            setDocInfo();
         }
 /*        let aurl = docauditions_url + 'document=' + row.id;
         current_document_audits = [];
@@ -1213,6 +1130,89 @@ initdocumentstabs = function() {
         let editWindow = window.open(edit_aggregate_url + '/' + document_id);
     });
 };
+
+function getDocumentMessages(document_id) {
+    let murl = docmessages_url + 'document=' + document_id;
+    $.ajax({
+        dataType: 'json',
+        url: murl,
+        method: 'GET',
+        beforeSend: function (xhr) {
+            let loadmessage = "<div class='row' style='margin: 0 0 -15px -15px'>" +
+                "   <div class='col-md-12' style='padding: 20px'>" +
+                "       <h5>Загрузка сообщений <img src='/jqwidgets/styles/images/loader-small.gif' /></h5>" +
+                "   </div>" +
+                "</div>";
+            $("#DocumentMessages").html(loadmessage);
+        },
+        success: function (data, status, xhr) {
+            if (data.length === 0) {
+                let message = "<div class='row' style='margin: 0 0 -15px -15px'>" +
+                    "   <div class='col-md-12' style='padding: 20px'>" +
+                    "       <p class='text text-info'>Нет сообщений для данного документа</p>" +
+                    "   </div>" +
+                    "</div>";
+                $("#DocumentMessages").html(message);
+            }
+            else {
+                let items = [];
+                $.each( data, function( key, val ) {
+                    let worker = 'н/д';
+                    let description = '';
+                    let wtel = 'н/д';
+                    let ctel = 'н/д';
+                    let fn = '';
+                    let pn = '';
+                    let ln = '';
+                    if (val.worker !== null) {
+                        let pr = val.worker.profiles;
+                        for (let i = 0; i < pr.length; i++) {
+                            switch (true) {
+                                case (pr[i].tag === 'tel' && pr[i].attribute === 'working') :
+                                    wtel = pr[i].value;
+                                    break;
+                                case (pr[i].tag === 'tel' && pr[i].attribute === 'cell') :
+                                    ctel = pr[i].value;
+                                    break;
+                                case (pr[i].tag === 'firstname') :
+                                    fn = pr[i].value;
+                                    break;
+                                case (pr[i].tag === 'patronym') :
+                                    pn = pr[i].value;
+                                    break;
+                                case (pr[i].tag === 'lastname') :
+                                    ln = pr[i].value;
+                                    break;
+                            }
+                        }
+                        description = val.worker.description === '' ? ln + ' ' + fn + ' ' + pn : val.worker.description;
+                    }
+                    let mark_as_unread = val.is_read_count === 1 ? "" : "info";
+                    //let m = "<tr class='"+ mark_as_unread + "'>";
+                    let m = "<tr class='"+ "'>";
+                    m += "<td style='width: 120px'><p class='text-info'>" + formatDate(val.created_at) + "</p></td>";
+                    m += '<td style="width: 20%">' +
+                        '<div class="dropdown">' +
+                        '  <button class="btn btn-sm btn-link dropdown-toggle" style="padding: 0" type="button" id="menu1" data-toggle="dropdown">' + description + '</button>' +
+                        '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
+                        '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
+                        '       <small>e-mail: ' + val.worker.email + '</small></a></li>' +
+                        '    <li role="presentation"><a role="menuitem" href="tel:'+ wtel +'"><small>Рабочий телефон: '+ wtel +'</small></a></li>' +
+                        '    <li role="presentation"><a role="menuitem" href="tel:'+ ctel +'"><small>Сотовый телефон: '+ ctel +'</small></a></li>' +
+                        '  </ul>' +
+                        '</div>' +
+                        '</td>';
+                    m += "<td><p class='text-info'>" + val.message + "</p></td>";
+                    m +="</tr>";
+                    items.push(m);
+                });
+                $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
+            }
+        },
+        error: xhrErrorNotificationHandler
+    });
+}
+
 // Инициализация вкладки консолидированных отчетов
 initConsolidates = function () {
     consolsource =
@@ -1459,85 +1459,6 @@ initauditionproperties = function() {
 initpopupwindows = function() {
 
 };
-// Инициализация окна с информацией о документе (последние исправления, смены статуса, принятие разделов документа)
-initdocinfowindow = function() {
-    docinfoWindow.jqxWindow({
-        width: 850,
-        height: 800,
-        position: 'center',
-        resizable: true,
-        isModal: false,
-        autoOpen: false,
-        theme: theme
-    });
-    docinfoWindow.on('open', function () {
-        let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        setDocInfo(rowindex);
-    });
-};
-function setDocInfo(rowindex) {
-    let row_id = dgrid.jqxGrid('getrowid', rowindex);
-    let rowdata = dgrid.jqxGrid('getrowdata', rowindex);
-    if (rowindex === -1) {
-        rec_tbody.html('');
-        return false;
-    }
-    docinfoWindow.jqxWindow('setTitle', 'Сводная информация по документу №' + row_id);
-    $.getJSON( docinfo_url + row_id, function( data ) {
-        let rec = data.records;
-        let st = data.states;
-        let sec = data.sections;
-        let rec_tbody = $("#valueChangingRecords");
-        let st_tbody = $("#stateChangingRecords");
-        let sec_tbody = $("#sectionChangingRecords");
-        let rec_rows = '';
-        let st_rows = '';
-        let sec_rows = '';
-
-        if (rec.length === 0) {
-            rec_rows = '<tr><td colspan="7"><p class="text-danger text-center">Нет данных</p></td></tr>';
-        } else {
-            for (let i = 0; i < rec.length; i++ ) {
-                rec_rows += '<tr>';
-                rec_rows += '<td>'+ rec[i].occured_at +'</td>';
-                rec_rows += '<td>'+ rec[i].worker.description +'</td>';
-                rec_rows += '<td>'+ rec[i].table.table_code +'</td>';
-                rec_rows += '<td>'+ rec[i].row.row_code +'</td>';
-                rec_rows += '<td>'+ rec[i].column.column_code +'</td>';
-                rec_rows += '<td>'+ rec[i].oldvalue +'</td>';
-                rec_rows += '<td>'+ rec[i].newvalue +'</td>' + '</tr>';
-                rec_rows += '</tr>';
-            }
-        }
-        rec_tbody.html(rec_rows);
-        if (st.length === 0) {
-            st_rows = '<tr><td colspan="4"><p class="text-danger text-center">Нет данных</p></td></tr>';
-        } else {
-            for (let i = 0; i < st.length; i++ ) {
-                st_rows += '<tr>';
-                st_rows += '<td>'+ st[i].occured_at +'</td>';
-                st_rows += '<td>'+ st[i].worker.description +'</td>';
-                st_rows += '<td>'+ st[i].oldstate.name +'</td>';
-                st_rows += '<td>'+ st[i].newstate.name +'</td>';
-                st_rows += '</tr>';
-            }
-        }
-        st_tbody.html(st_rows);
-        if (sec.length === 0) {
-            sec_rows = '<tr><td colspan="4"><p class="text-danger text-center">Нет данных</p></td></tr>';
-        } else {
-            for (let i = 0; i < sec.length; i++ ) {
-                sec_rows += '<tr>';
-                sec_rows += '<td>'+ sec[i].occured_at +'</td>';
-                sec_rows += '<td>'+ sec[i].worker.description +'</td>';
-                sec_rows += '<td>'+ sec[i].section.section_name +'</td>';
-                sec_rows += '<td>'+ (sec[i].blocked === true ? 'Принят' : 'Отклонен') +'</td>';
-                sec_rows += '</tr>';
-            }
-        }
-        sec_tbody.html(sec_rows);
-    });
-}
 
 // Формирование строки запроса к серверу
 filtersource = function() {

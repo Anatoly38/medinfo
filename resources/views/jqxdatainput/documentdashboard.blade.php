@@ -160,9 +160,9 @@
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=176') }}"></script>
+        <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=179') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/documentdashboard.js?v=176') }}"></script>
+        <script src="{{ asset('/medinfo/documentdashboard.js?v=179') }}"></script>
     @endif
 @endpush
 
@@ -188,7 +188,7 @@
         let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
             + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()
             + '&forms=' + checkedforms.join() + '&periods=' + checkedperiods.join() + '&filled=' + checkedfilled;
-        let dgridDataAdapter;
+        var dgridDataAdapter;
         datasources();
         initSplitters();
         initMonitoringTree();
@@ -206,6 +206,6 @@
         initConsolidates();
         initRecentDocuments();
         initpopupwindows();
-        initdocinfowindow();
+        //initdocinfowindow();
     </script>
 @endsection

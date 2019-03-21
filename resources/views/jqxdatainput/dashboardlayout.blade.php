@@ -61,14 +61,14 @@
 @endif
 
 @if(config('medinfo.ssl_connection'))
-    <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=004') }}"></script>
-    <script src="{{ secure_asset('/medinfo/dashboard.js?v=090') }}"></script>
+    <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=005') }}"></script>
+    <script src="{{ secure_asset('/medinfo/dashboard.js?v=092') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/localization.js?v=002') }}"></script>
     <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
     <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @else
-    <script src="{{ asset('/jqwidgets/jqx-all.js?v=004') }}"></script>
-    <script src="{{ asset('/medinfo/dashboard.js?v=091') }}"></script>
+    <script src="{{ asset('/jqwidgets/jqx-all.js?v=005') }}"></script>
+    <script src="{{ asset('/medinfo/dashboard.js?v=092') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js?v=002') }}"></script>
     <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
     <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -104,6 +104,7 @@
     inituserprofilewindow();
     initSendMessage();
     initChangeState();
+    initDocumentInfoWindow();
     $(document).ready(function () {
         $.ajaxSetup({
             headers: {

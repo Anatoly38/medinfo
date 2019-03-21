@@ -1,6 +1,6 @@
-/**
- * Created by shameev on 12.07.2016.
- */
+let fetchvalues_url = function() {
+    return source_url + current_table;
+};
 let initDgridSize = function () {
     return initialViewport - topOffset1;
 };
@@ -119,44 +119,7 @@ let renderCellProtocol = function(cell_protocol) {
     row.append(column);
     return row;
 };
-// Для контроля из "старого" Мединфо - вывод в читаемом виде контроля строки/столбца
-let renderRowProtocol = function (container, table_id, protocol_by_type, header_text) {
-    let header = $("<div class='rule-header'>" + header_text + " " + "</div>");
-    let content = $("<div class='rule-content'></div>");
-    let r = 0;
-    let i = 0;
-    let info = $("<div class='rule-comment bg-info'> - правила контроля не заданы</div>");
-    if (typeof protocol_by_type.no_rules === 'undefined' || !protocol_by_type.no_rules) {
-        info = $("<table style='margin: 5px;'></table>");
-        $.each(protocol_by_type, function(row_index, row_protocol) {
-            if (typeof row_protocol.valid !== 'undefined') {
-                $.each(row_protocol, function(column_index, cell_protocol ) {
-                    if ( typeof cell_protocol.valid !=='undefined' ) {
-                        //var valid = '';
-                        let row = renderCellProtocol(cell_protocol);
-                        info.append(row);
-                        if (!cell_protocol.valid) {
-                            invalidCells[table_id].push({r: row_protocol.row_id, c: cell_protocol.column_id});
-                            i++;
-                        } else {
-                            row.addClass('control-valid');
-                            //row.hide();
-                        }
-                        r++;
-                    }
-                });
-            }
-        });
-    }
-    let badge = "<span class='badge'>" + r + " / " + i + "</span>";
-    //var badge = "<span class='badge'>" + i + "</span>";
-    header.append(badge);
-    content.append(info);
-    container.append(header);
-    container.append(content);
-    return info;
-};
-// Отображение результатов контроля (новый формат) по каждой итерации
+// Отображение результатов контроля по каждой итерации
 let renderCompareControl = function(result, boolean_sign, mode, level) {
     //console.log(result.cells);
     let explanation_intro = setIntro(mode);
@@ -434,13 +397,7 @@ let renderTableProtocol = function (table_id, data) {
     alertedCells[table_id] = [];
     let container = $("<div></div>");
     let protocol_wrapper = $("<div class='tableprotocol-content'></div>");
-    if (typeof data.intable !== 'undefined') {
-        //renderRowProtocol(container, table_id, data.intable, 'Результаты внутритабличного контроля строк');
-        //renderRowProtocol(container, table_id, data.inform, 'Результаты внутриформенного контроля строк');
-        //renderRowProtocol(container, table_id, data.inreport, 'Результаты межформенного контроля строк');
-        //renderRowProtocol(container, table_id, data.inrow, 'Результаты контроля внутри строки');
-        //renderRowProtocol(container, table_id, data.columns, 'Результаты контроля граф');
-    } else if(typeof data.rules !== 'undefined') {
+    if(typeof data.rules !== 'undefined') {
         $.each(data.rules, function(rule_index, rule ) {
             renderFunctionProtocol(container, table_id, rule);
         });
@@ -538,12 +495,20 @@ function cellfound(cells, column_id, row_id) {
     });
     return found;
 }
-
+// Поиск таблицы по индексу
 function searchTableByIndex(table_index) {
-    let found = false;
     for (let i = 0; i < form_tables_data.length; i++ ) {
         if (form_tables_data[i].tindex === table_index) {
-            return form_tables_data[i].id
+            return form_tables_data[i];
+        }
+    }
+    return false;
+}
+// Поиск таблицы по Id
+function searchTableById(table_id) {
+    for (let i = 0; i < form_tables_data.length; i++ ) {
+        if (form_tables_data[i].id === table_id) {
+            return form_tables_data[i];
         }
     }
     return false;
@@ -621,7 +586,8 @@ let checkform = function () {
                         invalidCells[tablecontrol.table_id] = [];
                         alertedCells[tablecontrol.table_id] = [];
                         markTableInvalid(tablecontrol.table_id);
-                        let header_text = "(" + tablecode + ") " + data_for_tables[tablecontrol.table_id].tablename;
+
+                        let header_text = "(" + tablecode + ") " + searchTableById(tablecontrol.table_id).name;
                         let theader = $("<div class='tableprotocol-header text-info'><span class='glyph glyphicon-plus'></span>" + header_text + " " + "</div>");
                         let tcontent = renderTableProtocol(tablecontrol.table_id, tablecontrol);
                         //tcontent.hide();
@@ -639,11 +605,8 @@ let checkform = function () {
                 header.addClass('alert-warning');
             }
             formprotocol.append(header);
-            //header = $("<div class='alert alert-danger'>" + timestamp + " При проверке формы выявлены ошибки/замечания в следующих таблицах:</div>");
             formprotocol.append(protocol_wrapper);
             printable = formprotocol.clone();
-
-            //formprotocol.jqxPanel({ autoUpdate: true, width: '97%', height: '80%'});
             $("#formprotocol .tableprotocol-header").click(function() {
                 $(this).next().toggle();
                 let glyph = $(this.firstChild);
@@ -655,19 +618,7 @@ let checkform = function () {
                     glyph.removeClass('glyphicon-minus');
                 }
             });
-
-
-            //$("#formprotocol .rule-valid").hide();
             $("#formprotocol .tableprotocol-content").hide();
-/*            $("#formprotocol .tableprotocol-content").each( function() {
-                //consol.log(this.firstChild);
-                $(this.firstChild).jqxNavigationBar({
-                    width: 'auto',
-                    arrowPosition: 'left',
-                    expandMode: 'multiple',
-                    theme: theme
-                });
-            });*/
             $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
             $(".control-valid ").hide();
             formprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
@@ -737,11 +688,6 @@ let gettableprotocol = function (data, status, xhr) {
         cashed = "(сохраненная версия)";
     }
     raiseInfo("Протокол контроля таблицы загружен");
-/*    if  (data.no_data) {
-        tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Проверяемая таблица не содержит данных</div>");
-        protocol_control_created = true;
-    }
-    else*/
     if (typeof data.no_rules !== 'undefined' && data.no_rules) {
         tableprotocol.html("<div class='alert alert-info'>"+ timestamp+" Для данной таблицы не заданы правила этого типа контроля</div>");
         protocol_control_created = false;
@@ -762,27 +708,17 @@ let gettableprotocol = function (data, status, xhr) {
         $("#extrabuttons").show();
         protocol_wrapper = renderTableProtocol(data.table_id, data);
         printable = protocol_wrapper.clone();
-/*        $(protocol_wrapper[0].firstChild).jqxNavigationBar({
-            width: 'auto',
-            arrowPosition: 'left',
-            expandMode: 'multiple',
-            theme: theme
-        });*/
-        //protocol_wrapper.jqxPanel({ autoUpdate: true, width: '98%', height: '75%'});
         tableprotocol.append(header);
         tableprotocol.append(protocol_wrapper);
         if ($("#showallrule").jqxCheckBox('checked'))  {
             $(".rule-valid ").hide();
             $(".control-valid ").hide();
-            //$(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
-            //$(".control-valid ").hide();
         } else {
-            //$(".rule-valid").parent(".jqx-expander-header").show().next().hide();
             $(".rule-valid").show();
             $(".control-valid ").show();
         }
         let printprotocolheader ="<a href='#' onclick='window.print()'>Распечатать</a>";
-        printprotocolheader += "<h2>Протокол контроля таблицы " + current_table_code + " \""+ data_for_tables[data.table_id].tablename;
+        printprotocolheader += "<h2>Протокол контроля таблицы " + current_table_code + " \""+ data_for_table.name;
         printprotocolheader += "\" формы № "+ form_code + "</h2>";
         printprotocolheader +="<h4>Учреждение: " + ou_code + " " + ou_name + "</h4>";
         let print_style = "<style>.badge { background-color: #cbcbcb }";
@@ -816,7 +752,7 @@ let gettableprotocol = function (data, status, xhr) {
     fgrid.jqxDataTable('refresh');
     dgrid.jqxGrid('refresh');
     dgrid.jqxGrid('focus');
-    dgrid.jqxGrid('selectcell', 0, columns.firstdatacolumn);
+    dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
     tcheck.attr('disabled', false);
     idtcheck.attr('disabled', false);
     iptcheck.attr('disabled', false);
@@ -940,6 +876,7 @@ function fetchDataForDataGrid(tableid) {
         data_for_table = $.parseJSON(data.tableproperties);
         columns = $.parseJSON(data.columns);
         columngroups = $.parseJSON(data.columngroups);
+        firstdatacolumn = data.firstdatacolumn;
         there_is_calculated = calculatedfields.length > 0;
         there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
         current_table = tableid;
@@ -949,6 +886,9 @@ function fetchDataForDataGrid(tableid) {
         current_row_name_datafield = columns[1].dataField;
         current_row_number_datafield = columns[2].dataField;
         renderColumnFunctions();
+        tablesource.datafields = datafields;
+        tablesource.url = fetchvalues_url();
+        //dataAdapter.dataBind();
         renderDgrid();
     });
 }
@@ -985,8 +925,6 @@ function renderDgrid() {
     dgrid.jqxGrid('clearselection');
     dgrid.jqxGrid('clearfilters');
     dgrid.jqxGrid('beginupdate');
-        tablesource.datafields = datafields;
-        tablesource.url = source_url + current_table;
         dgrid.jqxGrid( { columns: columns } );
         dgrid.jqxGrid( { columngroups: columngroups } );
         dgrid.jqxGrid('updatebounddata');
@@ -1057,7 +995,7 @@ let initdatagrid = function() {
             datafields: datafields,
             autoBind: true,
             id: 'id',
-            url: source_url + current_table,
+            url: fetchvalues_url(),
             root: null
         };
     dataAdapter = new $.jqx.dataAdapter(tablesource, {
@@ -1088,7 +1026,7 @@ let initdatagrid = function() {
     dgrid.on("bindingcomplete", function (event) {
         dgrid.jqxGrid('focus');
         dgrid.jqxGrid({ 'keyboardnavigation': true  });
-        dgrid.jqxGrid('selectcell', 0, columns.firstdatacolumn);
+        dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
     });
 
     dgrid.on('cellselect', cellSelecting);
@@ -1228,9 +1166,8 @@ let inittoolbarbuttons = function () {
         let next = ++current_table_index;
         do {
             found = searchTableByIndex(next);
-            console.log(found);
             if (found) {
-                fetchDataForDataGrid(found);
+                fetchDataForDataGrid(found.id);
                 return true;
             }
             next++;
@@ -1239,16 +1176,15 @@ let inittoolbarbuttons = function () {
             current_table_index = oldindex;
             return false;
         }
-        //renderDgrid(found);
     });
     prevtable.click( function() {
         let oldindex = current_table_index;
+        let found = false;
         let prev = --current_table_index;
-        let found = searchTableByIndex(prev);
         do {
             found = searchTableByIndex(prev);
             if (found) {
-                fetchDataForDataGrid(found);
+                fetchDataForDataGrid(found.id);
                 return true;
             }
             prev--;
@@ -1257,7 +1193,6 @@ let inittoolbarbuttons = function () {
             current_table_index = oldindex;
             return false;
         }
-        //renderDgrid(found);
     });
     if (!there_is_calculated) {
         calculate.attr('disabled', true );
@@ -1422,27 +1357,14 @@ let initConsolidateButton = function () {
 
 let initTableMedstatExportButton = function() {
     let me = $("#tableMedstatExport");
+    if (current_user_role === '3' || current_user_role === '4') {
+        me.show();
+    }
     me.click(function () {
         let url = msexport_url + current_table ;
         location.replace(url);
     });
 };
-
-/*let firefullscreenevent = function() {
-    $(document).bind('fscreenchange', function(e, state, elem) {
-        let fsel1 =  $('#togglefullscreen');
-        let fsel3 =  $('#toggle_formcontrolscreen');
-        if ($.fullscreen.isFullScreen()) {
-            fsel1.jqxToggleButton('check');
-            fsel2.jqxToggleButton('check');
-            fsel3.jqxToggleButton('check');
-        } else {
-            fsel1.jqxToggleButton('unCheck');
-            fsel2.jqxToggleButton('unCheck');
-            fsel3.jqxToggleButton('unCheck');
-        }
-    });
-};*/
 
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (row, datafield, columntype, value) {
@@ -1478,9 +1400,7 @@ let cellsrenderer = function (row, column, value, defaulthtml, columnproperties)
     if (!value) {
         return;
     }
-    //let fixdecimal = value.replace(/(,)+/,'.');
     let formated = $(defaulthtml).html(localizednumber.format(value));
-    //console.log(formated);
     return formated[0].outerHTML;
 };
 let cellclass = function (row, columnfield, value, rowdata) {
@@ -1511,15 +1431,6 @@ let cellclass = function (row, columnfield, value, rowdata) {
                 alerted_cell = '';
             }
         }
-        /*        if (current_edited_cell.t == current_table && current_edited_cell.r == row && current_edited_cell.c == columnfield) {
-                    if (!current_edited_cell.valid) {
-                        invalid_cell = 'invalid';
-                    }
-                    else {
-                        invalid_cell = '';
-                    }
-                }*/
-        //return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row + ' ' + not_editable;
         return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row;
     }
     else if (marking_mode === 'compareperiods') {
@@ -1543,25 +1454,6 @@ let tooltiprenderer = function (element) {
     $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
 };
 
-// Инициализация вкладки протокола контроля текущей таблицы
-let initchecktabletab = function() {
-    //$("#checktable").jqxButton({ theme: theme, disabled: control_disabled });
-    //$("#checktable").click( function() { checktable(current_table) });
-    //$("#datacheck").jqxButton({ theme: theme, disabled: control_disabled });
-    $("#datacheck").click( function() { tabledatacheck(current_table) });
-    //$("#compareprevperiod").jqxButton({ theme: theme });
-    //$("#compareprevperiod").click(compare_with_prev);
-
-    /*    if (current_user_role == 3 || current_user_role == 4 ) {
-            var tk = $("<input id='medstatcontrol' style='float: left' type='button' value='Контроль таблицы (Старый формат)'/>");
-            $("#ProtocolToolbar").prepend(tk);
-            tk.jqxButton({ theme: theme });
-            tk.click(function () {
-                checktable(current_table);
-            });
-        }*/
-
-};
 let fillCalculatedFields = function () {
     $.get(calculatedcells_url + current_table, function( data ) {
         if (typeof data.errors !== 'undefined') {
