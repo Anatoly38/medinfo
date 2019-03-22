@@ -1,3 +1,5 @@
+/* Версия 2. 22.03.2019 */
+
 let fetchvalues_url = function() {
     return source_url + current_table;
 };
@@ -996,6 +998,56 @@ let initdatagrid = function() {
             autoBind: true,
             id: 'id',
             url: fetchvalues_url(),
+            updaterow: function (rowid, rowdata) {
+                //console.log(rowdata);
+                if (checkIsNotEditable(rowid, editedcell_column)) {
+                    return false;
+                }
+
+                let value = rowdata[editedcell_column];
+                let oldvalue;
+                if (typeof editedcell_value !== 'undefined') {
+                    oldvalue = editedcell_value;
+                } else {
+                    oldvalue = null;
+                }
+                current_edited_cell.t = current_table;
+                current_edited_cell.r = rowdata.boundindex;
+                current_edited_cell.c = editedcell_column;
+                current_edited_cell.valid = true;
+                current_edited_cell.rowid = rowid;
+
+                let data = "row=" + rowid + "&column=" + editedcell_column + "&value=" + value+ "&oldvalue=" + oldvalue;
+                console.log(data);
+                $.ajax({
+                    dataType: 'json',
+                    url: savevalue_url + current_table ,
+                    //timeout: 1000,
+                    data: data,
+                    method: 'POST',
+                    success: function (data, status, xhr) {
+                        if (data.error === 401) {
+                            raiseError("Данные не сохранены. Пользователь не авторизован!");
+                        }
+                        else if (data.error === 1001) {
+                            raiseError(data.comment);
+                            // возвращаем старое значение
+                            //dgrid.jqxGrid('setcellvalue', rowBoundIndex, colid, oldvalue);
+                        }
+                        else {
+                            if (data.cell_affected) {
+                                editedCells.push({ t: current_table, r: rowdata.boundindex, c: editedcell_column});
+                                if (protocol_control_created) {
+                                    $(".inactual-protocol").show();
+                                }
+                                commit(true);
+                            }
+                        }
+                    },
+                    error: xhrErrorNotificationHandler
+                });
+
+            },
             root: null
         };
     dataAdapter = new $.jqx.dataAdapter(tablesource, {
@@ -1022,7 +1074,14 @@ let initdatagrid = function() {
             columns: columns,
             columngroups: columngroups
         });
-    dgrid.on('cellvaluechanged', simpleSaving);
+    dgrid.on('cellbeginedit', function (event)
+    {
+        editedcell_column = event.args.datafield;
+        editedcell_value = event.args.value;
+    });
+
+    //dgrid.on('cellvaluechanged', simpleSaving);
+
     dgrid.on("bindingcomplete", function (event) {
         dgrid.jqxGrid('focus');
         dgrid.jqxGrid({ 'keyboardnavigation': true  });
@@ -1034,6 +1093,11 @@ let initdatagrid = function() {
 
 // Действия при выборе ячейки
 function cellSelecting(event) {
+    let panels = $('#formEditLayout').jqxSplitter('panels');
+    // Если правая панель скрыта, дальнейшие действия при выборе ячейки не производим.
+    if (panels[1].collapsed) {
+        return false;
+    }
     let cell_protocol_panel = $("#cellprotocol");
     let header;
     let args = event.args;
@@ -1146,7 +1210,6 @@ function simpleSaving(event) {
                     editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
                     if (protocol_control_created) {
                         $(".inactual-protocol").show();
-                        //$("#protocolcomment").html();
                     }
                 }
             }

@@ -48,6 +48,9 @@ let firstdatacolumn = '{{ $firstdatacolumn }}';
 let there_is_calculated = calculatedfields.length > 0;
 let current_row_name_datafield = columns[1].dataField;
 let current_row_number_datafield = columns[2].dataField;
+let editedcell_column = 0;
+let editedcell_value = null;
+
 $.each(columns, function(column, properties) {
     if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
         properties.cellclassname = cellclass;
