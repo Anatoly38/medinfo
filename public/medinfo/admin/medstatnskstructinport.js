@@ -16,8 +16,7 @@ initdatasources = function() {
 // Инициализация окна ввода нового документа
 initcontrols = function () {
     let sel = $("#selectForm");
-    let formsids = $("#formids");
-
+    let formids = $("#formids");
     let checkedItems = [];
     sel.jqxDropDownList({
         theme: theme,

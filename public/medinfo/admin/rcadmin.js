@@ -34,7 +34,6 @@ initdatasources = function() {
             { name: 'id', type: 'int' },
             { name: 'table_id', type: 'int' },
             { name: 'table_code', map: 'table>table_code', type: 'string' },
-            //{ name: 'excluded', map: 'excluded>0>album_id', type: 'bool' },
             { name: 'excluded', map: 'excluded>0>album_id', type: 'int' },
             { name: 'row_index', type: 'int' },
             { name: 'row_code', type: 'string' },
@@ -151,6 +150,70 @@ initColumnList = function() {
         }
     });
 };
+
+initDropDownRows = function() {
+    let dd = $("#aggregatedRows");
+    let el = $("#aggregatedRowElements");
+
+    let checkedItems = [];
+    dd.jqxDropDownList({
+        theme: theme,
+        checkboxes: true,
+        filterable: true,
+        filterPlaceHolder: '',
+        source: rowsDataAdapter,
+        displayMember: "row_code",
+        valueMember: "id",
+        placeHolder: "Выберите строки:",
+        width: '100%',
+        height: 35,
+        renderer: function (index, label, value) {
+            let rec = rowsDataAdapter.records[index];
+            return "<span class='text-info'><strong>" +rec.row_code + "</strong></span>&nbsp;&nbsp;" + rec.row_name;
+        }
+    });
+
+    dd.on('select', function (event) {
+        let items = dd.jqxDropDownList('getCheckedItems');
+        let allitems = dd.jqxDropDownList('getItems');
+        checkedItems = [];
+        $.each(items, function (index) {
+            checkedItems.push(this.value);
+        });
+        rowids.value = "";
+        rowids.value = checkedItems;
+
+        if (items.length === allitems.length) {
+            allrows.val('1');
+        } else {
+            allrows.val('0');
+        }
+    });
+
+    $("#checkAllRows").on('click', function () {
+        dd.jqxDropDownList('checkAll');
+        checkedItems = [];
+        let items = dd.jqxDropDownList('getCheckedItems');
+        $.each(items, function (index) {
+            checkedItems.push(this.value);
+        });
+        rowids.value = "";
+        rowids.value = checkedItems;
+        allrows.val('1');
+    });
+
+    $("#uncheckAllRows").on('click', function () {
+        dd.jqxDropDownList('uncheckAll');
+        checkedItems = [];
+        rowids.value = "";
+        allrows.val('0');
+    });
+
+    $("#IsAggregatedRow").click(function () {
+        $("#IsAggregatedRow").prop('checked') ? el.show() : el.hide() ;
+    });
+};
+
 // функция для обновления связанных объектов после выбора таблицы
 updateRelated = function() {
     updateRowList();
@@ -224,18 +287,6 @@ initButtons = function() {
             }
         }
     });
-/*    $('#excludedRow').jqxSwitchButton({
-        height: 31,
-        width: 120,
-        onLabel: 'Да',
-        offLabel: 'Нет',
-        checked: false });*/
-/*    $('#excludedColumn').jqxSwitchButton({
-        height: 31,
-        width: 120,
-        onLabel: 'Да',
-        offLabel: 'Нет',
-        checked: false });*/
 };
 
 // Операции со строками
@@ -331,6 +382,7 @@ initRowActions = function() {
         });
     });
 };
+// Действия с графами
 initColumnActions = function() {
     $("#insertcolumn").click(function () {
         if (current_table === 0) {

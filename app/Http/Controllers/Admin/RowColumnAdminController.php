@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\RowProperty;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -31,7 +32,7 @@ class RowColumnAdminController extends Controller
         $forms = Form::orderBy('form_code')->get(['id', 'form_code', 'form_name']);
         $columnTypes = DicColumnType::all();
         $album = $this->getDefaultAlbum();
-        return view('jqxadmin.rowcolumns', compact('forms', 'columnTypes', 'album'));
+        return view('jqxadmin.rowcolumns_v2', compact('forms', 'columnTypes', 'album'));
     }
 
     public function getDefaultAlbum()
@@ -54,6 +55,12 @@ class RowColumnAdminController extends Controller
         return Row::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($album) {
             $query->where('album_id', $album->id);
         }])->orderBy('row_index')->get();
+    }
+
+    public function fetchRowProperties(Row $row)
+    {
+        $props = RowProperty::where('row_id', $row->id)->get();
+        return $props;
     }
 
     public function fetchColumns(int $table)

@@ -62,13 +62,13 @@
 
 @if(config('medinfo.ssl_connection'))
     <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=005') }}"></script>
-    <script src="{{ secure_asset('/medinfo/dashboard.js?v=092') }}"></script>
+    <script src="{{ secure_asset('/medinfo/dashboard.js?v=093') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/localization.js?v=002') }}"></script>
     <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
     <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @else
     <script src="{{ asset('/jqwidgets/jqx-all.js?v=005') }}"></script>
-    <script src="{{ asset('/medinfo/dashboard.js?v=092') }}"></script>
+    <script src="{{ asset('/medinfo/dashboard.js?v=093') }}"></script>
     <script src="{{ asset('/jqwidgets/localization.js?v=002') }}"></script>
     <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=003') }}"></script>
     <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
@@ -89,11 +89,7 @@
     var pusher;
     var channel;
     initnotifications();
-@if(config('medinfo.show_websocket_notification'))
-    var show_websocket_notification = true;
-@else
-    var show_websocket_notification = false;
-@endif
+    var show_websocket_notification = {!! config('medinfo.show_websocket_notification') ? 'true' : 'false' !!};
 
 @if(config('medinfo.websocket'))
     initPusher();

@@ -29,7 +29,8 @@ let onResizeEventLitener = function () {
     });
 };
 let initSplitter = function () {
-    $('#formEditLayout').jqxSplitter({
+    let splitter = $('#formEditLayout');
+    splitter.jqxSplitter({
         width: '100%',
         height: initSplitterSize(),
         //height: '100%',
@@ -39,6 +40,11 @@ let initSplitter = function () {
             { size: '65%', min: 100, collapsible: false }, {collapsed:true}
         ]
     });
+    splitter.on('collapsed',
+        function (event) {
+        // При сворачивании панели очищаем протокол контроля ячейки
+            $("#cellprotocol").html('<p class="text-info">Для просмотра результов выберите ячейку</p>');
+        });
     $("#ControlTabs").jqxTabs({ theme: theme, height: '100%', width: '100%' });
     $("#TableTitle").html('Таблица ' + data_for_table.code + ', "' + data_for_table.name + '"');
 
@@ -1016,9 +1022,7 @@ let initdatagrid = function() {
                 current_edited_cell.c = editedcell_column;
                 current_edited_cell.valid = true;
                 current_edited_cell.rowid = rowid;
-
                 let data = "row=" + rowid + "&column=" + editedcell_column + "&value=" + value+ "&oldvalue=" + oldvalue;
-                console.log(data);
                 $.ajax({
                     dataType: 'json',
                     url: savevalue_url + current_table ,
@@ -1098,7 +1102,6 @@ function cellSelecting(event) {
     if (panels[1].collapsed) {
         return false;
     }
-    let cell_protocol_panel = $("#cellprotocol");
     let header;
     let args = event.args;
     let column_id = args.datafield;
@@ -1107,15 +1110,23 @@ function cellSelecting(event) {
     let row_code = dgrid.jqxGrid('getcellvaluebyid', row_id, current_row_number_datafield);
     let colindex = dgrid.jqxGrid('getcolumnproperty', column_id, 'text');
     let analitic_header = "<b>Строка " + row_code + ", Графа " + colindex +  ": </b><br/>";
+    cellProtocolRender(row_id, column_id);
+    if (doc_type === '2') {
+        let returned = fetchcelllayer(row_id, column_id);
+        $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
+        //$("#CellAnalysisTable").append(returned.layers);
+        $("#CellPeriodsTable").html(analitic_header).append(returned.periods);
+        //$("#CellPeriodsTable").append(returned.periods);
+    } else if (doc_type === '3') {
+        let returned = fetchconsolidationprotocol(row_id, column_id);
+        $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
+    }
+}
+// Протокол контроля выделенной ячейки
+function cellProtocolRender(row_id, column_id) {
+    let cell_protocol_panel = $("#cellprotocol");
     cell_protocol_panel.html('');
-    //if (current_protocol_source.length === 0) {
-    //  cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля формы не найден. Выполните контроль текущей таблицы</p></div>");
-    //console.log('Длина массива current_protocol_source равна нулю');
-    //} else
-    if (typeof current_protocol_source[current_table_code] === 'undefined') {
-        cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль текущей таблицы</p></div>");
-        //console.log('В массива current_protocol_source отсутствует ключ текущей таблицы');
-    } else {
+    if (current_protocol_source.length > 0 && typeof current_protocol_source[current_table_code] === 'object') {
         let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
         let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
         if ( cellprotocol.length > 0) {
@@ -1151,71 +1162,9 @@ function cellSelecting(event) {
                 cell_protocol_panel.append("<div style='margin-bottom: 5px'><strong>^ </strong><small>" + cellprotocol[i].rule.comment + "</small></div>");
             }
         }
-    }
-
-    if (doc_type === '2') {
-        let returned = fetchcelllayer(row_id, column_id);
-        $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
-        //$("#CellAnalysisTable").append(returned.layers);
-        $("#CellPeriodsTable").html(analitic_header).append(returned.periods);
-        //$("#CellPeriodsTable").append(returned.periods);
-    } else if (doc_type === '3') {
-        let returned = fetchconsolidationprotocol(row_id, column_id);
-        $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
-    }
-}
-
-// Действия при сохранении значения в ячейке
-function simpleSaving(event) {
-    let rowBoundIndex = args.rowindex;
-    let rowid = dgrid.jqxGrid('getrowid', rowBoundIndex);
-    //let colid = event.args.datafield;
-    let colid = args.datafield;
-    if (checkIsNotEditable(rowid, colid)) {
-        return false;
-    }
-    let value = args.newvalue;
-    let oldvalue;
-    if (typeof args.oldvalue !== 'undefined') {
-        oldvalue = args.oldvalue;
     } else {
-        oldvalue = null;
+        cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль текущей таблицы</p></div>");
     }
-    //let readable_coordinates = getreadablecelladress(rowid, colid);
-
-    current_edited_cell.t = current_table;
-    current_edited_cell.r = rowBoundIndex;
-    current_edited_cell.c = colid;
-    current_edited_cell.valid = true;
-    current_edited_cell.rowid = rowid;
-
-    let data = "row=" + rowid + "&column=" + colid + "&value=" + value+ "&oldvalue=" + oldvalue;
-    $.ajax({
-        dataType: 'json',
-        url: savevalue_url + current_table ,
-        //timeout: 1000,
-        data: data,
-        method: 'POST',
-        success: function (data, status, xhr) {
-            if (data.error === 401) {
-                raiseError("Данные не сохранены. Пользователь не авторизован!");
-            }
-            else if (data.error === 1001) {
-                raiseError(data.comment);
-                // возвращаем старое значение
-                //dgrid.jqxGrid('setcellvalue', rowBoundIndex, colid, oldvalue);
-            }
-            else {
-                if (data.cell_affected) {
-                    editedCells.push({ t: current_table, r: rowBoundIndex, c: colid});
-                    if (protocol_control_created) {
-                        $(".inactual-protocol").show();
-                    }
-                }
-            }
-        },
-        error: xhrErrorNotificationHandler
-    });
 }
 
 // Панель инструментов для редактируемой таблицы

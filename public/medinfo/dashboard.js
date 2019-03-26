@@ -621,5 +621,6 @@ function setDocInfo() {
             }
         }
         sec_tbody.html(sec_rows);
-    });
+    })
+        .fail( xhrErrorNotificationHandler );
 }
