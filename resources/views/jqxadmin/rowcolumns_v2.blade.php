@@ -231,7 +231,7 @@
 
 @push('loadjsscripts')
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=053') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=056') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -261,9 +261,8 @@
         let current_table = 0;
 
         let isRowAggregated = 0;
-        let allrows = $("#selectedallrows");
-        //let dd = $("#selectRows");
-        let rowids = $("#rowids");
+        let allrows = false;
+        let rowids = '';
 
         initFilterDatasources();
         initsplitter();

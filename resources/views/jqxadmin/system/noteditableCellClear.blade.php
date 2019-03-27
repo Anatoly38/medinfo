@@ -32,7 +32,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="selectForm">Загружать данные из выбранных форм</label>
+                    <label for="selectForm">Очищать данные в выбранных формах</label>
                     <div id="selectForm"></div>
                 </div>
                 <div class="form-group">

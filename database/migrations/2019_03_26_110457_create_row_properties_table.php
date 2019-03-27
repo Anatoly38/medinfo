@@ -16,7 +16,7 @@ class CreateRowPropertiesTable extends Migration
         Schema::create('row_properties', function (Blueprint $table) {
             //
             $table->increments('id');
-            $table->integer('row_id')->index();
+            $table->integer('row_id')->unique();
             $table->jsonb('properties');
             $table->string('comment', 128)->nullable();
             $table->timestamps();

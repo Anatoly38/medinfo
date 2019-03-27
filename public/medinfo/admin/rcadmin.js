@@ -180,13 +180,12 @@ initDropDownRows = function() {
         $.each(items, function (index) {
             checkedItems.push(this.value);
         });
-        rowids.value = "";
-        rowids.value = checkedItems;
+        rowids = checkedItems.join();
 
         if (items.length === allitems.length) {
-            allrows.val('1');
+            allrows = 1;
         } else {
-            allrows.val('0');
+            allrows = 0;
         }
     });
 
@@ -197,16 +196,15 @@ initDropDownRows = function() {
         $.each(items, function (index) {
             checkedItems.push(this.value);
         });
-        rowids.value = "";
-        rowids.value = checkedItems;
-        allrows.val('1');
+        rowids = checkedItems.join();
+        allrows = 1;
     });
 
     $("#uncheckAllRows").on('click', function () {
         dd.jqxDropDownList('uncheckAll');
         checkedItems = [];
-        rowids.value = "";
-        allrows.val('0');
+        rowids = "";
+        allrows = 0;
     });
 
     $("#IsAggregatedRow").click(function () {
@@ -243,7 +241,11 @@ setrowquery = function() {
         "&medstat_code=" + $("#row_medstat_code").val() +
         "&medstatnsk_id=" + $("#row_medstatnsk_id").val() +
         //"&excluded=" + ($("#excludedRow").val() ? 1 : 0);
-        "&excluded=" + ($("#excludedRow").prop('checked') ? 1 : 0);
+        "&excluded=" + ($("#excludedRow").prop('checked') ? 1 : 0) +
+        "&aggregated=" + ($("#IsAggregatedRow").prop('checked') ? 1 : 0) +
+        "&aggregatedrows=" + rowids;
+
+
 };
 
 setcolumnquery = function() {

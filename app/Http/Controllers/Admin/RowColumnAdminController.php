@@ -59,7 +59,7 @@ class RowColumnAdminController extends Controller
 
     public function fetchRowProperties(Row $row)
     {
-        $props = RowProperty::where('row_id', $row->id)->get();
+        $props = RowProperty::Row($row->id)->first();
         return $props;
     }
 
@@ -80,6 +80,7 @@ class RowColumnAdminController extends Controller
                 'medstat_code' => 'digits:3',
                 'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
+                'aggregated' => 'required|in:1,0',
             ]
         );
         $row->row_index = $request->row_index;
@@ -102,6 +103,17 @@ class RowColumnAdminController extends Controller
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }
+
+        if ($request->aggregated) {
+
+            $aggregate = true;
+            $aggregated_rows = explode(',', $request->aggregatedrows);
+            $encoded = json_encode([ "aggregate" => $aggregate, "aggregated_rows" => $aggregated_rows]);
+            $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
+            $rowprop_record->properties = $encoded;
+            $rowprop_record->save();
+        }
+
         return $result;
     }
 
