@@ -10,6 +10,7 @@ namespace App\Medinfo;
 
 use App\Album;
 use App\Column;
+use App\RowProperty;
 use App\Table;
 
 class TableEditing
@@ -125,7 +126,16 @@ class TableEditing
         $fortable['calcfields'] = $calculated_fields;
         $fortable['columns'] = $columns_arr;
         $fortable['columngroups'] = $column_groups_arr;
+        $fortable['aggregates'] = self::getAggregatedRows($table->id);
         return $fortable;
+    }
+
+    public static function getAggregatedRows($table_id)
+    {
+        $props = RowProperty::whereHas('row', function ($query) use($table_id) {
+            $query->where('table_id', $table_id);
+        })->first(['properties']);
+        return $props ? $props->properties : null;
     }
 
     public static function tableRender(Table $table, $columntype = 'textbox', $hiderowid = true)

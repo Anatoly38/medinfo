@@ -19,6 +19,11 @@ class Row extends Model
         return $this->belongsTo('App\Table');
     }
 
+    public function property()
+    {
+        return $this->hasOne('App\RowProperty');
+    }
+
     public function scopeOfTable($query, $table)
     {
         return $query->where('table_id', $table);

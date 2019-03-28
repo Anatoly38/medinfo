@@ -52,7 +52,10 @@ class RowColumnAdminController extends Controller
     public function fetchRows(int $table)
     {
         $album = $this->getDefaultAlbum();
-        return Row::OfTable($table)->with('table')->with(['excluded' => function ($query) use ($album) {
+        return Row::OfTable($table)
+            ->with('table')
+            ->with('property')
+            ->with(['excluded' => function ($query) use ($album) {
             $query->where('album_id', $album->id);
         }])->orderBy('row_index')->get();
     }
@@ -60,7 +63,7 @@ class RowColumnAdminController extends Controller
     public function fetchRowProperties(Row $row)
     {
         $props = RowProperty::Row($row->id)->first();
-        return $props;
+        return $props ? $props->properties : [ 'aggregate' => false ];
     }
 
     public function fetchColumns(int $table)
@@ -105,15 +108,24 @@ class RowColumnAdminController extends Controller
         }
 
         if ($request->aggregated) {
-
-            $aggregate = true;
-            $aggregated_rows = explode(',', $request->aggregatedrows);
-            $encoded = json_encode([ "aggregate" => $aggregate, "aggregated_rows" => $aggregated_rows]);
-            $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
-            $rowprop_record->properties = $encoded;
-            $rowprop_record->save();
+            if ($request->aggregatedrows) {
+                $aggregated_rows = explode(',', $request->aggregatedrows);
+                $aggregate = true;
+                $corrected = [];
+                foreach ($aggregated_rows as $id) {
+                    if ($id == $row->id) { continue; }
+                    $corrected[] = (int)$id;
+                }
+                $encoded = json_encode([ "aggregate" => $aggregate, "aggregated_rows" => $corrected]);
+                $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
+                $rowprop_record->properties = $encoded;
+                $rowprop_record->save();
+            } else {
+                RowProperty::Row($row->id)->delete();
+            }
+        } else {
+            RowProperty::Row($row->id)->delete();
         }
-
         return $result;
     }
 

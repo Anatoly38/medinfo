@@ -231,7 +231,7 @@
 
 @push('loadjsscripts')
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=056') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=058') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -245,6 +245,7 @@
         let rowsource;
         let columnsource;
         let rowfetch_url = '/admin/rc/fetchrows/';
+        let rowpropfetch_url = '/admin/rc/fetchrowprops/';
         let columnfetch_url = '/admin/rc/fetchcolumns/';
         let showcolumnformula_url = '/admin/rc/columnformula/show/';
         let updatecolumnformula_url = '/admin/rc/columnformula/update/';

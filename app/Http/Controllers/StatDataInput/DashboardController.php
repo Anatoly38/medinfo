@@ -176,6 +176,7 @@ class DashboardController extends Controller
         $composedata['columns'] = json_encode($datafortable['columns']);
         $composedata['columngroups'] = json_encode($datafortable['columngroups']);
         $composedata['firstdatacolumn'] = $datafortable['firstdatacolumn'];
+        $composedata['aggregates'] = $datafortable['aggregates'];
         return $composedata;
     }
     // данные для таблицы-фильтра для навигации по отчетным таблицам в форме

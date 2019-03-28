@@ -39,7 +39,8 @@ initdatasources = function() {
             { name: 'row_code', type: 'string' },
             { name: 'row_name', type: 'string' },
             { name: 'medstat_code', type: 'string' },
-            { name: 'medstatnsk_id', type: 'int' }
+            { name: 'medstatnsk_id', type: 'int' },
+            { name: 'prop', map: 'property>properties', type: 'string' },
         ],
         id: 'id',
         url: rowfetch_url + current_table,
@@ -96,6 +97,7 @@ initRowList = function() {
         });
     rlist.on('rowselect', function (event) {
         let row = event.args.row;
+        let props = {};
         if (typeof row !== 'undefined') {
             $("#row_index").val(row.row_index);
             $("#row_name").val(row.row_name);
@@ -104,9 +106,30 @@ initRowList = function() {
             $("#row_medstatnsk_id").val(row.medstatnsk_id);
             //row.excluded > 0 ? $("#excludedRow").prop('checked', true) : $("#excludedRow").val(false);
             row.excluded > 0 ? $("#excludedRow").prop('checked', true) : $("#excludedRow").prop('checked', false);
+
+            showRowProperties(row);
+
         }
     });
 };
+
+showRowProperties = function(row) {
+    let dd = $("#aggregatedRows");
+    let props = $.parseJSON(row.prop);
+    dd.jqxDropDownList('uncheckAll');
+    if (props) {
+        $("#IsAggregatedRow").prop('checked', true);
+        $("#aggregatedRowElements").show();
+        for (let i = 0; props.aggregated_rows.length > i; i++) {
+            dd.jqxDropDownList('checkItem', props.aggregated_rows[i]);
+        }
+    } else {
+        $("#IsAggregatedRow").prop('checked', false);
+        $("#aggregatedRowElements").hide();
+    }
+
+};
+
 //Таблица граф
 initColumnList = function() {
     clist.jqxGrid(
@@ -317,11 +340,7 @@ initRowActions = function() {
                     rlist.jqxGrid('ensurerowvisible', newindex);
                 });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#saverow").click(function () {
@@ -345,16 +364,12 @@ initRowActions = function() {
                 }
                 rlist.jqxGrid('updatebounddata', 'data');
                 rlist.on("bindingcomplete", function (event) {
-                    var newindex = rlist.jqxGrid('getrowboundindexbyid', rowid);
+                    let newindex = rlist.jqxGrid('getrowboundindexbyid', rowid);
                     rlist.jqxGrid('selectrow', newindex);
                     rlist.jqxGrid('ensurerowvisible', newindex);
                 });
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#deleterow").click(function () {
@@ -378,9 +393,7 @@ initRowActions = function() {
                 rlist.jqxGrid('updatebounddata', 'data');
                 rlist.jqxGrid('clearselection');
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка удаления записи', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
 };
