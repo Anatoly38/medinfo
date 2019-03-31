@@ -231,7 +231,7 @@
 
 @push('loadjsscripts')
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=058') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=059') }}"></script>
 @endpush
 
 @section('inlinejs')

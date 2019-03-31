@@ -417,22 +417,6 @@ let renderTableProtocol = function (table_id, data) {
 let init_fc_extarbuttons = function () {
     $("#fc_extrabuttons").hide();
     $('#printformprotocol').jqxButton({ theme: theme });
-/*    $("#showallfcrule").jqxCheckBox({ theme: theme, checked: true });
-    $("#showallfcrule").on('checked', function (event) {
-        $(".rule-valid ").parent(".jqx-expander-header").hide().next().hide();
-    });
-    $("#showallfcrule").on('unchecked', function (event) {
-        $(".rule-valid ").parent(".jqx-expander-header").show().next().show();
-    });*/
-    //$("#toggle_formcontrolscreen").jqxToggleButton({ theme: theme });
-    //$("#toggle_formcontrolscreen").on('click', function () {
-      //  var toggled = $("#toggle_formcontrolscreen").jqxToggleButton('toggled');
-//        if (toggled) {
-  //          $("#formprotocol").fullscreen();
-    //    }
-      //  else $.fullscreen.exit();
-        //return false;
-    //});
 };
 // Инициализация дополнительных кнопок на панели инструментов контроля таблицы
 let initextarbuttons = function () {
@@ -879,7 +863,8 @@ let inittablelist = function() {
 
 function fetchDataForDataGrid(tableid) {
     $.get(tableprops_url + tableid, function (data) {
-        datafields = $.parseJSON(data.datafields);
+        //datafields = $.parseJSON(data.datafields);
+        datafields = data.datafields;
         calculatedfields = $.parseJSON(data.calcfields);
         data_for_table = $.parseJSON(data.tableproperties);
         columns = $.parseJSON(data.columns);

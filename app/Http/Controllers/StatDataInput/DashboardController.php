@@ -102,7 +102,7 @@ class DashboardController extends Controller
         $tablelist = json_encode($for_form_tables['forformtable']);
         $maxtableindex = $for_form_tables['max_index'];
         $tableproperties = $renderingtabledata['tableproperties'];
-        $datafields = $renderingtabledata['datafields'];
+        $datafields = json_encode($renderingtabledata['datafields']);
         $calcfields = $renderingtabledata['calcfields'];
         $columns = $renderingtabledata['columns'];
         $columngroups = $renderingtabledata['columngroups'];
@@ -171,7 +171,8 @@ class DashboardController extends Controller
         $table_props = [ 'id' => $table->id , 'code' => $table->table_code, 'name' => $table->table_name, 'index' => $table->table_index ];
         $datafortable = TableEditing::fetchDataForTableRenedering($table, $album);
         $composedata['tableproperties'] = json_encode($table_props);
-        $composedata['datafields'] = json_encode($datafortable['datafields']);
+        //$composedata['datafields'] = json_encode($datafortable['datafields']);
+        $composedata['datafields'] = $datafortable['datafields'];
         $composedata['calcfields'] = json_encode($datafortable['calcfields']);
         $composedata['columns'] = json_encode($datafortable['columns']);
         $composedata['columngroups'] = json_encode($datafortable['columngroups']);

@@ -116,7 +116,7 @@ class RowColumnAdminController extends Controller
                     if ($id == $row->id) { continue; }
                     $corrected[] = (int)$id;
                 }
-                $encoded = json_encode([ "aggregate" => $aggregate, "aggregated_rows" => $corrected]);
+                $encoded = json_encode([ "aggregate" => $aggregate, "aggregating_row" => $row->id, "aggregated_rows" => $corrected]);
                 $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
                 $rowprop_record->properties = $encoded;
                 $rowprop_record->save();

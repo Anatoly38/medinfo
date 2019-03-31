@@ -11,6 +11,7 @@ let protectaggregate_url = '/admin/protectaggregates';
 let calculate_url = '/admin/consolidate/';
 let log_form_url = '/admin/documents/valuechanginglog/';
 let msexport_url = '/medstat_export/';
+let excelexport_url = '/admin/documents/excelexport/';
 let current_top_level_node = 0;
 let mondropdown = $("#monitoringSelector");
 let periodDropDown = $('#periodSelector');
@@ -205,6 +206,7 @@ initdocumentactions = function() {
     let calc =  $("#Сalculate");
     let velog = $("#ValueEditingLog");
     let msexport = $("#MedstatExport");
+    let excelexport = $("#ExcelExport");
 
     state.jqxDropDownList({
         theme: theme,
@@ -395,6 +397,34 @@ initdocumentactions = function() {
         }
         let editWindow = window.open(msexport_url + row_ids[0]);
     });
+
+    excelexport.click(function () {
+        let row_ids = noselected_error("Не выбрано ни одного документа для удаления статданных");
+        if (!row_ids) {
+            return false;
+        }
+        let data = "documents=" + row_ids;
+        let confirm_text = 'Экспортировать документы №№ ' + row_ids + '?';
+        if (!confirm(confirm_text)) {
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            url: excelexport_url,
+            method: "GET",
+            data: data,
+            success: function (data, status, xhr) {
+                console.log(data);
+                dlist.jqxGrid('clearselection');
+                dlist.jqxGrid('updatebounddata');
+            },
+            error: function (xhr, status, errorThrown) {
+                let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
+                raiseError(error_text);
+            }
+        });
+    });
+
     let newdoc_form = $('#cloneDocuments').jqxWindow({
         width: 600,
         height: 520,

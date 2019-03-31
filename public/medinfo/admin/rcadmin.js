@@ -117,15 +117,19 @@ showRowProperties = function(row) {
     let dd = $("#aggregatedRows");
     let props = $.parseJSON(row.prop);
     dd.jqxDropDownList('uncheckAll');
+    let checedItems = [];
     if (props) {
         $("#IsAggregatedRow").prop('checked', true);
         $("#aggregatedRowElements").show();
         for (let i = 0; props.aggregated_rows.length > i; i++) {
             dd.jqxDropDownList('checkItem', props.aggregated_rows[i]);
+            checedItems.push(props.aggregated_rows[i]);
         }
+        rowids = checedItems.join();
     } else {
         $("#IsAggregatedRow").prop('checked', false);
         $("#aggregatedRowElements").hide();
+        rowids = '';
     }
 
 };
@@ -204,7 +208,6 @@ initDropDownRows = function() {
             checkedItems.push(this.value);
         });
         rowids = checkedItems.join();
-
         if (items.length === allitems.length) {
             allrows = 1;
         } else {

@@ -255,6 +255,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@index');
     Route::post('admin/documents/medstatimport', 'ImportExport\MedstatImportAdminController@uploadNormalizedMedstatData');
     Route::post('admin/documents/medstatimportmake', 'ImportExport\MedstatImportAdminController@makeMedstatImport');
+    // экспорт данных из статдокумекнтов
+    Route::get('admin/documents/excelexport', 'ImportExport\DocumentExcelExportController@exportDocuments');
+
     // импорт структуры таблиц из формата Медстат (ЦНИИОИЗ)
     Route::get('admin/sctruct/ms_rows_columns_import', 'ImportExport\ImportMsRowsColumns@index');
     Route::post('admin/sctruct/ms_rows_columns_import', 'ImportExport\ImportMsRowsColumns@uploadMedstatSrtuct');

@@ -106,7 +106,11 @@
                     <button class="btn btn-default navbar-btn" id="Сalculate" title="Расчет (консолидация) данных"><span class='fa fa-calculator fa-lg'></span></button>
                     <button class="btn btn-default navbar-btn" id="ValueEditingLog" title="Журнал изменения данных"><span class='fa fa-leaf fa-lg'></span></button>
                     <button class="btn btn-default navbar-btn" id="CloneDocuments" title="Клонирование документов в новый отчетный период"><span class='fa fa-clone fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="MedstatExport" title="Экспорт в формат Медстат (ЦИИОИЗ)"> <span class='fa fa-download fa-lg'></span></button>
+                    <button class="btn btn-default navbar-btn" id="MedstatExport" title="Экспорт в формат Медстат (ЦИИОИЗ)"> <span class='fa fa-download fa-lg'></span> МС</button>
+                    <button class="btn btn-default navbar-btn" id="ExcelExport" title="Экспорт в формат MS Excel">
+                        <span class='fa fa-download fa-lg'></span>
+                        <span class='fa fa-file-excel-o fa-lg'></span>
+                    </button>
                 </div>
             </div>
             <div class="row" id="documentList"></div>
@@ -215,7 +219,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=075') }}"></script>
+    <script src="{{ asset('/medinfo/admin/documentadmin.js?v=076') }}"></script>
 @endpush
 
 @section('inlinejs')

@@ -134,8 +134,16 @@ class TableEditing
     {
         $props = RowProperty::whereHas('row', function ($query) use($table_id) {
             $query->where('table_id', $table_id);
-        })->first(['properties']);
-        return $props ? $props->properties : null;
+        })->pluck('properties');
+        if ($props) {
+            $decoded = $props->map(function ($item, $key) {
+                return json_decode($item);
+            });
+            return $decoded;
+        } else {
+            return null;
+        }
+
     }
 
     public static function tableRender(Table $table, $columntype = 'textbox', $hiderowid = true)

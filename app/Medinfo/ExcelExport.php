@@ -310,7 +310,7 @@ class ExcelExport
             $data[$i] = $row;
             $i++;
         }
-        return ['data' => $data, 'cols' => $cols];
+        return compact('data', 'cols');
     }
 
 

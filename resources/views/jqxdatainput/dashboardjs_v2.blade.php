@@ -40,6 +40,7 @@ let not_editable_cells = {!! json_encode($noteditablecells) !!};
 let edit_permission = {{ $editpermission ? 'true' : 'false' }};
 let control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
 let datafields = $.parseJSON('{!!  $datafields !!}');
+
 let calculatedfields = $.parseJSON('{!!  $calcfields !!}');
 let data_for_table = $.parseJSON('{!!  $tableproperties !!}');
 let columns = $.parseJSON('{!!  $columns !!}');
