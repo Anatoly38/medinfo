@@ -19,6 +19,8 @@ class DocumentExcelExportController extends Controller
     public function exportDocuments(Request $request)
     {
         $documents = explode(",", $request->documents );
+        // Форма 30 экспортируется примерно 30 секунд - таймлимит выставляем по ней.
+        // set_time_limit(count($documents) * 40);
         $d = new DocumentExcelExport();
         try {
             $zip_archiv = $d->batchExport($documents);
