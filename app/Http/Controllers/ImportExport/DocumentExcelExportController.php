@@ -20,8 +20,12 @@ class DocumentExcelExportController extends Controller
     {
         $documents = explode(",", $request->documents );
         $d = new DocumentExcelExport();
-        $d->batchExport($documents);
-
-        return 'Выгружены';
+        try {
+            $zip_archiv = $d->batchExport($documents);
+            $headers =  ['Content-Type' => 'application/zip'];
+            return response()->download($zip_archiv, basename($zip_archiv), $headers)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            abort(500, $e->getMessage());
+        }
     }
 }

@@ -26,26 +26,27 @@ class DocumentExcelExport
         $xls_files = [];
         foreach ($docs as $doc) {
             $dir = storage_path('app/exports/excel/' );
-            $fn = $doc->id . '_' . $random_suffix;
+            //$fn = mb_ereg_replace("([^\w\d\-_~,;\[\]\(\).])", '_', $doc->unit->unit_name);
+            //$fn = mb_ereg_replace("([\.]{2,})", '', $fn);
+            //$fn = $doc->unit->unit_code. '_' . $fn . 'Форма_' . $doc->form->form_code . '_' .  $random_suffix;
+            $fn = $doc->unit->unit_code . ' ' . $doc->unit->unit_name . ' Форма ' . $doc->form->form_code . ' Период ' . $doc->period->name ;
             $xls_files[] = $dir . $fn;
             $excelo = $this->documentExcelExport($doc, $fn);
-            $excelo->store('xls', $dir);
+            $excelo->store('xlsx', $dir);
         }
-
-        $zip_file = storage_path('app/exports/excel/batchexcelexport' . $random_suffix .'.zip');
+        $zip_file = storage_path('app/exports/excel/batchexcelexport_' . $random_suffix .'.zip');
         $zip = new \ZipArchive();
         if ($zip->open($zip_file, \ZipArchive::CREATE) === true) {
-            //$zip->addFromString("testfilephp.txt" . time(), "#1 Это тестовая строка добавляется в качестве testfilephp.txt.\n");
-            //$zip->addFromString("testfilephp2.txt" . time(), "#2 Это тестовая строка добавляется в качестве testfilephp2.txt.\n");
-            //$zip->addFile($thisdir . "/too.php","/testfromfile.php");
-            //echo "numfiles: " . $zip->numFiles . "\n";
-            //echo "status:" . $zip->status . "\n";
             $i = 1;
             foreach ($xls_files as $xls_file) {
-                $zip->addFile($xls_file . '.xls', $i . '.xls');
+                $zip->addFile($xls_file . '.xlsx', basename($xls_file) . '.xlsx');
                 $i++;
             }
             $zip->close();
+            foreach ($xls_files as $xls_file) {
+              unlink($xls_file . '.xlsx');
+            }
+            return $zip_file;
         } else {
             throw  new \Exception("Не удалось открыть файл архива $zip_file");
         }

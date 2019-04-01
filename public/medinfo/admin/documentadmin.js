@@ -403,12 +403,13 @@ initdocumentactions = function() {
         if (!row_ids) {
             return false;
         }
-        let data = "documents=" + row_ids;
+        let data = "?documents=" + row_ids;
         let confirm_text = 'Экспортировать документы №№ ' + row_ids + '?';
         if (!confirm(confirm_text)) {
             return false;
         }
-        $.ajax({
+        location.assign(excelexport_url + data);
+/*        $.ajax({
             dataType: 'json',
             url: excelexport_url,
             method: "GET",
@@ -422,7 +423,7 @@ initdocumentactions = function() {
                 let error_text = "Ошибка сохранения данных на сервере. " + xhr.status + ' (' + xhr.statusText + ') - ' + status + ". Обратитесь к администратору.";
                 raiseError(error_text);
             }
-        });
+        });*/
     });
 
     let newdoc_form = $('#cloneDocuments').jqxWindow({
