@@ -12,7 +12,7 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#rowmain"><strong><span style="zoom: 1.1">Редактирование/ввод строки</span></strong></a></li>
                     <li><a data-toggle="tab" href="#rowprops">Свойства</a></li>
-                    <li><a data-toggle="tab" href="#menu2">Дополнительные заголовки</a></li>
+                    {{--<li><a data-toggle="tab" href="#menu2">Дополнительные заголовки</a></li>--}}
                 </ul>
                 <div class="tab-content">
                     <div id="rowmain" class="tab-pane fade in active" style="height: 360px">
@@ -102,10 +102,10 @@
                             </div>
                         </form>
                     </div>
-                    <div id="menu2" class="tab-pane fade" style="height: 340px">
+{{--                    <div id="menu2" class="tab-pane fade" style="height: 340px">
                         <h3>Свойства</h3>
                         <p>Дополнительно.</p>
-                    </div>
+                    </div>--}}
                 </div>
         </div>
         <div class="form-group" >

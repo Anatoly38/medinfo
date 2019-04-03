@@ -27,6 +27,11 @@
     background-color: #ffc8c8;
 }
 
+.aggregate:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: #ceeaff;
+}
+
 .editedRow {
     font-style: italic;
     font-weight: bold ;

@@ -9,23 +9,11 @@ let initDgridSize = function () {
 let initSplitterSize = function () {
     return initialViewport - topOffset2;
 };
-/*let initProtSize = function () {
-    $("#tableprotocol").height(initialViewport - topOffset3);
-    $("#formprotocol").height(initialViewport - topOffset3);
-    $("#CellAnalysisTable").height(initialViewport - topOffset4);
-};
-let initCellProtSize = function () {
-    $("#cellprotocol").height(initialViewport - topOffset3);
-};
-*/
+
 let onResizeEventLitener = function () {
     $(window).resize(function() {
         dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
         $('#formEditLayout').jqxSplitter({ height: $(window).height()-topOffset2});
-        //$("#tableprotocol").height($(window).height()-topOffset3);
-        //$("#formprotocol").height($(window).height()-topOffset3);
-        //$("#cellprotocol").height($(window).height()-topOffset3);
-        //$("#CellAnalysisTable").height(initialViewport - topOffset4);
     });
 };
 let initSplitter = function () {
@@ -430,17 +418,7 @@ let initextarbuttons = function () {
         $(".rule-valid").show();
         $(".control-valid").show();
     });
-/*    $("#togglecontrolscreen").jqxToggleButton({ theme: theme });
-    $("#togglecontrolscreen").on('click', function () {
-        let toggled = $("#togglecontrolscreen").jqxToggleButton('toggled');
-        if (toggled) {
-            splitter.jqxSplitter({panels: [{ size: 100, collapsible: false }, { size: '50%'}]})
-        } else {
-            splitter.jqxSplitter({panels: [ { size: '60%', min: 100, collapsible: false }, {collapsed:true} ]});
-        }
-    });*/
     $('#printtableprotocol').jqxButton({ theme: theme });
-    //$("#expandprotocolrow").jqxToggleButton({ theme: theme });
 };
 // поиск в протоколе контроля по id строки и столбца (старый формат)
 function searchprotocol(source, column_id, row_id) {
@@ -478,14 +456,13 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
     return cell_protocol;
 }
 function cellfound(cells, column_id, row_id) {
-    let found = false;
     $.each(cells, function(cell_idx, cell) {
         //console.log(cell.column == column_id && cell.row == row_id);
         if (cell.column === column_id && cell.row === parseInt(row_id)) {
-            found = true;
+            return true;
         }
     });
-    return found;
+    return false;
 }
 // Поиск таблицы по индексу
 function searchTableByIndex(table_index) {
@@ -872,6 +849,7 @@ function fetchDataForDataGrid(tableid) {
         firstdatacolumn = data.firstdatacolumn;
         there_is_calculated = calculatedfields.length > 0;
         there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
+        aggregatedrows = data.aggregates;
         current_table = tableid;
         current_table_code = data_for_table.code;
         current_table_index = data_for_table.index;
@@ -990,11 +968,9 @@ let initdatagrid = function() {
             id: 'id',
             url: fetchvalues_url(),
             updaterow: function (rowid, rowdata) {
-                //console.log(rowdata);
                 if (checkIsNotEditable(rowid, editedcell_column)) {
                     return false;
                 }
-
                 let value = rowdata[editedcell_column];
                 let oldvalue;
                 if (typeof editedcell_value !== 'undefined') {
@@ -1002,6 +978,7 @@ let initdatagrid = function() {
                 } else {
                     oldvalue = null;
                 }
+                let aggregatingrow = checkIsAggregatedRowCell(parseInt(rowid));
                 current_edited_cell.t = current_table;
                 current_edited_cell.r = rowdata.boundindex;
                 current_edited_cell.c = editedcell_column;
@@ -1029,8 +1006,11 @@ let initdatagrid = function() {
                                 if (protocol_control_created) {
                                     $(".inactual-protocol").show();
                                 }
-                                commit(true);
+                                //commit(true);
                             }
+                        }
+                        if (aggregatingrow) {
+                            calculateAggregatingRowCell(aggregatingrow, editedcell_column);
                         }
                     },
                     error: xhrErrorNotificationHandler
@@ -1150,6 +1130,59 @@ function cellProtocolRender(row_id, column_id) {
     } else {
         cell_protocol_panel.html("<div class='alert alert-danger'><p>Протокол контроля текущей таблицы не найден. Выполните контроль текущей таблицы</p></div>");
     }
+}
+// На случай вставки данных из буфера - не версим данные в нередатируемые ячейки
+function checkIsNotEditable(rowid, colid) {
+    let necell_count = not_editable_cells.length;
+    for (let i = 0; i < necell_count; i++) {
+        if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowid && not_editable_cells[i].c == colid ) {
+            return true;
+        }
+    }
+    return false;
+}
+// Проверяем - итоговая ли строка?
+function checkIsAggregatingdRow(rowid) {
+    for (let i = 0; i < aggregatedrows.length; i++ ) {
+        if (aggregatedrows[i].aggregating_row === rowid ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Проверяем участвует ли ячейка при расчете итоговой строки
+function checkIsAggregatedRowCell(rowid) {
+    for (let i = 0; i < aggregatedrows.length; i++ ) {
+        let rowcollection = aggregatedrows[i].aggregated_rows;
+        for (let j = 0; j < rowcollection.length; j++) {
+            if (rowcollection[j] === rowid ) {
+                return aggregatedrows[i].aggregating_row;
+            }
+        }
+    }
+    return null;
+}
+// Получение списка Id строк для подсчета итоговой строки
+function getAggregatedRows(aggregating_row) {
+    for (let i = 0; i < aggregatedrows.length; i++ ) {
+        if (aggregatedrows[i].aggregating_row === aggregating_row ) {
+            return aggregatedrows[i].aggregated_rows;
+        }
+    }
+    return null;
+}
+
+// расчет ячейки входящей в итоговую строку
+function calculateAggregatingRowCell(rowid, colid) {
+    let aggregated_rows = getAggregatedRows(parseInt(rowid));
+    let value = 0;
+    for (let i = 0; i < aggregated_rows.length; i++) {
+        let cc = parseFloat(dgrid.jqxGrid('getcellvaluebyid', aggregated_rows[i], colid))||0;
+        //console.log(cc);
+        value += cc;
+    }
+    dgrid.jqxGrid('setcellvaluebyid', rowid, colid, value);
 }
 
 // Панель инструментов для редактируемой таблицы
@@ -1371,16 +1404,6 @@ let cellbeginedit = function (row, datafield, columntype, value) {
     }
 };
 
-function checkIsNotEditable(rowid, colid) {
-    let necell_count = not_editable_cells.length;
-    for (let i = 0; i < necell_count; i++) {
-        if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowid && not_editable_cells[i].c == colid ) {
-            return true;
-        }
-    }
-    return false;
-}
-
 let defaultEditor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });
 };
@@ -1405,40 +1428,39 @@ let cellclass = function (row, columnfield, value, rowdata) {
     let alerted_cell = '';
     let class_by_edited_row = '';
     let not_editable = '';
+    let aggregate = '';
     for (let i = 0; i < not_editable_cells.length; i++) {
-        if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowdata.id && not_editable_cells[i].c == columnfield) {
+        if (not_editable_cells[i].t === parseInt(current_table) && not_editable_cells[i].r === rowdata.id && not_editable_cells[i].c === columnfield) {
             return 'jqx-grid-cell-pinned jqx-grid-cell-pinned-bootstrap not_editable';
         }
     }
     if (marking_mode === 'control') {
-        $.each(invalidCells[current_table], function(key, value) {
-            if (value.r == rowdata.id && value.c == columnfield) {
-                invalid_cell = 'invalid';
-            }
-        });
-        $.each(alertedCells[current_table], function(key, value) {
-            if (value.r === rowdata.id && value.c === columnfield) {
-                alerted_cell = 'alerted';
-            }
-        });
-        for (let i = 0; i < editedCells.length; i++) {
-            if (editedCells[i].t == current_table && editedCells[i].r == row && editedCells[i].c == columnfield ) {
-                class_by_edited_row = "editedRow";
-                invalid_cell = '';
-                alerted_cell = '';
+        if (typeof invalidCells[current_table] !== 'undefined' ) {
+            for (let i = 0; i < invalidCells[current_table].length; i++ ) {
+                if (invalidCells[current_table][i].r === rowdata.id && invalidCells[current_table][i].c === columnfield) {
+                    invalid_cell = 'invalid';
+                }
             }
         }
-        return  alerted_cell + ' ' + invalid_cell +' ' + class_by_edited_row;
-    }
-    else if (marking_mode === 'compareperiods') {
-        let class_compare = '';
-        for (let i = 0; i < comparedCells.length; i++) {
-            if (comparedCells[i].t == current_table && comparedCells[i].r == rowdata.id && comparedCells[i].c == columnfield ) {
-                class_compare = comparedCells[i].degree;
+        if (typeof alertedCells[current_table] !== 'undefined' ) {
+            for (let i = 0; i < alertedCells[current_table].length; i++ ) {
+                if (alertedCells[current_table][i].r === rowdata.id && alertedCells[current_table][i].c === columnfield) {
+                    alerted_cell = 'alerted';
+                }
             }
         }
-        return class_compare + ' ' + not_editable;
     }
+    for (let i = 0; i < editedCells.length; i++) {
+        if (editedCells[i].t === current_table && editedCells[i].r === row && editedCells[i].c === columnfield ) {
+            class_by_edited_row = "editedRow";
+            invalid_cell = '';
+            alerted_cell = '';
+        }
+    }
+    if (checkIsAggregatingdRow(rowdata.id)) {
+        aggregate = 'aggregate'
+    }
+    return  alerted_cell + ' ' + invalid_cell + ' ' + aggregate + ' ' +  class_by_edited_row;
 };
 let validation = function(cell, value) {
     if (value < 0) {
