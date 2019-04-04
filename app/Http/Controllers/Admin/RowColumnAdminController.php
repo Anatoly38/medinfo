@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\RowProperty;
+
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -18,6 +18,8 @@ use App\ColumnCalculation;
 use App\NECell;
 use App\Cell;
 use App\DicColumnType;
+use App\RowProperty;
+use App\ColumnProperty;
 
 class RowColumnAdminController extends Controller
 {
@@ -66,10 +68,18 @@ class RowColumnAdminController extends Controller
         return $props ? $props->properties : [ 'aggregate' => false ];
     }
 
+    public function fetchColumnProperties(Column $column)
+    {
+        $props = ColumnProperty::Column($column->id)->first();
+        return $props ? $props->properties : [ 'aggregate' => false ];
+    }
+
     public function fetchColumns(int $table)
     {
         $album = $this->getDefaultAlbum();
-        return Column::OfTable($table)->orderBy('column_index')->with('table')->with(['excluded' => function ($query) use ($album) {
+        return Column::OfTable($table)->orderBy('column_index')->with('table')
+            ->with('property')
+            ->with(['excluded' => function ($query) use ($album) {
             $query->where('album_id', $album->id);
         }])->get();
     }
@@ -106,26 +116,28 @@ class RowColumnAdminController extends Controller
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }
-
+        $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
+        $props = $rowprop_record->properties ? json_decode($rowprop_record->properties) : new \stdClass();
         if ($request->aggregated) {
-            if ($request->aggregatedrows) {
-                $aggregated_rows = explode(',', $request->aggregatedrows);
-                $aggregate = true;
-                $corrected = [];
-                foreach ($aggregated_rows as $id) {
-                    if ($id == $row->id) { continue; }
-                    $corrected[] = (int)$id;
-                }
-                $encoded = json_encode([ "aggregate" => $aggregate, "aggregating_row" => $row->id, "aggregated_rows" => $corrected]);
-                $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
-                $rowprop_record->properties = $encoded;
-                $rowprop_record->save();
-            } else {
-                RowProperty::Row($row->id)->delete();
-            }
+            $props->aggregate = true;
+            $props->aggregating_row = $row->id;
         } else {
-            RowProperty::Row($row->id)->delete();
+            $props->aggregate = false;
         }
+        if ($request->aggregatedrows) {
+            $aggregated_rows = explode(',', $request->aggregatedrows);
+            $corrected = [];
+            // редактируемую строку убираем из суммируемых строк
+            foreach ($aggregated_rows as $id) {
+                if ($id == $row->id) { continue; }
+                $corrected[] = (int)$id;
+            }
+            $props->aggregated_rows = $corrected;
+        } else {
+            $props->aggregate = false;
+        }
+        $rowprop_record->properties = json_encode($props);
+        $rowprop_record->save();
         return $result;
     }
 
@@ -219,6 +231,7 @@ class RowColumnAdminController extends Controller
                 'medstat_code' => 'digits:2',
                 'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
+                'aggregated' => 'required|in:1,0',
             ]
         );
         $column->column_index = $request->column_index;
@@ -244,6 +257,30 @@ class RowColumnAdminController extends Controller
                 $result = ['error' => 422, 'message' => 'Запись не сохранена. Дублирование данных.'];
             }
         }
+
+        $colprop_record = ColumnProperty::firstOrNew(['column_id' => $column->id ]);
+        $props = $colprop_record->properties ? json_decode($colprop_record->properties) : new \stdClass();
+        //dd($colprop_record->properties);
+        if ($request->aggregated) {
+            $props->aggregate = true;
+            $props->aggregating_column = $column->id;
+        } else {
+            $props->aggregate = false;
+        }
+        if ($request->aggregatedcolumns) {
+            $aggregated_columns = explode(',', $request->aggregatedcolumns);
+            $corrected = [];
+            // редактируемую строку убираем из суммируемых строк
+            foreach ($aggregated_columns as $id) {
+                if ($id == $column->id) { continue; }
+                $corrected[] = (int)$id;
+            }
+            $props->aggregated_columns = $corrected;
+        } else {
+            $props->aggregate = false;
+        }
+        $colprop_record->properties = json_encode($props);
+        $colprop_record->save();
         return $result;
     }
 

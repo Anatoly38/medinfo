@@ -26,6 +26,11 @@ class Column extends Model
         return $this->belongsTo('App\Table');
     }
 
+    public function property()
+    {
+        return $this->hasOne('App\ColumnProperty');
+    }
+
     public function calculation()
     {
         return $this->hasOne('App\ColumnCalculation');

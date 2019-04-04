@@ -68,7 +68,6 @@
                                 </form>
                             </div>
                         </div>
-
                     </div>
                     <div id="rowprops" class="tab-pane fade" style="height: 360px">
                         <form id="RowProps" style="padding-top: 10px" class="form-horizontal" >
@@ -121,83 +120,129 @@
     <div>
         <div id="columnList" style="margin: 10px"></div>
         <div id="columnPropertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
-            <div class="panel-heading"><h3>Редактирование/ввод графы</h3></div>
-            <div class="panel-body">
-                <form id="columnform" class="form-horizontal" >
-                    <div class="form-group">
-                        <label class="control-label col-md-3" for="column_index">Порядковый номер в таблице:</label>
-                        <div class="col-md-2">
-                            <input type="number" class="form-control input-sm" id="column_index">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#columnmain"><strong><span style="zoom: 1.1">Редактирование/ввод графы</span></strong></a></li>
+                <li><a data-toggle="tab" href="#columnprops">Свойства</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="columnmain" class="tab-pane fade in active" style="height: 360px">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form id="columnform" class="form-horizontal" style="padding-top: 10px">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" for="column_index">Порядковый номер в таблице:</label>
+                                    <div class="col-md-2">
+                                        <input type="number" class="form-control input-sm" id="column_index">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" for="column_name">Имя:</label>
+                                    <div class="col-md-8">
+                                        <textarea rows="2" class="form-control input-sm" id="column_name"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" for="column_code">Код:</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control input-sm" id="column_code">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" for="column_type">Тип поля:</label>
+                                    <div class="col-md-3">
+                                        <div id="column_type"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="editFormula" type="button" class="btn btn-primary btn-sm" style="display: none">Добавить/изменить формулу расчета</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" for="field_size">Размер поля (px):</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control input-sm" id="field_size" name="field_size">
+                                    </div>
+                                    <label class="control-label col-md-3" for="decimal_count">Знаков после запятой (десятичных):</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control input-sm" id="decimal_count">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3" for="column_medstat_code">Код Медстат:</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control input-sm" id="column_medstat_code">
+                                    </div>
+                                    <label class="control-label col-md-3" for="column_medstatnsk_id">Медстат (НСК) Id:</label>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control input-sm" id="column_medstatnsk_id">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-1 col-sm-11">
+                                        <div class="checkbox">
+                                            <label for="excludedColumn">
+                                                <input type="checkbox" id="excludedColumn" name="excludedColumn" value="1" style="zoom: 1.7">
+                                                <p style="margin-top: 8px">
+                                                    <strong>
+                                                        Исключена из текущего альбома
+                                                        <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>
+                                                    </strong>
+                                                </p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3" for="column_name">Имя:</label>
-                        <div class="col-md-8">
-                            <textarea rows="2" class="form-control input-sm" id="column_name"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3" for="column_code">Код:</label>
-                        <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="column_code">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3" for="column_type">Тип поля:</label>
-                        <div class="col-md-3">
-                            <div id="column_type"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <button id="editFormula" type="button" class="btn btn-primary btn-sm" style="display: none">Добавить/изменить формулу расчета</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3" for="field_size">Размер поля (px):</label>
-                        <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="field_size" name="field_size">
-                        </div>
-                        <label class="control-label col-md-3" for="decimal_count">Знаков после запятой (десятичных):</label>
-                        <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="decimal_count">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3" for="column_medstat_code">Код Медстат:</label>
-                        <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="column_medstat_code">
-                        </div>
-                        <label class="control-label col-md-3" for="column_medstatnsk_id">Медстат (НСК) Id:</label>
-                        <div class="col-md-2">
-                            <input type="text" class="form-control input-sm" id="column_medstatnsk_id">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-1 col-sm-11">
-                            <div class="checkbox">
-                                <label for="excludedColumn">
-                                    <input type="checkbox" id="excludedColumn" name="excludedColumn" value="1" style="zoom: 1.7">
-                                    <p style="margin-top: 8px">
-                                        <strong>
-                                            Исключена из текущего альбома
-                                            <a href="albums" target="_blank" class="text-primary album-name" title="Изменить текущий альбом">("{{ $album->album_name }}")</a>
-                                        </strong>
-                                    </p>
-                                </label>
+
+                </div>
+                <div id="columnprops" class="tab-pane fade" style="height: 360px">
+                    <form id="ColumnProps" style="padding-top: 10px" class="form-horizontal" >
+                        <div class="form-group">
+                            <div class="col-sm-offset-1 col-sm-11">
+                                <div class="checkbox">
+                                    <label for="IsAggregatedColumn">
+                                        <input type="checkbox" id="IsAggregatedColumn" name="IsAggregatedColumn" value="1" style="zoom: 1.7">
+                                        <p style="margin-top: 8px">
+                                            <strong>Итоговая графа</strong>
+                                        </p>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="button" id="savecolumn" class="btn btn-primary">Сохранить изменения</button>
-                            <button type="button" id="insertcolumn" class="btn btn-success">Вставить новую запись</button>
-                            <button type="button" id="deletecolumn" class="btn btn-danger">Удалить запись</button>
-                            <button type="button" id="column_left" class="btn btn-sm btn-default">Влево</button>
-                            <button type="button" id="column_right" class="btn btn-sm btn-default">Вправо</button>
+                        <div id="aggregatedColumnElements" class="row" style="display: none">
+                            <div class="form-group">
+                                <label class="control-label col-md-3" for="aggregatedColumns">Суммируемые графы:</label>
+                                <div class="col-md-8">
+                                    <div id="aggregatedColumns"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <button type="button" id="checkAllColumns" class="btn btn-default btn-sm">Выбрать все графы</button>
+                                    <button type="button" id="uncheckAllColumns" class="btn btn-default btn-sm">Очистить</button>
+                                </div>
+                            </div>
+                            <input id="сolumnids" name="сolumnids" type="hidden" value="">
+                            <input id="selectedallcolumns" name="selectedallcolumns" type="hidden" value="">
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="button" id="savecolumn" class="btn btn-primary">Сохранить изменения</button>
+                <button type="button" id="insertcolumn" class="btn btn-success">Вставить новую запись</button>
+                <button type="button" id="deletecolumn" class="btn btn-danger">Удалить запись</button>
+                <button type="button" id="column_left" class="btn btn-sm btn-default">Влево</button>
+                <button type="button" id="column_right" class="btn btn-sm btn-default">Вправо</button>
             </div>
         </div>
+
     </div>
 </div>
 <div id="formulaWindow">
@@ -231,7 +276,7 @@
 
 @push('loadjsscripts')
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=059') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=061') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -247,6 +292,7 @@
         let rowfetch_url = '/admin/rc/fetchrows/';
         let rowpropfetch_url = '/admin/rc/fetchrowprops/';
         let columnfetch_url = '/admin/rc/fetchcolumns/';
+        let columnpropfetch_url = '/admin/rc/fetchcolumnprops/';
         let showcolumnformula_url = '/admin/rc/columnformula/show/';
         let updatecolumnformula_url = '/admin/rc/columnformula/update/';
         let storecolumnformula_url = '/admin/rc/columnformula/store/';
@@ -264,6 +310,8 @@
         let isRowAggregated = 0;
         let allrows = false;
         let rowids = '';
+        let columnids = '';
+        let allcolumns = false;
 
         initFilterDatasources();
         initsplitter();
@@ -277,5 +325,6 @@
         initOrderControls();
         initColumnFormulaWindow();
         initDropDownRows();
+        initDropDownColumns();
     </script>
 @endsection

@@ -60,7 +60,8 @@ initdatasources = function() {
             { name: 'size', type: 'int' },
             { name: 'decimal_count', type: 'int' },
             { name: 'medstat_code', type: 'string' },
-            { name: 'medstatnsk_id', type: 'int' }
+            { name: 'medstatnsk_id', type: 'int' },
+            { name: 'prop', map: 'property>properties', type: 'string' },
         ],
         id: 'id',
         url: columnfetch_url + current_table,
@@ -106,9 +107,7 @@ initRowList = function() {
             $("#row_medstatnsk_id").val(row.medstatnsk_id);
             //row.excluded > 0 ? $("#excludedRow").prop('checked', true) : $("#excludedRow").val(false);
             row.excluded > 0 ? $("#excludedRow").prop('checked', true) : $("#excludedRow").prop('checked', false);
-
             showRowProperties(row);
-
         }
     });
 };
@@ -117,21 +116,29 @@ showRowProperties = function(row) {
     let dd = $("#aggregatedRows");
     let props = $.parseJSON(row.prop);
     dd.jqxDropDownList('uncheckAll');
-    let checedItems = [];
-    if (props) {
-        $("#IsAggregatedRow").prop('checked', true);
-        $("#aggregatedRowElements").show();
+    let checkedItems = [];
+    if (props === null) {
+        $("#IsAggregatedRow").prop('checked', false);
+        $("#aggregatedRowElements").hide();
+        rowids = '';
+        return false;
+    }
+    if (props.aggregated_rows instanceof Array) {
         for (let i = 0; props.aggregated_rows.length > i; i++) {
             dd.jqxDropDownList('checkItem', props.aggregated_rows[i]);
-            checedItems.push(props.aggregated_rows[i]);
+            checkedItems.push(props.aggregated_rows[i]);
         }
-        rowids = checedItems.join();
+    }
+    rowids = checkedItems.join();
+    if (props.aggregate) {
+        $("#IsAggregatedRow").prop('checked', true);
+        $("#aggregatedRowElements").show();
     } else {
         $("#IsAggregatedRow").prop('checked', false);
         $("#aggregatedRowElements").hide();
         rowids = '';
     }
-
+    return true;
 };
 
 //Таблица граф
@@ -174,16 +181,46 @@ initColumnList = function() {
             $("#column_medstatnsk_id").val(row.medstatnsk_id);
             //row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
             row.excluded > 0 ? $("#excludedColumn").prop('checked', true) : $("#excludedColumn").prop('checked', false);
+            showColumnProperties(row);
         }
     });
 };
 
+showColumnProperties = function(column) {
+    let dd = $("#aggregatedColumns");
+    let props = $.parseJSON(column.prop);
+    dd.jqxDropDownList('uncheckAll');
+    let checkedItems = [];
+    if (props === null) {
+        $("#IsAggregatedColumn").prop('checked', false);
+        $("#aggregatedColumnElements").hide();
+        columnids = '';
+        return false;
+    }
+    if (props.aggregated_columns instanceof Array) {
+        for (let i = 0; props.aggregated_columns.length > i; i++) {
+            dd.jqxDropDownList('checkItem', props.aggregated_columns[i]);
+            checkedItems.push(props.aggregated_columns[i]);
+        }
+    }
+    columnids = checkedItems.join();
+    if (props.aggregate) {
+        $("#IsAggregatedColumn").prop('checked', true);
+        $("#aggregatedColumnElements").show();
+    } else {
+        $("#IsAggregatedColumn").prop('checked', false);
+        $("#aggregatedColumnElements").hide();
+        columnids = '';
+    }
+    return true;
+};
+
 initDropDownRows = function() {
-    let dd = $("#aggregatedRows");
+    let rowdd = $("#aggregatedRows");
     let el = $("#aggregatedRowElements");
 
     let checkedItems = [];
-    dd.jqxDropDownList({
+    rowdd.jqxDropDownList({
         theme: theme,
         checkboxes: true,
         filterable: true,
@@ -200,9 +237,36 @@ initDropDownRows = function() {
         }
     });
 
-    dd.on('select', function (event) {
-        let items = dd.jqxDropDownList('getCheckedItems');
-        let allitems = dd.jqxDropDownList('getItems');
+    rowdd.on('select', function (event) {
+       getCheckedRows();
+    });
+
+    $("#checkAllRows").on('click', function () {
+        rowdd.jqxDropDownList('checkAll');
+        checkedItems = [];
+        let items = rowdd.jqxDropDownList('getCheckedItems');
+        $.each(items, function (index) {
+            checkedItems.push(this.value);
+        });
+        rowids = checkedItems.join();
+        allrows = 1;
+    });
+
+    $("#uncheckAllRows").on('click', function () {
+        rowdd.jqxDropDownList('uncheckAll');
+        checkedItems = [];
+        rowids = "";
+        allrows = 0;
+    });
+
+    $("#IsAggregatedRow").click(function () {
+        getCheckedRows();
+        $("#IsAggregatedRow").prop('checked') ? el.show() : el.hide() ;
+    });
+    
+    let getCheckedRows = function () {
+        let items = rowdd.jqxDropDownList('getCheckedItems');
+        let allitems = rowdd.jqxDropDownList('getItems');
         checkedItems = [];
         $.each(items, function (index) {
             checkedItems.push(this.value);
@@ -213,29 +277,73 @@ initDropDownRows = function() {
         } else {
             allrows = 0;
         }
+    } 
+};
+
+initDropDownColumns = function() {
+    let columndd = $("#aggregatedColumns");
+    let el = $("#aggregatedColumnElements");
+
+    let checkedItems = [];
+    columndd.jqxDropDownList({
+        theme: theme,
+        checkboxes: true,
+        filterable: true,
+        filterPlaceHolder: '',
+        source: columnsDataAdapter,
+        displayMember: "column_code",
+        valueMember: "id",
+        placeHolder: "Выберите графы:",
+        width: '100%',
+        height: 35,
+        renderer: function (index, label, value) {
+            let rec = columnsDataAdapter.records[index];
+            return "<span class='text-info'><strong>" +rec.column_code + "</strong></span>&nbsp;&nbsp;" + rec.column_name;
+        }
     });
 
-    $("#checkAllRows").on('click', function () {
-        dd.jqxDropDownList('checkAll');
+    columndd.on('select', function (event) {
+        getCheckedColumns();
+    });
+
+    $("#checkAllColumns").on('click', function () {
+        columndd.jqxDropDownList('checkAll');
         checkedItems = [];
-        let items = dd.jqxDropDownList('getCheckedItems');
+        let items = columndd.jqxDropDownList('getCheckedItems');
         $.each(items, function (index) {
             checkedItems.push(this.value);
         });
-        rowids = checkedItems.join();
-        allrows = 1;
+        columnids = checkedItems.join();
+        allcolumns = 1;
     });
 
-    $("#uncheckAllRows").on('click', function () {
-        dd.jqxDropDownList('uncheckAll');
+    $("#uncheckAllColumns").on('click', function () {
+        columndd.jqxDropDownList('uncheckAll');
         checkedItems = [];
-        rowids = "";
-        allrows = 0;
+        columnids = "";
+        allcolumns = 0;
     });
 
-    $("#IsAggregatedRow").click(function () {
-        $("#IsAggregatedRow").prop('checked') ? el.show() : el.hide() ;
+    $("#IsAggregatedColumn").click(function () {
+        getCheckedColumns();
+        $("#IsAggregatedColumn").prop('checked') ? el.show() : el.hide();
+
     });
+
+    let getCheckedColumns = function () {
+        let items = columndd.jqxDropDownList('getCheckedItems');
+        let allitems = columndd.jqxDropDownList('getItems');
+        checkedItems = [];
+        $.each(items, function (index) {
+            checkedItems.push(this.value);
+        });
+        columnids = checkedItems.join();
+        if (items.length === allitems.length) {
+            allcolumns = 1;
+        } else {
+            allcolumns = 0;
+        }
+    }
 };
 
 // функция для обновления связанных объектов после выбора таблицы
@@ -285,7 +393,9 @@ setcolumnquery = function() {
         "&medstat_code=" + $("#column_medstat_code").val() +
         "&medstatnsk_id=" + $("#column_medstatnsk_id").val() +
         //"&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
-        "&excluded=" + ($("#excludedColumn").prop('checked') ? 1 : 0);
+        "&excluded=" + ($("#excludedColumn").prop('checked') ? 1 : 0) +
+        "&aggregated=" + ($("#IsAggregatedColumn").prop('checked') ? 1 : 0) +
+        "&aggregatedcolumns=" + columnids;
 };
 
 initButtons = function() {

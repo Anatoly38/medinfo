@@ -142,6 +142,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/rc/fetchtables/{form}', 'Admin\RowColumnAdminController@fetchTables');
 
     Route::get('admin/rc/fetchrowprops/{row}', 'Admin\RowColumnAdminController@fetchRowProperties');
+    Route::get('admin/rc/fetchcolumnprops/{column}', 'Admin\RowColumnAdminController@fetchColumnProperties');
 
     Route::patch('admin/rc/rowupdate/{row}', 'Admin\RowColumnAdminController@rowUpdate');
     Route::post('admin/rc/rowcreate', 'Admin\RowColumnAdminController@rowStore');
