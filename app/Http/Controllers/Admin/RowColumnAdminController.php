@@ -118,9 +118,9 @@ class RowColumnAdminController extends Controller
         }
         $rowprop_record = RowProperty::firstOrNew(['row_id' => $row->id ]);
         $props = $rowprop_record->properties ? json_decode($rowprop_record->properties) : new \stdClass();
+        $props->row = $row->id;
         if ($request->aggregated) {
             $props->aggregate = true;
-            $props->aggregating_row = $row->id;
         } else {
             $props->aggregate = false;
         }
@@ -232,6 +232,7 @@ class RowColumnAdminController extends Controller
                 'medstatnsk_id' => 'integer',
                 'excluded' => 'required|in:1,0',
                 'aggregated' => 'required|in:1,0',
+                'allownegatives' => 'required|in:1,0',
             ]
         );
         $column->column_index = $request->column_index;
@@ -261,9 +262,9 @@ class RowColumnAdminController extends Controller
         $colprop_record = ColumnProperty::firstOrNew(['column_id' => $column->id ]);
         $props = $colprop_record->properties ? json_decode($colprop_record->properties) : new \stdClass();
         //dd($colprop_record->properties);
+        $props->column = $column->id;
         if ($request->aggregated) {
             $props->aggregate = true;
-            $props->aggregating_column = $column->id;
         } else {
             $props->aggregate = false;
         }
@@ -279,6 +280,10 @@ class RowColumnAdminController extends Controller
         } else {
             $props->aggregate = false;
         }
+        if (!isset($props->validation)) {
+            $props->validation = new \stdClass();
+        }
+        $props->validation->allownegatives = $request->allownegatives ? true : false;
         $colprop_record->properties = json_encode($props);
         $colprop_record->save();
         return $result;

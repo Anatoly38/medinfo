@@ -107,6 +107,9 @@ class DashboardController extends Controller
         $columns = $renderingtabledata['columns'];
         $columngroups = $renderingtabledata['columngroups'];
         $firstdatacolumn = $renderingtabledata['firstdatacolumn'];
+        $rowprops = $renderingtabledata['rowprops'];
+        $colprops = $renderingtabledata['colprops'];
+
 
         $formsections = $this->getFormSections($realform->id, $album->id, $document->id);
 
@@ -133,7 +136,9 @@ class DashboardController extends Controller
             'firstdatacolumn',
             'laststate',
             'formsections',
-            'disabled_states'
+            'disabled_states',
+            'rowprops',
+            'colprops'
         ));
     }
 
@@ -177,7 +182,8 @@ class DashboardController extends Controller
         $composedata['columns'] = json_encode($datafortable['columns']);
         $composedata['columngroups'] = json_encode($datafortable['columngroups']);
         $composedata['firstdatacolumn'] = $datafortable['firstdatacolumn'];
-        $composedata['aggregates'] = $datafortable['aggregates'];
+        $composedata['rowprops'] = $datafortable['rowprops'];
+        $composedata['colprops'] = $datafortable['colprops'];
         return $composedata;
     }
     // данные для таблицы-фильтра для навигации по отчетным таблицам в форме

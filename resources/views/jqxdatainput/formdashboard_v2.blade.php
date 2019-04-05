@@ -56,17 +56,17 @@
 
 @push('loadcss')
     @if(config('medinfo.ssl_connection'))
-        <link href="{{ secure_asset('/css/medinfoeditform.css?v=017') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ secure_asset('/css/medinfoeditform.css?v=018') }}" rel="stylesheet" type="text/css" />
     @else
-        <link href="{{ asset('/css/medinfoeditform.css?v=017') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('/css/medinfoeditform.css?v=018') }}" rel="stylesheet" type="text/css" />
     @endif
 @endpush('loadcss')
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=013') }}"></script>
+        <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=015') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/editdashboard_v2.js?v=013') }}"></script>
+        <script src="{{ asset('/medinfo/editdashboard_v2.js?v=015') }}"></script>
     @endif
 @endpush('loadjsscripts')
 

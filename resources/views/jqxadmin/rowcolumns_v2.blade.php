@@ -226,6 +226,18 @@
                             <input id="сolumnids" name="сolumnids" type="hidden" value="">
                             <input id="selectedallcolumns" name="selectedallcolumns" type="hidden" value="">
                         </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-1 col-sm-11">
+                                <div class="checkbox">
+                                    <label for="AllowNegatives">
+                                        <input type="checkbox" id="AllowNegatives" name="AllowNegatives" value="1" style="zoom: 1.7">
+                                        <p style="margin-top: 8px">
+                                            <strong>Допускаются отрицательные значения</strong>
+                                        </p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
 
@@ -276,7 +288,7 @@
 
 @push('loadjsscripts')
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=061') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=062') }}"></script>
 @endpush
 
 @section('inlinejs')

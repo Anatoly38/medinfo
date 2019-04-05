@@ -88,12 +88,13 @@ initRowList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'row_index', width: '50px' },
-                //{ text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
-                { text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
+                { text: 'Искл.', datafield: 'excluded', columntype: 'checkbox', width: '70px'  },
+                //{ text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
                 { text: 'Код', datafield: 'row_code', width: '70px'  },
                 { text: 'Имя', datafield: 'row_name' , width: '480px'},
                 { text: 'Код МС(мск)', datafield: 'medstat_code', width: '80px' },
-                { text: 'Код МС(нск)', datafield: 'medstatnsk_id', width: '70px' }
+                //{ text: 'Код МС(нск)', datafield: 'medstatnsk_id', width: '70px' }
+                { text: 'Свойства', datafield: 'prop', width: '70px'  },
             ]
         });
     rlist.on('rowselect', function (event) {
@@ -157,15 +158,16 @@ initColumnList = function() {
             columns: [
                 { text: 'Id', datafield: 'id', width: '50px' },
                 { text: '№ п/п', datafield: 'column_index', width: '50px' },
-                //{ text: 'Исключена из альбома', datafield: 'excluded', columntype: 'checkbox', width: '90px'  },
-                { text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
+                { text: 'Искл.', datafield: 'excluded', columntype: 'checkbox', width: '70px'  },
+                //{ text: 'Исключена из альбома', datafield: 'excluded', width: '90px'  },
                 { text: 'Имя', datafield: 'column_name' , width: '300px'},
                 { text: 'Код', datafield: 'column_code' , width: '50px'},
                 { text: 'Тип', datafield: 'content_type', width: '50px' },
                 { text: 'Размер', datafield: 'size', width: '70px' },
                 { text: 'Десятичные', datafield: 'decimal_count', width: '90px' },
                 { text: 'Код МС(мск)', datafield: 'medstat_code', width: '70px' },
-                { text: 'Код МС(нск)', datafield: 'medstatnsk_id', width: '70px' }
+                //{ text: 'Код МС(нск)', datafield: 'medstatnsk_id', width: '70px' }
+                { text: 'Свойства', datafield: 'prop', width: '70px'  },
             ]
         });
     clist.on('rowselect', function (event) {
@@ -395,7 +397,8 @@ setcolumnquery = function() {
         //"&excluded=" + ($("#excludedColumn").val() ? 1 : 0);
         "&excluded=" + ($("#excludedColumn").prop('checked') ? 1 : 0) +
         "&aggregated=" + ($("#IsAggregatedColumn").prop('checked') ? 1 : 0) +
-        "&aggregatedcolumns=" + columnids;
+        "&aggregatedcolumns=" + columnids +
+        "&allownegatives=" + ($("#AllowNegatives").prop('checked') ? 1 : 0) ;
 };
 
 initButtons = function() {
