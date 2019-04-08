@@ -283,7 +283,9 @@ class RowColumnAdminController extends Controller
         if (!isset($props->validation)) {
             $props->validation = new \stdClass();
         }
-        $props->validation->allownegatives = $request->allownegatives ? true : false;
+        if ($request->allownegatives) {
+            $props->validation->disablenegatives = ['rule' => null, 'message' => 'Допускаются отрицательные значения'];
+        }
         $colprop_record->properties = json_encode($props);
         $colprop_record->save();
         return $result;

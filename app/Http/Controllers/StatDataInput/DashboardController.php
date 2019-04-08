@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
+use Illuminate\Foundation\Auth\RedirectsUsers;
 use Illuminate\Http\Request;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,6 @@ use App\Medinfo\TableEditing;
 class DashboardController extends Controller
 {
     //public $default_album;
-
     //
     public function index(Document $document)
     {
@@ -97,6 +97,7 @@ class DashboardController extends Controller
         //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
         $noteditablecells = NECellsFetch::byOuId($current_unit->id, $realform->id);
         $laststate = $this->getLastState($worker, $document, $form, $album);
+        $autocalculate_totals = true;
         $renderingtabledata = $this->composeDataForTable($laststate['currenttable'], $album);
         $for_form_tables = $this->composeTableList($realform, $album, $editedtables);
         $tablelist = json_encode($for_form_tables['forformtable']);
@@ -109,9 +110,8 @@ class DashboardController extends Controller
         $firstdatacolumn = $renderingtabledata['firstdatacolumn'];
         $rowprops = $renderingtabledata['rowprops'];
         $colprops = $renderingtabledata['colprops'];
-
-
         $formsections = $this->getFormSections($realform->id, $album->id, $document->id);
+        $validationrules = json_encode(self::defaultValidationRules());
 
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
         return view('jqxdatainput.formdashboard_v2', compact(
@@ -135,10 +135,12 @@ class DashboardController extends Controller
             'columngroups',
             'firstdatacolumn',
             'laststate',
+            'autocalculate_totals',
             'formsections',
             'disabled_states',
             'rowprops',
-            'colprops'
+            'colprops',
+            'validationrules'
         ));
     }
 
@@ -388,6 +390,14 @@ class DashboardController extends Controller
         }])->with('tables.table')
             ->orderBy('section_name')
             ->get();
+    }
+
+    public static function defaultValidationRules()
+    {
+        return [
+            'disablenegatives' => ['rule' => '>= 0', 'message' => 'Отрицательные значения не допускаются'], // Отрицительные значения не допускаются
+            'min' => ['rule' => null, 'message' => 'Значение не может быть меньше допустимого минимального значения'], // 0 - нет ограничений по минимальному значению
+        ];
     }
 
 /*    public function isTableBlocked(Document $document, int $table)

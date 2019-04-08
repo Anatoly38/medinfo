@@ -971,6 +971,13 @@ let initdatagrid = function() {
                     return false;
                 }
                 let value = rowdata[editedcell_column];
+
+/*                let cellvalidation = validateCell(rowid, editedcell_column, value);
+                if (!cellvalidation.result) {
+                    dgrid.jqxGrid('showvalidationpopup', 5, editedcell_column, "Invalid Value");
+                    return false;
+                }*/
+
                 let oldvalue;
 
                 if (typeof editedcell_value !== 'undefined') {
@@ -980,6 +987,7 @@ let initdatagrid = function() {
                 }
                 let aggregatingrow = checkIsAggregatedRowCell(parseInt(rowid));
                 let aggregatingcolumn = checkIsAggregatedColumnCell(parseInt(editedcell_column));
+
                 current_edited_cell.t = current_table;
                 current_edited_cell.r = rowdata.boundindex;
                 current_edited_cell.c = editedcell_column;
@@ -1010,11 +1018,13 @@ let initdatagrid = function() {
                                 //commit(true);
                             }
                         }
-                        if (aggregatingrow) {
-                            calculateAggregatingRowCell(aggregatingrow, editedcell_column);
-                        }
-                        if (aggregatingcolumn) {
-                            calculateAggregatingColumnCell(rowid, aggregatingcolumn);
+                        if (autocalculateTotals) {
+                            if (aggregatingrow) {
+                                calculateAggregatingRowCell(aggregatingrow, editedcell_column);
+                            }
+                            if (aggregatingcolumn) {
+                                calculateAggregatingColumnCell(rowid, aggregatingcolumn);
+                            }
                         }
                     },
                     error: xhrErrorNotificationHandler
@@ -1047,11 +1057,10 @@ let initdatagrid = function() {
             columns: columns,
             columngroups: columngroups
         });
-    dgrid.on('cellbeginedit', function (event)
+/*    dgrid.on('cellbeginedit', function (event)
     {
-        editedcell_column = event.args.datafield;
-        editedcell_value = event.args.value;
-    });
+
+    });*/
 
     //dgrid.on('cellvaluechanged', simpleSaving);
 
@@ -1139,13 +1148,30 @@ function cellProtocolRender(row_id, column_id) {
 function checkIsNotEditable(rowid, colid) {
     let necell_count = not_editable_cells.length;
     for (let i = 0; i < necell_count; i++) {
-        if (not_editable_cells[i].t == current_table && not_editable_cells[i].r == rowid && not_editable_cells[i].c == colid ) {
+        if (not_editable_cells[i].t === parseInt(current_table) && not_editable_cells[i].r == rowid && not_editable_cells[i].c == colid ) {
             return true;
         }
     }
+/*    if (autocalculateTotals) {
+        if (checkIsAggregatingdRow(parseInt(rowid))) {
+            return true;
+        }
+        if (checkIsAggregatingColumn(parseInt(colid))) {
+            return true;
+        }
+    }*/
     return false;
 }
 
+// Получаем свойства строки
+function getRowProperties(rowid) {
+    for (let i = 0; i < rowprops.length; i++ ) {
+        if (rowprops[i].row === rowid ) {
+            return rowprops[i];
+        }
+    }
+    return null;
+}
 // Проверяем - итоговая ли строка?
 function checkIsAggregatingdRow(rowid) {
     for (let i = 0; i < rowprops.length; i++ ) {
@@ -1167,6 +1193,16 @@ function checkIsAggregatedRowCell(rowid) {
     }
     return null;
 }
+// ПОлучаем свойства графы
+function getColumnProperties(colid) {
+    for (let i = 0; i < colprops.length; i++ ) {
+        if (colprops[i].column === colid) {
+            return colprops[i];
+        }
+    }
+    return null;
+}
+
 // Получение списка Id строк для подсчета итоговой строки
 function getAggregatedRows(aggregating_row) {
     for (let i = 0; i < rowprops.length; i++ ) {
@@ -1219,7 +1255,6 @@ function calculateAggregatingRowCell(rowid, colid) {
     }
     dgrid.jqxGrid('setcellvaluebyid', rowid, colid, value);
 }
-
 // расчет ячейки входящей в итоговую графу
 function calculateAggregatingColumnCell(rowid, colid) {
     let aggregated_columns = getAggregatedColumns(parseInt(colid));
@@ -1447,7 +1482,19 @@ let initTableMedstatExportButton = function() {
 
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (row, datafield, columntype, value) {
+
+    editedcell_column = datafield;
+    editedcell_value = value;
     let rowid = dgrid.jqxGrid('getrowid', row);
+    editedcell_row = parseInt(rowid);
+    if (autocalculateTotals) {
+        if (checkIsAggregatingdRow(editedcell_row)) {
+            return false;
+        }
+        if (checkIsAggregatingColumn(datafield)) {
+            return false;
+        }
+    }
     if (checkIsNotEditable(rowid, datafield)) {
         return false;
     }
@@ -1508,21 +1555,63 @@ let cellclass = function (row, columnfield, value, rowdata) {
             alerted_cell = '';
         }
     }
-    if (checkIsAggregatingdRow(rowdata.id)) {
-        rowaggregate = 'rowaggregate'
-    }
-    if (checkIsAggregatingColumn(columnfield)) {
-        columnaggregate = 'columnaggregate'
+    if (autocalculateTotals) {
+        if (checkIsAggregatingdRow(rowdata.id)) {
+            rowaggregate = 'rowaggregate'
+        }
+        if (checkIsAggregatingColumn(columnfield)) {
+            columnaggregate = 'columnaggregate'
+        }
     }
     return  alerted_cell + ' ' + invalid_cell + ' ' + rowaggregate + ' ' + columnaggregate + ' ' +  class_by_edited_row;
 };
+// Функция не нужна - оставим пока на всякий случай
 let validation = function(cell, value) {
-    //console.log(cell);
-    if (value < 0) {
-        return { result: false, message: 'Допускаются только положительные значения' };
+    let props = getColumnProperties(colid);
+    let cellrules = null;
+    if (props !== null && typeof props.validation !== 'undefined') {
+        cellrules = props.validation;
     }
-    return true;
+    for (let grkey in validationrules) {
+        let cellrule = overideRule(grkey, cellrules);
+        let vrule = cellrule ? cellrule  : validationrules[grkey];
+        if (!assetvrule(value, vrule.rule)) {
+            return { result: false, message: vrule.message };
+        }
+    }
+    return { result: true, message: 'Проверка значения ячейки произведена' };
 };
+
+function validateCell(rowid, colid, value) {
+    let props = getColumnProperties(colid);
+    let cellrules = null;
+    if (props !== null && typeof props.validation !== 'undefined') {
+        cellrules = props.validation;
+    }
+    for (let grkey in validationrules) {
+        let cellrule = overideRule(grkey, cellrules);
+        let vrule = cellrule ? cellrule  : validationrules[grkey];
+        if (!assetvrule(value, vrule.rule)) {
+            return { result: false, message: vrule.message };
+        }
+    }
+    return { result: true, message: 'Проверка значения ячейки произведена' };
+}
+
+function overideRule(rule, cellrules) {
+    for (let key in cellrules) {
+        if (key === rule) {
+            return cellrules[key];
+        }
+    }
+    return false;
+}
+
+function assetvrule(value, rule) {
+    //console.log(eval(value + ' ' + rule));
+    return rule === null ? true : eval(value + ' ' + rule);
+}
+
 // Пояснялки названий столбцов
 let tooltiprenderer = function (element) {
     $(element).jqxTooltip({position: 'mouse', content: $(element).text() });
