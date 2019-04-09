@@ -152,17 +152,17 @@
 
 @push('loadcss')
     @if(config('medinfo.ssl_connection'))
-        <link href="{{ secure_asset('/css/medinfodocuments.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ secure_asset('/css/medinfodocuments.css?v=001') }}" rel="stylesheet" type="text/css" />
     @else
-        <link href="{{ asset('/css/medinfodocuments.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('/css/medinfodocuments.css?v=001') }}" rel="stylesheet" type="text/css" />
     @endif
 @endpush
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=180') }}"></script>
+        <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/documentdashboard.js?v=180') }}"></script>
+        <script src="{{ asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @endif
 @endpush
 

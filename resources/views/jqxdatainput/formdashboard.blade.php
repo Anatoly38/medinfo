@@ -54,9 +54,9 @@
 
 @push('loadcss')
     @if(config('medinfo.ssl_connection'))
-        <link href="{{ secure_asset('/css/medinfoeditform.css?v=016') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ secure_asset('/css/medinfoeditform.css?v=017') }}" rel="stylesheet" type="text/css" />
     @else
-        <link href="{{ asset('/css/medinfoeditform.css?v=016') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('/css/medinfoeditform.css?v=017') }}" rel="stylesheet" type="text/css" />
     @endif
 @endpush('loadcss')
 

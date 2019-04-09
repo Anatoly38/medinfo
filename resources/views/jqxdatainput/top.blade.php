@@ -42,7 +42,6 @@
                     <div id="messageFeed"></div>
                 </div>
             </li>
-
         </ul>
     </div>
 </nav>
