@@ -310,11 +310,8 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Рабочий стол - Первичный отчетный документ, ввод данных, журнал изменений
     Route::get('datainput/formdashboard/{document}', 'StatDataInput\FormDashboardController@index');
-
     Route::get('datainput/formdashboard_v2/{document}', 'StatDataInput\FormDashboardController@index_v2');
-
     Route::get('datainput/fetchtableprops/{album}/{table}', 'StatDataInput\FormDashboardController@fetchDataForDataGrid');
-
     Route::get('datainput/fetchvalues/{document}/{album}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
     Route::post('datainput/excelupload/{document}/{table}/{only}', 'ImportExport\ImportDataFromExcelController@importData');

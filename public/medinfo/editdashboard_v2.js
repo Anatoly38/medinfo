@@ -1,5 +1,4 @@
 /* Версия 2. 22.03.2019 */
-
 let fetchvalues_url = function() {
     return source_url + current_table;
 };
@@ -9,7 +8,6 @@ let initDgridSize = function () {
 let initSplitterSize = function () {
     return initialViewport - topOffset2;
 };
-
 let onResizeEventLitener = function () {
     $(window).resize(function() {
         dgrid.jqxGrid({ height: $(window).height()-topOffset1 });
@@ -639,7 +637,6 @@ let markTableValid = function (id) {
         delete invalidTables[index];
     }
 };
-
 let gettableprotocol = function (data, status, xhr) {
     let protocol_wrapper;
     let header;
@@ -727,7 +724,6 @@ let gettableprotocol = function (data, status, xhr) {
 let tabledataexport = function(table_id) {
     window.open(tableexport_url + table_id);
 };
-
 let initdatasources = function() {
     form_table_source = {
         dataType: "json",
@@ -749,8 +745,8 @@ let initdatasources = function() {
 // Получение читабельных координат ячейки - код строки, индекс графы
 let getreadablecelladress = function(row, column) {
     let row_code = dgrid.jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
-    let column_index = dgrid.jqxGrid('getcolumnproperty', column, 'text');
-    return { row: row_code, column: column_index};
+    let column_code = dgrid.jqxGrid('getcolumnproperty', column, 'text');
+    return { row: row_code, column: column_code};
 };
 // Возвращает данные для состава свода по медицинским организациям и движения по периодам
 let fetchcelllayer = function(row, column) {
@@ -971,13 +967,11 @@ let initdatagrid = function() {
                     return false;
                 }
                 let value = rowdata[editedcell_column];
-
 /*                let cellvalidation = validateCell(rowid, editedcell_column, value);
                 if (!cellvalidation.result) {
                     dgrid.jqxGrid('showvalidationpopup', 5, editedcell_column, "Invalid Value");
                     return false;
                 }*/
-
                 let oldvalue;
 
                 if (typeof editedcell_value !== 'undefined') {
@@ -1057,19 +1051,11 @@ let initdatagrid = function() {
             columns: columns,
             columngroups: columngroups
         });
-/*    dgrid.on('cellbeginedit', function (event)
-    {
-
-    });*/
-
-    //dgrid.on('cellvaluechanged', simpleSaving);
-
     dgrid.on("bindingcomplete", function (event) {
         dgrid.jqxGrid('focus');
         dgrid.jqxGrid({ 'keyboardnavigation': true  });
         dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
     });
-
     dgrid.on('cellselect', cellSelecting);
 };
 
@@ -1243,8 +1229,7 @@ function getAggregatedColumns(aggregating_column) {
     }
     return null;
 }
-
-// расчет ячейки входящей в итоговую строку
+// Расчет ячейки входящей в итоговую строку
 function calculateAggregatingRowCell(rowid, colid) {
     let aggregated_rows = getAggregatedRows(parseInt(rowid));
     let value = 0;
@@ -1255,7 +1240,7 @@ function calculateAggregatingRowCell(rowid, colid) {
     }
     dgrid.jqxGrid('setcellvaluebyid', rowid, colid, value);
 }
-// расчет ячейки входящей в итоговую графу
+// Расчет ячейки входящей в итоговую графу
 function calculateAggregatingColumnCell(rowid, colid) {
     let aggregated_columns = getAggregatedColumns(parseInt(colid));
     //console.log(aggregated_columns);
@@ -1567,7 +1552,7 @@ let cellclass = function (row, columnfield, value, rowdata) {
 };
 // Функция не нужна - оставим пока на всякий случай
 let validation = function(cell, value) {
-    let props = getColumnProperties(colid);
+    let props = getColumnProperties(cell.column);
     let cellrules = null;
     if (props !== null && typeof props.validation !== 'undefined') {
         cellrules = props.validation;

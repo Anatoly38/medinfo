@@ -197,6 +197,7 @@ showColumnProperties = function(column) {
         $("#IsAggregatedColumn").prop('checked', false);
         $("#aggregatedColumnElements").hide();
         columnids = '';
+        $("#AllowNegatives").prop('checked', false);
         return false;
     }
     if (props.aggregated_columns instanceof Array) {
@@ -213,6 +214,15 @@ showColumnProperties = function(column) {
         $("#IsAggregatedColumn").prop('checked', false);
         $("#aggregatedColumnElements").hide();
         columnids = '';
+    }
+    if (props.validation.hasOwnProperty('disablenegatives')) {
+        if (props.validation.disablenegatives.rule === null) {
+            $("#AllowNegatives").prop('checked', true);
+        } else {
+            $("#AllowNegatives").prop('checked', false);
+        }
+    } else {
+        $("#AllowNegatives").prop('checked', false);
     }
     return true;
 };

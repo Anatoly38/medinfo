@@ -9,7 +9,8 @@ let changeaudition_url = 'datainput/changeaudition';
 //let docmessagesend_url = 'datainput/sendmessage';
 let docauditions_url = 'datainput/fetchauditions?';
 let aggrsource_url = 'datainput/fetchaggregates?';
-let edit_form_url = 'datainput/formdashboard';
+//let edit_form_url = 'datainput/formdashboard/';
+let edit_form_url = 'datainput/formdashboard_v2/'; // Новая версия рабочего стола для редактирования отчетного документа
 let edit_aggregate_url = 'datainput/aggregatedashboard';
 let edit_consolidate_url = 'datainput/consolidatedashboard';
 let aggregatedata_url = "/datainput/aggregatedata/";
@@ -453,7 +454,7 @@ renderdoctoolbar = function (toolbar) {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         if (rowindex !== -1 && typeof rowindex !== 'undefined') {
             let document_id = dgrid.jqxGrid('getrowid', rowindex);
-            let editWindow = window.open(edit_form_url + '/' + document_id);
+            let editWindow = window.open(edit_form_url + document_id);
         }
     });
     changestatus.click(function () {
@@ -1098,7 +1099,7 @@ initdocumentstabs = function() {
         let args = event.args;
         let rowindex = args.rowindex;
         let document_id = dgrid.jqxGrid('getrowid', rowindex);
-        let editWindow = window.open(edit_form_url + '/' + document_id);
+        let editWindow = window.open(edit_form_url + document_id);
     });
     agrid.jqxGrid(
         {
