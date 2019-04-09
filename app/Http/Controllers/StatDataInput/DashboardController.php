@@ -146,7 +146,7 @@ class DashboardController extends Controller
 
     public function dashboardView()
     {
-        return property_exists($this, 'dashboardView') ? $this->dashboardView : 'jqxdatainput.formdashboard';
+        return property_exists($this, 'dashboardView') ? $this->dashboardView : 'jqxdatainput.formdashboard_v2';
     }
 
     //Описательная информация для построения гридов динамически

@@ -129,7 +129,7 @@ function setProtocol(result) {
         }
         let row = $('<tr class="' + danger + ' ' + muted + '"></tr>');
         row.append('<td>' + result[i].doc_id + ' ' + nodata +
-            '</td><td><a href="/datainput/formdashboard/' + result[i].doc_id + '" target="_blank">' + result[i].unit_name +
+            '</td><td><a href="/datainput/formdashboard_v2/' + result[i].doc_id + '" target="_blank">' + result[i].unit_name +
             '</a></td><td> ' + correct +
             '</td><td> ' + checklist + '</td>');
         table.append(row);

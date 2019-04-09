@@ -756,7 +756,7 @@ let fetchcelllayer = function(row, column) {
     $.getJSON( fetch_url, function( data ) {
         $.each(data.layers, function (i, layer) {
             let row = $("<tr class='rowdocument' id='"+ layer.doc_id +"'><td>" + layer.unit_code
-                + "</td><td><a href='/datainput/formdashboard/" + layer.doc_id +"' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
+                + "</td><td><a href='/datainput/formdashboard_v2/" + layer.doc_id +"' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
                 + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value
                 + "</td></tr>");
             layer_container.append(row);
@@ -777,7 +777,6 @@ let fetchconsolidationprotocol = function(row, column) {
     $.getJSON( fetch_url, function( data ) {
         //console.log(data);
         $.each(data, function (i, layer) {
-            //+ "<td><a href='/datainput/formdashboard/" + layer.unit_id + "' target='_blank' title='Открыть для редактирования'>" + layer.unit_name + "</a>"
             let row = $("<tr class='rowdocument' ><td>" + layer.unit_code + "</td>"
                 + "<td>" + layer.unit_name + "</td><td style='min-width: 40px' class='text-primary text-right'>" + layer.value + "</td></tr>");
             layer_container.append(row);

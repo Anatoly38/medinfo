@@ -53,7 +53,7 @@ class NotificationPusherListener
 
         $data['message'] = "<p class='text-warning'><strong>Изменен статус отчетного документа (Id {$document->id})</strong></p>";
         $data['worker'] =  "<p class='text-info small'>Исполнитель: {$worker->description}</p>";
-        $data['form'] =  "<p class='text-info small'><a href='{$baseurl}/datainput/formdashboard/{$document->id}'>Отчетная форма:
+        $data['form'] =  "<p class='text-info small'><a href='{$baseurl}/datainput/formdashboard_v2/{$document->id}'>Отчетная форма:
             ({$document->form->form_code}) {$document->form->form_name}</a></p>";
         $data['unit'] =  "<p class='text-info small'>Медицинская организация: {$document->unit->unit_name}</p>";
         $data['period'] =  "<p class='text-info small'>Отчетный период: {$document->period->name}</p>";

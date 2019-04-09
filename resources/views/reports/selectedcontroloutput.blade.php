@@ -13,7 +13,7 @@
                     @if (!$res['valid'])
                     <tr>
                         <td width="400">
-                            <a href="http://medinfo.miac-io.ru/datainput/formdashboard/{{ $res['document'] }}" target="_blank">{{ $res['unit_code'] }} {{ $res['unit_name']  }}</a>
+                            <a href="{{ config('app.url') }}/datainput/formdashboard_v2/{{ $res['document'] }}" target="_blank">{{ $res['unit_code'] }} {{ $res['unit_name']  }}</a>
                         </td>
                         <td>
 

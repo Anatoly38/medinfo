@@ -1,4 +1,4 @@
-Раздел документа <a href="{{ config('app.url') }}/datainput/formdashboard/{{ $document->id }}">№{{ $document->id }} по Форме №{{ $document->form->form_code }}</a>
+Раздел документа <a href="{{ config('app.url') }}/datainput/formdashboard_v2/{{ $document->id }}">№{{ $document->id }} по Форме №{{ $document->form->form_code }}</a>
 "{{ $formsection->section_name }}" {{ $action }}
 <p>Учреждение: {{ $document->unit->unit_name }}</p>
 <p>Исполнитель: {{ $worker->description }}</p>

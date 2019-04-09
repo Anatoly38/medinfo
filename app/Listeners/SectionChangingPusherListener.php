@@ -52,7 +52,7 @@ class SectionChangingPusherListener
             $app_id,
             $options
         );
-        $url = config('app.url') . '/datainput/formdashboard/' . $document->id;
+        $url = config('app.url') . '/datainput/formdashboard_v2/' . $document->id;
         $data['document_id'] = $document->id;
         $data['worker_id'] = $worker->id;
         $data['to_other'] = true;

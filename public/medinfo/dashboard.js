@@ -288,7 +288,7 @@ function getLatestMessages() {
                 let dpanel = $('<div class="row '+ mark + '" style="margin:0; border-bottom-color:#00a7d0; border-bottom-style:dotted; border-bottom-width: 1px"></div>');
                 let dcontent = '<div class="col-md-1"></div>' +
                     '<div class="col-md-7"><p class="text small"><i class="fa fa-map-o"></i> ' +
-                    '<a href="/datainput/formdashboard/'+ m[i].document.id + '" target="_blank">Форма ' + m[i].document.form.form_code + ' ' + m[i].document.unit.unit_name +'</a>' +
+                    '<a href="/datainput/formdashboard_v2/'+ m[i].document.id + '" target="_blank">Форма ' + m[i].document.form.form_code + ' ' + m[i].document.unit.unit_name +'</a>' +
                     '</p></div>' +
                     '<div class="col-md-4"><p class="text small"><i class="fa fa-clock-o"></i> ' + formatDate(m[i].created_at) + '</p></div>';
                 mpanel.append(mcontent);

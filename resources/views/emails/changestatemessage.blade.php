@@ -1,4 +1,4 @@
-Статус документа <a href="{{ config('app.url') }}/datainput/formdashboard/{{ $document->id }}">№{{ $document->id }} по Форме №{{ $document->form->form_code }}</a>
+Статус документа <a href="{{ config('app.url') }}/datainput/formdashboard_v2/{{ $document->id }}">№{{ $document->id }} по Форме №{{ $document->form->form_code }}</a>
 изменен на "{{ $newlabel }}"
 <p>Учреждение: {{ $document->unit->unit_name }}</p>
 <p>Исполнитель: {{ $worker->description }}</p>

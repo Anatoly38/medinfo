@@ -511,7 +511,7 @@ linkrenderer = function (row, column, value) {
     let html = "<div class='jqx-grid-cell-left-align' style='margin-top: 6px'>";
     switch (rowdata.dtype) {
         case 1 :
-            html += "<a href='/datainput/formdashboard/" + value + "' target='_blank' title='Открыть для редактирования'>" + value + "</a></div>";
+            html += "<a href='/datainput/formdashboard_v2/" + value + "' target='_blank' title='Открыть для редактирования'>" + value + "</a></div>";
             break;
         case 2 :
         case 4 :
