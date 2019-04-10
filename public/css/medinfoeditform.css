@@ -33,7 +33,7 @@
 }
 .columnaggregate:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
     color: black;
-    background-color: #ffe4e8;
+    background-color: #ceeaff;
 }
 
 .editedRow {
