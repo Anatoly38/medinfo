@@ -440,10 +440,8 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
         return false;
     } else {
         $.each(tableprotocol.rules, function (rule_idx, rule) {
-            //console.log(rule);
             if (!rule.no_rules) {
                 $.each(rule.iterations, function (iteration_idx, iteration) {
-                    //console.log(iteration.cells, column_id, row_id);
                     if (cellfound(iteration.cells, column_id, row_id)) {
                         cell_protocol.push({ rule: rule, result: iteration });
                     }
@@ -454,12 +452,11 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
     return cell_protocol;
 }
 function cellfound(cells, column_id, row_id) {
-    $.each(cells, function(cell_idx, cell) {
-        //console.log(cell.column == column_id && cell.row == row_id);
-        if (cell.column === column_id && cell.row === parseInt(row_id)) {
+    for (let i = 0; cells.length > i; i++) {
+        if (cells[i].column === column_id && cells[i].row === parseInt(row_id)) {
             return true;
         }
-    });
+    }
     return false;
 }
 // Поиск таблицы по индексу
@@ -770,7 +767,6 @@ let fetchcelllayer = function(row, column) {
     });
     return { layers: layer_container, periods: period_container} ;
 };
-
 let fetchconsolidationprotocol = function(row, column) {
     let layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
     let fetch_url = cons_protocol_url + row + '/' + column;
@@ -784,7 +780,6 @@ let fetchconsolidationprotocol = function(row, column) {
     });
     return { layers: layer_container } ;
 };
-
 // Инициализация перечня таблиц текущей формы
 let inittablelist = function() {
     fgrid.jqxDataTable({
@@ -829,7 +824,6 @@ let inittablelist = function() {
         fetchDataForDataGrid(event.args.row.id);
     });
 };
-
 function fetchDataForDataGrid(tableid) {
     $.get(tableprops_url + tableid, function (data) {
         //datafields = $.parseJSON(data.datafields);
@@ -856,7 +850,6 @@ function fetchDataForDataGrid(tableid) {
         renderDgrid();
     });
 }
-
 function renderColumnFunctions() {
     $.each(columns, function(column, properties) {
         if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
@@ -883,7 +876,6 @@ function renderColumnFunctions() {
             properties.rendered = tooltiprenderer;
     });
 }
-
 function renderDgrid() {
     dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
     dgrid.jqxGrid('clearselection');
@@ -899,7 +891,6 @@ function renderDgrid() {
     tdropdown.jqxDropDownButton('close');
     splitter.jqxSplitter('collapse');
 }
-
 // Инициализация вкладки протокола контроля формы
 let initcheckformtab = function() {
     //$("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
@@ -951,7 +942,6 @@ let initfilters = function() {
         dgrid.jqxGrid('applyfilters');
     }
 };
-
 let initdatagrid = function() {
     tablesource =
         {
@@ -1057,7 +1047,6 @@ let initdatagrid = function() {
     });
     dgrid.on('cellselect', cellSelecting);
 };
-
 // Действия при выборе ячейки
 function cellSelecting(event) {
     let panels = $('#formEditLayout').jqxSplitter('panels');
@@ -1089,8 +1078,10 @@ function cellSelecting(event) {
 function cellProtocolRender(row_id, column_id) {
     let cell_protocol_panel = $("#cellprotocol");
     cell_protocol_panel.html('');
-    if (current_protocol_source.length > 0 && typeof current_protocol_source[current_table_code] === 'object') {
+    if (typeof current_protocol_source[current_table_code] === 'object') {
+
         let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
+        console.log(cellprotocol);
         let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
         if ( cellprotocol.length > 0) {
             header = $("<div class='alert alert-info'><p>Количество заданых правил контроля для данной ячейки - " + count_of_rules + " </p></div>");
