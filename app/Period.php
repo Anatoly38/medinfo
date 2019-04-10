@@ -40,7 +40,7 @@ class Period extends Model
     public function scopePreviousAnnual($query, $current_period)
     {
         $previous_annual_pattern = self::$period_cycles[$current_period->pattern_id];
-        $previous_annual_enddate = $current_period->end_date->subYear(); // Функция Carbon, вычитающая квартал из текущей даты
+        $previous_annual_enddate = $current_period->end_date->subYear(); // Функция Carbon, вычитающая год из текущей даты
         return $query
             ->where('end_date', $previous_annual_enddate)
             ->where('pattern_id', $previous_annual_pattern);
@@ -49,7 +49,7 @@ class Period extends Model
     public function scopePreviousSemiannual($query, $current_period)
     {
         $previous_semiannual_pattern = self::$period_cycles[$current_period->pattern_id];
-        $previous_semiannual_enddate = $current_period->end_date->subYear(); // Функция Carbon, вычитающая квартал из текущей даты
+        $previous_semiannual_enddate = $current_period->end_date->subYear(); // Функция Carbon, вычитающая год из текущей даты
         return $query
             ->where('end_date', $previous_semiannual_enddate)
             ->where('pattern_id', $previous_semiannual_pattern);

@@ -181,7 +181,6 @@ initColumnList = function() {
             $("#decimal_count").val(row.decimal_count);
             $("#column_medstat_code").val(row.medstat_code);
             $("#column_medstatnsk_id").val(row.medstatnsk_id);
-            //row.excluded > 0 ? $("#excludedColumn").val(true) : $("#excludedColumn").val(false);
             row.excluded > 0 ? $("#excludedColumn").prop('checked', true) : $("#excludedColumn").prop('checked', false);
             showColumnProperties(row);
         }

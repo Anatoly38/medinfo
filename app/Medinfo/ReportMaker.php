@@ -245,7 +245,11 @@ class ReportMaker
                 //dd($this->population_form);
                 $document = Document::OfTUPF( $document_type, $unit->id, $this->period->id, $this->population_form->id)->first();
                 if (!$document) {
-                    throw new \Exception("Форма \"(100) Население\" не найдена");
+                    $previous_annual = Period::PreviousYear($this->period->year)->first();
+                    $document = Document::OfTUPF( $document_type, $unit->id, $previous_annual->id, $this->population_form->id)->first();
+                    if (!$document) {
+                        throw new \Exception("Форма \"(100) Население\" не найдена");
+                    }
                 }
                 $cell = Cell::OfDRC(
                     $document->id,
