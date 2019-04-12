@@ -19,7 +19,6 @@ class CreatePeriodsTable extends Migration
             $table->date('begin_date')->index();
             $table->date('end_date')->index();
             $table->integer('pattern_id')->index();
-            $table->char('medinfo_id', 8)->nullable()->index();
             $table->timestamps();
             $table->unique(['year', 'pattern_id']);
         });

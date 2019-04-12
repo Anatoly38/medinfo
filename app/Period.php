@@ -13,7 +13,7 @@ class Period extends Model
         6 => 9, 7 => 6, 8 => 7, 9 => 8, // квартальные накопительные
         10 => 11, 11 => 10, // полугодовые
     ];
-    protected $fillable = ['name', 'begin_date', 'end_date', 'pattern_id', 'medinfo_id'];
+    protected $fillable = ['name', 'year', 'begin_date', 'end_date', 'pattern_id', ];
     protected $dates = ['begin_date', 'end_date',];
 
     public function periodpattern()

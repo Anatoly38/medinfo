@@ -40,14 +40,17 @@ let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! json_encode($noteditablecells) !!};
 let edit_permission = {{ $editpermission ? 'true' : 'false' }};
 let control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
-let datafields = $.parseJSON('{!!  $datafields !!}');
-let calculatedfields = $.parseJSON('{!!  $calcfields !!}');
-let rowprops = $.parseJSON('{!!  $rowprops !!}');
-let colprops = $.parseJSON('{!!  $colprops !!}');
-let validationrules = $.parseJSON('{!!  $validationrules !!}');
-let data_for_table = $.parseJSON('{!!  $tableproperties !!}');
-let columns = $.parseJSON('{!!  $columns !!}');
-let columngroups = $.parseJSON('{!!  $columngroups !!}');
+let datafields = {!!  $datafields !!};
+let calculatedfields = {!!  $calcfields !!};
+let rowprops = {!!  $rowprops !!};
+let colprops = {!!  $colprops !!};
+let validationrules = {!!  $validationrules !!};
+//let data_for_table = $.parseJSON('{!!  $tableproperties !!}');
+//let data_for_table = JSON.parse('{!!  $tableproperties !!}');
+let data_for_table = {!!  $tableproperties !!};
+//let columns = $.parseJSON('{!!  $columns !!}');
+let columns = {!!  $columns !!};
+let columngroups = {!!  $columngroups !!};
 let firstdatacolumn = '{{ $firstdatacolumn }}';
 let there_is_calculated = calculatedfields.length > 0;
 let current_row_name_datafield = columns[1].dataField;
@@ -77,7 +80,7 @@ $.each(columngroups, function(group, properties) {
     if (typeof properties.rendered !== 'undefined')
         properties.rendered = tooltiprenderer;
 });
-let form_tables_data = $.parseJSON('{!! $tablelist !!}');
+let form_tables_data = {!! $tablelist !!};
 
 let protocol_control_created = false;
 let forcereload = 0; // При наличии загружается кэшированный протокол контроля

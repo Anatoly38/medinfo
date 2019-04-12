@@ -26,7 +26,6 @@ initdatasources = function() {
             { name: 'end_date', type: 'string' },
             { name: 'pattern_id', type: 'int' },
             { name: 'pattern', map: 'periodpattern>name', type: 'string' },
-            { name: 'medinfo_id', type: 'string' }
         ],
         id: 'id',
         url: 'fetchperiods',
@@ -125,7 +124,6 @@ initperiodlist = function() {
                 { text: 'Начало', datafield: 'begin_date', width: '100px' },
                 { text: 'Окончание', datafield: 'end_date', width: '100px' },
                 { text: 'Шаблон', datafield: 'pattern', width: '250px'  },
-                { text: 'Id Мединфо', datafield: 'medinfo_id', width: '100px' }
             ]
         });
     plist.on('rowselect', function (event) {
@@ -134,13 +132,13 @@ initperiodlist = function() {
         $("#begin_date").val(row.begin_date);
         $("#end_date").val(row.end_date);
         $("#pattern_id").val(row.pattern_id);
-        $("#medinfo_id").val(row.medinfo_id);
+        //$("#medinfo_id").val(row.medinfo_id);
     });
 };
 initformactions = function() {
     $("#insert").click(function () {
         var data = "&name=" + $("#name").val() + "&begin_date=" + $("#begin_date").val() + "&end_date=" + $("#end_date").val() +
-            "&pattern_id=" + $("#pattern_id").val() + "&medinfo_id=" + $("#medinfo_id").val();
+            "&pattern_id=" + $("#pattern_id").val();
         $.ajax({
             dataType: 'json',
             url: '/admin/periods/create',

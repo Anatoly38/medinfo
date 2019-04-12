@@ -175,7 +175,10 @@ class DashboardController extends Controller
 
     protected function composeDataForTable(Table $table, Album $album)
     {
-        $table_props = [ 'id' => $table->id , 'code' => $table->table_code, 'name' => $table->table_name, 'index' => $table->table_index ];
+        $table_props = [ "id" => $table->id , "code" => $table->table_code, "name" => $table->table_name, "index" => $table->table_index, ];
+        //$table_props = [ "id" => $table->id , "code" => $table->table_code, "name" => 'asdfasdfasdf ', "index" => $table->table_index, ];
+        //dd(json_encode($table_props));
+        //dd($table->table_name);
         $datafortable = TableEditing::fetchDataForTableRenedering($table, $album);
         $composedata['tableproperties'] = json_encode($table_props);
         //$composedata['datafields'] = json_encode($datafortable['datafields']);

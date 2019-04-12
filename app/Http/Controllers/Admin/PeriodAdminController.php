@@ -108,7 +108,6 @@ class PeriodAdminController extends Controller
         $period->begin_date = $request->begin_date;
         $period->end_date = $request->end_date;
         $period->pattern_id = $request->pattern_id;
-        $period->medinfo_id = $request->medinfo_id;
         $result = [];
         try {
             $period->save();
