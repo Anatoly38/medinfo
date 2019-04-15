@@ -48,7 +48,6 @@ let validationrules = {!!  $validationrules !!};
 //let data_for_table = $.parseJSON('{!!  $tableproperties !!}');
 //let data_for_table = JSON.parse('{!!  $tableproperties !!}');
 let data_for_table = {!!  $tableproperties !!};
-//let columns = $.parseJSON('{!!  $columns !!}');
 let columns = {!!  $columns !!};
 let columngroups = {!!  $columngroups !!};
 let firstdatacolumn = '{{ $firstdatacolumn }}';
@@ -58,7 +57,6 @@ let current_row_number_datafield = columns[2].dataField;
 let editedcell_row = 0;
 let editedcell_column = 0;
 let editedcell_value = null;
-
 $.each(columns, function(column, properties) {
     if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
         properties.cellclassname = cellclass;
@@ -81,7 +79,6 @@ $.each(columngroups, function(group, properties) {
         properties.rendered = tooltiprenderer;
 });
 let form_tables_data = {!! $tablelist !!};
-
 let protocol_control_created = false;
 let forcereload = 0; // При наличии загружается кэшированный протокол контроля
 let invalidTables = [];
@@ -91,7 +88,6 @@ let invalidCells = [];
 let show_table_errors_only = true;
 let marking_mode = 'control';
 let current_edited_cell = {};
-// JSON объект - протокол контроля формы
 let current_protocol_source = [];
 let source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
 let tableprops_url = "/datainput/fetchtableprops/" + default_album + "/";

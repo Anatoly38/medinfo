@@ -88,12 +88,14 @@ class BriefReferenceMaker extends Controller
             $grouping_row = $rows[0];
             $el_name = $grouping_row->row_code . ' "' . $grouping_row->row_name . '"';
             foreach ($columns as $column) {
-                $column_titles[] = $column->column_index . ': ' . $column->column_name;
+                //$column_titles[] = $column->column_index . ': ' . $column->column_name;
+                $column_titles[] = $column->column_code . ': ' . $column->column_name;
             }
         } elseif ($mode == 2) {
             $group_title = 'По графе: ';
             $grouping_column = $columns[0];
-            $el_name = $grouping_column->column_index . ' "' . $grouping_column->column_name . '"';
+            //$el_name = $grouping_column->column_index . ' "' . $grouping_column->column_name . '"';
+            $el_name = $grouping_column->column_code . ' "' . $grouping_column->column_name . '"';
             foreach ($rows as $row) {
                 $column_titles[] = $row->row_code . ': '  . $row->row_name;
             }
@@ -197,7 +199,8 @@ class BriefReferenceMaker extends Controller
                 if ($mode == 1) {
                     $i = 0;
                     foreach ($columns as $column) {
-                        $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $rows[0]->row_code, $column->column_index);
+                        //$value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $rows[0]->row_code, $column->column_index);
+                        $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $rows[0]->row_code, $column->column_code);
                         $values[$unit->id][$i] = (float)$value;
                         isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
@@ -205,7 +208,8 @@ class BriefReferenceMaker extends Controller
                 } elseif ($mode == 2) {
                     $i = 0;
                     foreach ($rows as $row) {
-                        $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $row->row_code, $columns[0]->column_index);
+                        //$value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $row->row_code, $columns[0]->column_index);
+                        $value = $rcontroller->getAggregatedValue($unit, $form, $table->table_code, $row->row_code, $columns[0]->column_code);
                         $values[$unit->id][$i] = (float)$value;
                         isset($values[999999][$i]) ? $values[999999][$i] += (float)$value : $values[999999][$i] = (float)$value;
                         $i++;
