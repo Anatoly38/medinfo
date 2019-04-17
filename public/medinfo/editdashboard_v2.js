@@ -968,8 +968,8 @@ let initdatagrid = function() {
                 } else {
                     oldvalue = null;
                 }
-                let aggregatingrow = checkIsAggregatedRowCell(parseInt(rowid));
-                let aggregatingcolumn = checkIsAggregatedColumnCell(parseInt(editedcell_column));
+                let aggregatingrows = checkIsAggregatedRowCell(parseInt(rowid));
+                let aggregatingcolumns = checkIsAggregatedColumnCell(parseInt(editedcell_column));
 
                 current_edited_cell.t = current_table;
                 current_edited_cell.r = rowdata.boundindex;
@@ -1002,11 +1002,16 @@ let initdatagrid = function() {
                             }
                         }
                         if (autocalculateTotals) {
-                            if (aggregatingrow) {
-                                calculateAggregatingRowCell(aggregatingrow, editedcell_column);
+                            if (aggregatingrows.length > 0) {
+                                for (let i = 0; aggregatingrows.length > i; i++) {
+                                    calculateAggregatingRowCell(aggregatingrows[i], editedcell_column);
+                                }
+
                             }
-                            if (aggregatingcolumn) {
-                                calculateAggregatingColumnCell(rowid, aggregatingcolumn);
+                            if (aggregatingcolumns.length > 0) {
+                                for (let i = 0; aggregatingcolumns.length > i; i++) {
+                                    calculateAggregatingColumnCell(rowid, aggregatingcolumns[i]);
+                                }
                             }
                         }
                     },
@@ -1159,15 +1164,17 @@ function checkIsAggregatingdRow(rowid) {
 }
 // Проверяем участвует ли ячейка при расчете итоговой строки
 function checkIsAggregatedRowCell(rowid) {
+    let aggregatedrows = [];
     for (let i = 0; i < rowprops.length; i++ ) {
         let rowcollection = typeof rowprops[i].aggregated_rows !== 'undefined' ? rowprops[i].aggregated_rows : [];
         for (let j = 0; j < rowcollection.length; j++) {
             if (rowcollection[j] === rowid ) {
-                return rowprops[i].row;
+                //return rowprops[i].row;
+                aggregatedrows.push(rowprops[i].row);
             }
         }
     }
-    return null;
+    return aggregatedrows;
 }
 // ПОлучаем свойства графы
 function getColumnProperties(colid) {
@@ -1178,7 +1185,6 @@ function getColumnProperties(colid) {
     }
     return null;
 }
-
 // Получение списка Id строк для подсчета итоговой строки
 function getAggregatedRows(aggregating_row) {
     for (let i = 0; i < rowprops.length; i++ ) {
@@ -1200,15 +1206,18 @@ function checkIsAggregatingColumn(colid) {
 // Проверяем участвует ли ячейка при расчете итоговой графы
 function checkIsAggregatedColumnCell(colid) {
     //console.log(colid);
+    let aggregatedcolumns = [];
     for (let i = 0; i < colprops.length; i++ ) {
         let colcollection = typeof colprops[i].aggregated_columns !== 'undefined' ? colprops[i].aggregated_columns : [];
         for (let j = 0; j < colcollection.length; j++) {
             if (colcollection[j] === colid ) {
-                return colprops[i].column;
+                //return colprops[i].column;
+                aggregatedcolumns.push(colprops[i].column);
             }
         }
     }
-    return null;
+    //return null;
+    return aggregatedcolumns;
 }
 // Получение списка Id граф для подсчета итоговой графы
 function getAggregatedColumns(aggregating_column) {
