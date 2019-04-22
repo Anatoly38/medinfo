@@ -452,6 +452,9 @@ function selectedcell_protocol(form_protocol, table_id, table_code, column_id, r
     return cell_protocol;
 }
 function cellfound(cells, column_id, row_id) {
+    if (typeof cells === 'undefined') {
+        return false;
+    }
     for (let i = 0; cells.length > i; i++) {
         if (cells[i].column === column_id && cells[i].row === parseInt(row_id)) {
             return true;

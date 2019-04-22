@@ -66,9 +66,10 @@ return [
     | to any of the locales which will be supported by the application.
     |
     */
-
+    'locale' => env('APP_LOCALE', 'en'),
+    'lc_all' => env('APP_LC_ALL', 'en_US.UTF-8'), // Pay attention to the locale name!
     //'locale' => 'en',
-    'locale' => 'ru',
+    //'locale' => 'ru',
 
     /*
     |--------------------------------------------------------------------------

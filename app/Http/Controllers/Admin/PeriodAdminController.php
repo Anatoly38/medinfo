@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Period;
 use App\PeriodPattern;
 use App\Document;
+use Carbon\Carbon;
 
 class PeriodAdminController extends Controller
 {
@@ -131,5 +133,63 @@ class PeriodAdminController extends Controller
         } else {
             return ['error' => 422, 'message' => 'Период Id ' . $id . ' содержит документы. Удаление невозможно.' ];
         }
+    }
+
+    public function testOfWeeks($year)
+    {
+        set_time_limit(10);
+        //setlocale(LC_TIME, 'ru-RU');
+        //Carbon::setLocale('ru');
+        $date = Carbon::parse($year . '-01-01');
+        //echo $date->localeMonth;
+        //echo  Carbon::getLocale();
+        //var_dump($date->addMonth()->startOfMonth()->format('Y-m-d'));
+        //var_dump($date->startOfWeek()->format('Y-m-d'));
+        //var_dump($en->endOfWeek()->format('Y-m-d'));
+        $w = 1;
+        $stack = [];
+        for ($i = 0 ; $i < 12 ; $i++) {
+            // Вывод названия месяца в локализованном виде
+            echo $date->formatLocalized('%B') . " -----------\n";
+            $endmonth = $date->copy()->endOfMonth();
+            $week = $date->copy()->startOfWeek();
+            while (true) {
+                $endOfMonth = false;
+                $startweek = $week->copy()->startOfWeek();
+                $endweek = $week->copy()->endOfWeek();
+                $breaked = '';
+                //var_dump($endmonth->eq($endweek));
+                switch (true) {
+                    case $startweek->month < $date->month || $startweek->year < $date->year :
+                        $breaked = ' Неполная неделя';
+                        $startweek->addWeek()->startOfMonth();
+                        break;
+                    case $endweek->month > $date->month || $endweek->year > $date->year :
+                        $endweek = $startweek->copy()->endOfMonth();
+                        $breaked = ' Неполная неделя';
+                        $endOfMonth = true;
+                        break;
+                    case $endmonth->eq($endweek) :
+                        $endOfMonth = true;
+                        break;
+                }
+
+                $stack[] = [$startweek, $endweek];
+
+                // Продолжительность недели, включая проследний день
+                $duration = $startweek->diff($endweek)->days + 1;
+                $breaked .= '(' . $duration . ')';
+                echo $w . ' ' . $startweek->format('Y-m-d') . ' - ' . $endweek->format('Y-m-d') . $breaked .  " \n";
+                $w++;
+                if ($endOfMonth) {
+                    break;
+                }
+
+                $week->addWeek();
+            }
+            $date->addMonth();
+        }
+        echo "-----------\n";
+        dd($stack);
     }
 }
