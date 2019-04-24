@@ -294,9 +294,11 @@ class DashboardController extends Controller
             $new = $request->value;
             //dd($new);
             $old = $request->oldvalue;
+            //dd($old);
             $casted_new_value = (float)$new;
             $casted_old_value = (float)$old;
-
+            //dd($casted_old_value);
+            //dd($casted_new_value);
             if ($casted_new_value === $casted_old_value) {
                 $data['cell_affected'] = false;
                 $data['comment'] = "Изменения не сохранены по причине того что старое и новое значение равны, либо по причине того, что значение null изменено на 0 (или наоборот).";

@@ -867,9 +867,9 @@ function renderColumnFunctions() {
         if (typeof properties.validation !== 'undefined') {
             properties.validation = validation;
         }
-        if (typeof properties.cellbeginedit !== 'undefined') {
-            properties.cellbeginedit = cellbeginedit;
-        }
+/*        if (typeof properties.cellbeginedit !== 'undefined') {
+            properties.cellbeginedit = cellbegineditByColumn;
+        }*/
         if (typeof properties.cellsrenderer !== 'undefined') {
             properties.cellsrenderer = cellsrenderer;
         }
@@ -954,6 +954,7 @@ let initdatagrid = function() {
             id: 'id',
             url: fetchvalues_url(),
             updaterow: function (rowid, rowdata) {
+                //console.log("Начало выполнения функции update row");
                 //console.log(rowdata);
                 if (checkIsNotEditable(rowid, editedcell_column)) {
                     return false;
@@ -1054,6 +1055,18 @@ let initdatagrid = function() {
         dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
     });
     dgrid.on('cellselect', cellSelecting);
+    dgrid.on('cellvaluechanged', function (event) {
+        //console.log("Событие смена значения ячейки");
+        //console.log(event);
+    });
+    dgrid.on('cellendedit', function (event)
+    {
+        //console.log("Событие завершение редактирования ячейки");
+        //console.log(event.args);
+
+    });
+    dgrid.on('cellbeginedit', cellbeginedit);
+
 };
 // Действия при выборе ячейки
 function cellSelecting(event) {
@@ -1468,8 +1481,13 @@ let initTableMedstatExportButton = function() {
 };
 
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
-let cellbeginedit = function (row, datafield, columntype, value) {
-
+//let cellbeginedit = function (row, datafield, columntype, value) {
+let cellbeginedit = function (event) {
+    let args = event.args;
+    //console.log(event);
+    let datafield = args.datafield;
+    let row = args.rowindex;
+    let value = args.value;
     editedcell_column = datafield;
     editedcell_value = value;
     let rowid = dgrid.jqxGrid('getrowid', row);
@@ -1486,6 +1504,8 @@ let cellbeginedit = function (row, datafield, columntype, value) {
         return false;
     }
 };
+// На всякий случай "заглушка", если нужно определить событие на редактирование отдельной графы
+let cellbegineditByColumn = function() { };
 
 let defaultEditor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });

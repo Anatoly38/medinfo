@@ -74,7 +74,7 @@ class TableEditing
                     'columngroup' => $col->id,
                     'filtertype' => 'number',
                     'cellclassname' => 'cellclass',
-                    'cellbeginedit' => 'cellbeginedit',
+                    //'cellbeginedit' => 'cellbegineditByColumn',
                     'initeditor' => $editor,
                     'validation' => 'validation'
                 );
