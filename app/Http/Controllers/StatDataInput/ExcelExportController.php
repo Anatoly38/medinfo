@@ -36,11 +36,10 @@ class ExcelExportController extends Controller
         $cols = $ret['cols'];
         //dd($data);
         $excel = Excel::create('Table' . $form->form_code . '_' . $table->table_code);
-        $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
+        $this->excelDataTableRender($excel, $form, $table, $cols, $data);
+/*        $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
             $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
-/*            $sheet->setColumnFormat(array(
-                'A:B' => '@',
-            ));*/
+            //$sheet->setColumnFormat(array( 'A:B' => '@', ));
             //$sheet->getColumnDimensionByColumn('C5:BZ5')->setAutoSize(false);
             //$sheet->getColumnDimensionByColumn('C5:BZ5')->setWidth('10');
             //$sheet->getColumnDimensionByColumn('B')->setAutoSize(false);
@@ -54,7 +53,7 @@ class ExcelExportController extends Controller
             //$sheet->getStyle(ExcelExport::getCellByRC(3, 2) . ':' . ExcelExport::getCellByRC(count($data)+3, 2))->setQuotePrefix(true);
             $sheet->getStyle(ExcelExport::getCellByRC(4, 2) . ':' . ExcelExport::getCellByRC(count($data)+5, 2))->getNumberFormat()
                 ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-        });
+        });*/
         $excel->export('xlsx');
     }
 
@@ -92,17 +91,40 @@ class ExcelExportController extends Controller
             $ret = ExcelExport::getTableDataForExport($document, $table);
             $data = $ret['data'];
             $cols = $ret['cols'];
-            $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
-                $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
+            $this->excelDataTableRender($excel, $form, $table, $cols, $data);
+/*            $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
+
+                $sheet->loadView('reports.datatable_excel_simple', compact('table', 'cols', 'data'));
+                $sheet->cell('A1', function($cell) {
+                    $cell->setFontSize(16);
+                });
+                $sheet->getStyle(ExcelExport::getCellByRC(1, 1))->getAlignment()->setWrapText(true);
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(4, count($cols)))->getAlignment()->setWrapText(true);
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+5, count($cols)))->getBorders()
                     ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 2) . ':' . ExcelExport::getCellByRC(count($data)+5, 2))->getNumberFormat()
                     ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-            });
+            });*/
         }
         $excel->setActiveSheetIndex(0);
         $excel->export('xlsx');
+    }
+
+    public function excelDataTableRender($excel, $form, $table, $cols, $data)
+    {
+        $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
+
+            $sheet->loadView('reports.datatable_excel_simple', compact('table', 'cols', 'data'));
+            $sheet->cell('A1', function($cell) {
+                $cell->setFontSize(16);
+            });
+            $sheet->getStyle(ExcelExport::getCellByRC(1, 1))->getAlignment()->setWrapText(true);
+            $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(4, count($cols)))->getAlignment()->setWrapText(true);
+            $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+5, count($cols)))->getBorders()
+                ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+            $sheet->getStyle(ExcelExport::getCellByRC(4, 2) . ':' . ExcelExport::getCellByRC(count($data)+5, 2))->getNumberFormat()
+                ->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+        });
     }
 
 }

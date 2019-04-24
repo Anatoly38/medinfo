@@ -89,7 +89,11 @@ class DocumentExcelExport
             $data = $ret['data'];
             $cols = $ret['cols'];
             $excel->sheet($form->form_code . '_' . $table->table_code , function($sheet) use ($table, $cols, $data) {
-                $sheet->loadView('reports.datatable_excel', compact('table', 'cols', 'data'));
+                $sheet->loadView('reports.datatable_excel_simple', compact('table', 'cols', 'data'));
+                $sheet->cell('A1', function($cell) {
+                    $cell->setFontSize(16);
+                });
+                $sheet->getStyle(ExcelExport::getCellByRC(1, 1))->getAlignment()->setWrapText(true);
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(4, count($cols)))->getAlignment()->setWrapText(true);
                 $sheet->getStyle(ExcelExport::getCellByRC(4, 1) . ':' . ExcelExport::getCellByRC(count($data)+5, count($cols)))->getBorders()
                     ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
