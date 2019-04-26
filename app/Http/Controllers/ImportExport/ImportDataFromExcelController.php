@@ -59,7 +59,7 @@ class ImportDataFromExcelController extends Controller
         $result = [];
         for ($i = 0; $i < count($lists); $i++ ) {
             $title = $lists[$i]->getTitle();
-            $codes = explode("_", $title);
+            $codes = explode("__", $title);
             if (($codes[0] === $this->realform->form_code) || ($codes[0] === $this->form->form_code)) {
                 if (isset($codes[1])) {
                     if ($only === '1') {
