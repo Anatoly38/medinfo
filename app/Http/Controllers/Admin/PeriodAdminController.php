@@ -148,21 +148,26 @@ class PeriodAdminController extends Controller
         //var_dump($en->endOfWeek()->format('Y-m-d'));
         $w = 1;
         $stack = [];
+        $split_weeks = true;
+        //$split_weeks = false;
         for ($i = 0 ; $i < 12 ; $i++) {
             // Вывод названия месяца в локализованном виде
-            echo $date->formatLocalized('%B') . " -----------\n";
+            //echo $date->formatLocalized('%B') . " -----------\n";
             $endmonth = $date->copy()->endOfMonth();
             $week = $date->copy()->startOfWeek();
             while (true) {
                 $endOfMonth = false;
+                $startOfMonth = false;
+                $correctedweek = false;
                 $startweek = $week->copy()->startOfWeek();
                 $endweek = $week->copy()->endOfWeek();
                 $breaked = '';
                 //var_dump($endmonth->eq($endweek));
                 switch (true) {
                     case $startweek->month < $date->month || $startweek->year < $date->year :
-                        $breaked = ' Неполная неделя';
                         $startweek->addWeek()->startOfMonth();
+                        $breaked = ' Неполная неделя';
+                        $startOfMonth = true;
                         break;
                     case $endweek->month > $date->month || $endweek->year > $date->year :
                         $endweek = $startweek->copy()->endOfMonth();
@@ -173,13 +178,25 @@ class PeriodAdminController extends Controller
                         $endOfMonth = true;
                         break;
                 }
-
-                $stack[] = [$startweek, $endweek];
-
                 // Продолжительность недели, включая проследний день
                 $duration = $startweek->diff($endweek)->days + 1;
                 $breaked .= '(' . $duration . ')';
-                echo $w . ' ' . $startweek->format('Y-m-d') . ' - ' . $endweek->format('Y-m-d') . $breaked .  " \n";
+                //echo $w . ' ' . $startweek->format('Y-m-d') . ' - ' . $endweek->format('Y-m-d') . $breaked .  " \n";
+                if ($split_weeks) {
+                    if ($duration < 4 && $endOfMonth) {
+                        $previous_week = array_pop($stack);
+                        $startweek = $previous_week[0];
+                        $duration = $startweek->diff($endweek)->days + 1;
+                        $correctedweek = true;
+                    }
+                    if ($duration < 4 && $startOfMonth) {
+                        $week->addWeek();
+                        $endweek = $week->copy()->endOfWeek();
+                        $duration = $startweek->diff($endweek)->days + 1;
+                        $correctedweek = true;
+                    }
+                }
+                $stack[] = [$startweek, $endweek, $correctedweek, $duration];
                 $w++;
                 if ($endOfMonth) {
                     break;
@@ -189,7 +206,23 @@ class PeriodAdminController extends Controller
             }
             $date->addMonth();
         }
-        echo "-----------\n";
-        dd($stack);
+        //echo "-----------\n";
+
+        echo "скорректированные недельные отчетные периоды ------------- \n";
+        $stackmonths = [];
+        $j = 1;
+        foreach ($stack as $stackweek) {
+            $corr = $stackweek[2] ? ' (объединенная неделя)' : '';
+            //echo $stackweek[0]->month . "\n";
+            $week_title = $j++ . ' ' . $stackweek[0]->format('Y-m-d') . ' - ' . $stackweek[1]->format('Y-m-d') . " (" . $stackweek[3] . ")" . $corr  . " \n";
+            //$stackmonths[$stackweek[0]->month][] = $week_title;
+            $stackmonths[$stackweek[0]->formatLocalized('%B')][] = $week_title;
+        }
+        foreach ($stackmonths as $key => $stackmonth) {
+            echo $key . " \n";
+            foreach ($stackmonth as $mw) {
+                echo $mw;
+            }
+        }
     }
 }
