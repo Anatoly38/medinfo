@@ -129,15 +129,16 @@ class BriefReferenceMaker extends Controller
             $excel->sheet("Форма {$form->form_code}, таблица {$table->table_code}" , function($sheet) use ($form, $table, $top, $group_title, $el_name, $period, $units,
                 $column_titles, $tablewidth, $tableheight, $values) {
                 $sheet->loadView('reports.br_excel', compact('form', 'table', 'top','group_title', 'el_name', 'period', 'units', 'column_titles', 'values'));
-                //$highestrow = $sheet->getHighestRow();
-                //$sheet->getColumnDimensionByColumn('C5:BZ5')->setAutoSize(false);
-                //$sheet->getColumnDimensionByColumn('C5:BZ5')->setWidth('10');
-                //$sheet->getColumnDimensionByColumn('B')->setAutoSize(false);
-                //$sheet->getColumnDimensionByColumn('B')->setWidth('80');
+                $sheet->cell('A1', function($cell) {
+                    $cell->setFontSize(16);
+                });
+                $sheet->cell('A2', function($cell) {
+                    $cell->setFontSize(14);
+                });
                 $sheet->getRowDimension('6')->setRowHeight(-1);
                 //dd(self::getCellByRC(6, 0) . ':' . self::getCellByRC(6, $tablewidth));
                 $sheet->getStyle(ExcelExport::getCellByRC(6, 1) . ':' . ExcelExport::getCellByRC(6, $tablewidth))->getAlignment()->setWrapText(true);
-                $sheet->getStyle('B7:B430')->getAlignment()->setWrapText(true);
+                $sheet->getStyle('B7:B450')->getAlignment()->setWrapText(true);
                 $sheet->getStyle(ExcelExport::getCellByRC(6, 1) . ':' . ExcelExport::getCellByRC($tableheight, $tablewidth))->getBorders()
                     ->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
             });
