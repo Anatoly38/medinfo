@@ -42,7 +42,7 @@ JSON;
     public function performReport(ReportPattern $pattern, $period, $sortorder)
     {
         $structure = json_decode($pattern->pattern, true);
-        dd($structure);
+        //dd($structure);
         $count_of_indexes = count($structure['content']);
         $title = $structure['header']['title'];
         //$indexes = ReportMaker::makeReportByLegal($structure, $level, $period);
