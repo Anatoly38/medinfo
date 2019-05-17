@@ -53,7 +53,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/medstatnskstructinport.js?v=004') }}"></script>
+    <script src="{{ asset('/medinfo/admin/necellclear.js?v=002') }}"></script>
 @endpush
 
 @section('inlinejs')
