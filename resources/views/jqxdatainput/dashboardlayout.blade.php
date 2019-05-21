@@ -20,26 +20,32 @@
         }
     </style>
     <title id="Description">@yield('headertitle')</title>
-    {{-- TODO: Перейти на CDN ресурсы--}}
-    {{--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">--}}
-    {{--<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">--}}
-@if(config('medinfo.ssl_connection'))
     <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=005') }}" rel="stylesheet" type="text/css" />
     <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css?v=002') }}" rel="stylesheet" type="text/css" />
-{{--    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
+    {{--    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-green.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}
+    {{--<link href="{{ secure_asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">--}}
+    <link href="{{ secure_asset('/fa582/css/all.min.css') }}" rel="stylesheet" type="text/css">
+
+{{--@if(config('medinfo.ssl_connection'))
+    <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=005') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css?v=002') }}" rel="stylesheet" type="text/css" />
+--}}{{--    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-green.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}{{--
     <link href="{{ secure_asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
 @else
     <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=005') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css?v=002') }}" rel="stylesheet" type="text/css" />
-{{--    <link href="{{ asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
+--}}{{--    <link href="{{ asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/jqwidgets/styles/jqx.material-green.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}
+    <link href="{{ asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}{{--
     <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-@endif
+@endif--}}
 
 @stack('loadcss')
 </head>
@@ -59,8 +65,12 @@
 @if(config('medinfo.websocket'))
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 @endif
-
-@if(config('medinfo.ssl_connection'))
+    <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>
+    <script src="{{ secure_asset('/medinfo/dashboard.js?v=094') }}"></script>
+    <script src="{{ secure_asset('/jqwidgets/localization.js?v=003') }}"></script>
+    <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=004') }}"></script>
+    <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+{{--@if(config('medinfo.ssl_connection'))
     <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>
     <script src="{{ secure_asset('/medinfo/dashboard.js?v=094') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/localization.js?v=003') }}"></script>
@@ -72,7 +82,7 @@
     <script src="{{ asset('/jqwidgets/localization.js?v=003') }}"></script>
     <script src="{{ asset('/plugins/fullscreen/jquery.fullscreen.js?v=004') }}"></script>
     <script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
-@endif
+@endif--}}
 
 @stack('loadjsscripts')
 <script type="text/javascript">

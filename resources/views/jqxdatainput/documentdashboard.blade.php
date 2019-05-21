@@ -33,11 +33,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="well well-sm">
-                                <div id="periodSelector">
-                                    <button class="btn btn-default btn-sm" id="clearAllPeriods">Очистить</button>
-                                    <button class="btn btn-primary btn-sm" id="applyPeriods">Применить</button>
-                                    <div id="periodTree"></div>
-                                </div>
+                                @include('jqxdatainput.periodfilter')
                                 <div id="statusSelector">
                                     <button class="btn btn-default btn-sm" id="checkAllStates">Выбрать все</button>
                                     <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
@@ -105,7 +101,43 @@
                         </div>
 
                     <div id="DocumentPanelSplitter">
-                        <div >
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form class="navbar-form navbar-left">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" style="width: 220px" id="searchUnit"  placeholder="Медицинская организация">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" id="clearFilter" type="button" title="Очистить фильтр">
+                                                <i class="far fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="btn-group">
+                                <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
+                                    <i class='fa fa-edit'></i>
+                                </button>
+                                <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
+                                    <i class='far fa-comment'></i>
+                                </button>
+                                </div>
+                                <div class="btn-group">
+                                <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
+                                    <span class='far fa-download'></span>
+                                    <i class='fal fa-file-word'></i>
+                                </button>
+                                <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
+                                    <span class='far fa-download'></span>
+                                    <i class='fal fa-file-excel'></i>
+                                </button>
+                                </div>
+                                <button class="btn btn-default navbar-btn" id="documentInfo" title="Информация о документе">
+                                    <i class='fas fa-info'></i>
+                                </button>
+                                <button class="btn btn-default navbar-btn" id="refreshPrimaryDocumentList" title="Обновить список документов">
+                                    <i class="far fa-sync-alt"></i>
+                                </button>
+                            </div>
                             <div id="Documents"></div>
                         </div>
                         <div class="jqx-hideborder">
@@ -151,19 +183,21 @@
 @endsection
 
 @push('loadcss')
-    @if(config('medinfo.ssl_connection'))
+    <link href="{{ secure_asset('/css/medinfodocuments.css?v=001') }}" rel="stylesheet" type="text/css" />
+{{--    @if(config('medinfo.ssl_connection'))
         <link href="{{ secure_asset('/css/medinfodocuments.css?v=001') }}" rel="stylesheet" type="text/css" />
     @else
         <link href="{{ asset('/css/medinfodocuments.css?v=001') }}" rel="stylesheet" type="text/css" />
-    @endif
+    @endif--}}
 @endpush
 
 @push('loadjsscripts')
-    @if(config('medinfo.ssl_connection'))
+    <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=182') }}"></script>
+{{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else
         <script src="{{ asset('/medinfo/documentdashboard.js?v=181') }}"></script>
-    @endif
+    @endif--}}
 @endpush
 
 @section('inlinejs')
@@ -206,6 +240,6 @@
         initConsolidates();
         initRecentDocuments();
         initpopupwindows();
-        //initdocinfowindow();
+        primaryDocToolbar();
     </script>
 @endsection

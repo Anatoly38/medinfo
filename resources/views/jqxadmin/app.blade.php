@@ -22,7 +22,8 @@
     <!-- jQWidgets CSS -->
     <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=004') }}" rel="stylesheet">
     <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css?v=001') }}" rel="stylesheet">
-    <link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    {{--<link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">--}}
+    <link href="{{ secure_asset('/fa582/css/all.min.css') }}" rel="stylesheet" type="text/css">
 </head>
 
 <body>

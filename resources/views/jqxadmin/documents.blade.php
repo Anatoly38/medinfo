@@ -100,16 +100,30 @@
                 <div class="col-md-1"><h4 style="margin-left: 10px">Документы</h4></div>
                 <div class="col-md-11">
                     <div class="btn btn-default" id="statesDropdownList"></div>
-                    <button class="btn btn-default navbar-btn" id="eraseData" title="Очистить данныеы"><span class='fa fa-eraser fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="deleteDocuments" title="Удалить документы"><span class='fa fa-trash-o fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="protectAggregates" title="Защитить сводный документ"><span class='fa fa-product-hunt fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="Сalculate" title="Расчет (консолидация) данных"><span class='fa fa-calculator fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="ValueEditingLog" title="Журнал изменения данных"><span class='fa fa-leaf fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="CloneDocuments" title="Клонирование документов в новый отчетный период"><span class='fa fa-clone fa-lg'></span></button>
-                    <button class="btn btn-default navbar-btn" id="MedstatExport" title="Экспорт в формат Медстат (ЦИИОИЗ)"> <span class='fa fa-download fa-lg'></span> МС</button>
+                    <button class="btn btn-default navbar-btn" id="eraseData" title="Очистить данные">
+                        <i class='far fa-eraser'></i>
+                    </button>
+                    <button class="btn btn-default navbar-btn" id="deleteDocuments" title="Удалить документы">
+                        <i class='far fa-trash'></i>
+                    </button>
+                    <button class="btn btn-default navbar-btn" id="protectAggregates" title="Защитить сводный документ">
+                        <i class="fab fa-product-hunt"></i>
+                    </button>
+                    <button class="btn btn-default navbar-btn" id="Сalculate" title="Расчет (консолидация) данных">
+                        <i class='fal fa-calculator'></i>
+                    </button>
+                    <button class="btn btn-default navbar-btn" id="ValueEditingLog" title="Журнал изменения данных">
+                        <i class='fal fa-leaf'></i>
+                    </button>
+                    <button class="btn btn-default navbar-btn" id="CloneDocuments" title="Клонирование документов в новый отчетный период">
+                        <i class='fal fa-clone'></i>
+                    </button>
+                    <button class="btn btn-default navbar-btn" id="MedstatExport" title="Экспорт в формат Медстат (ЦИИОИЗ)">
+                        <i class='fal fa-download'></i> МС
+                    </button>
                     <button class="btn btn-default navbar-btn" id="ExcelExport" title="Экспорт в формат MS Excel">
-                        <span class='fa fa-download fa-lg'></span>
-                        <span class='fa fa-file-excel-o fa-lg'></span>
+                        <span class='fal fa-download'></span>
+                        <i class='fal fa-file-excel'></i>
                     </button>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 /vendor
 /node_modules
 /public/storage
-/public/font-awesome/fonts/
+/public/font-awesome/
+/public/fa582/
 /public/jqwidgets
 /config/medinfo.php

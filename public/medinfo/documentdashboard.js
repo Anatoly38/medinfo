@@ -349,6 +349,77 @@ mo_name_aggrfilter = function (needle) {
     agrid.jqxGrid('addfilter', 'unit_name', rowFilterGroup);
     agrid.jqxGrid('applyfilters');
 };
+
+// Новый рендеринг панели инструментов для первичных документов
+
+primaryDocToolbar = function() {
+    let searchField = $("#searchUnit");
+    let oldVal = '';
+    let me = {};
+    searchField.on('keydown', function (event) {
+        if (searchField.val().length >= 2) {
+            if (me.timer) {
+                clearTimeout(me.timer);
+            }
+            if (oldVal !== searchField.val()) {
+                me.timer = setTimeout(function () {
+                    mo_name_filter(searchField.val());
+                }, 500);
+                oldVal = searchField.val();
+            }
+        }
+        else {
+            dgrid.jqxGrid('removefilter', '1');
+        }
+    });
+    $("#clearFilter").click(function () {
+        dgrid.jqxGrid('clearfilters');
+        searchField.val('');
+        oldVal = '';
+    });
+
+    $("#editPrimaryDocument").click(function () {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        if (rowindex !== -1 && typeof rowindex !== 'undefined') {
+            let document_id = dgrid.jqxGrid('getrowid', rowindex);
+            let editWindow = window.open(edit_form_url + document_id);
+        }
+    });
+    $("#commentingDocument").click(function () {
+        let sm = $("#sendMessageWindow");
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        if (rowindex === -1) {
+            return false;
+        }
+        $("#message").val("");
+        sm.jqxWindow('open');
+    });
+    $("#documentWordExport").click(function () {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let document_id = dgrid.jqxGrid('getrowid', rowindex);
+        if (rowindex !== -1) {
+            location.replace(export_word_url + document_id);
+        }
+    });
+    $("#documentExcelExport").click(function () {
+        let rowindex = dgrid.jqxGrid('getselectedrowindex');
+        let document_id = dgrid.jqxGrid('getrowid', rowindex);
+        if (rowindex !== -1) {
+            location.replace(export_form_url + document_id);
+        }
+    });
+    $("#documentInfo").click(function () {
+        $("#DocumentInfoWindow").jqxWindow('open');
+    });
+    $("#refreshPrimaryDocumentList").click(function () {
+        docsource.url = docsource_url + filtersource();
+        dgrid.jqxGrid('updatebounddata');
+        $("#DocumentMessages").html('');
+        $("#DocumentAuditions").html('');
+    });
+
+};
+
 // Рендеринг панели инструментов для таблицы первичных документов
 renderdoctoolbar = function (toolbar) {
     let me = this;
@@ -394,7 +465,7 @@ renderdoctoolbar = function (toolbar) {
     }*/
 
     let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-edit fa-lg' title='Редактировать форму' />");
-    let word_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-word-o fa-lg' title='Экспортировать документ в MS Word'></i>");
+    let word_export = $("<i style='margin-left: 2px;height: 14px' class='far fa-file-word fa-xs' title='Экспортировать документ в MS Word'></i>");
     let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать данные документа в MS Excel'></i>");
     let message_input = $("<i style='margin-left: 2px;height: 14px' class='fa fa-commenting-o fa-lg' title='Сообщение/комментарий к документу'></i>");
     let doc_info = $("<i style='margin-left: 2px;height: 14px' class='fa fa-info fa-lg' title='Информация о документе'></i>");
@@ -427,7 +498,7 @@ renderdoctoolbar = function (toolbar) {
     clearfilters.jqxButton({ theme: theme });
     editform.jqxButton({ theme: theme });
     changestatus.jqxButton({ theme: theme });
-    word_export.jqxButton({ theme: theme });
+    word_export.jqxButton();
     excel_export.jqxButton({ theme: theme });
     message_input.jqxButton({ theme: theme });
     doc_info.jqxButton({ theme: theme });
@@ -547,9 +618,9 @@ renderaggregatetoolbar = function(toolbar) {
     let me = this;
     let container = $("<div style='margin: 5px;'></div>");
     let input1 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 150px;' />");
-    let filter = $("<i style='margin-left: 2px;height: 14px' class='fa fa-filter fa-lg' title='Очистить фильтр' />");
-    let editform = $("<i style='margin-left: 2px;height: 14px' class='fa fa-eye fa-lg' title='Просмотр/редактирование сводного отчета' />");
-    let makeaggregation = $("<i style='margin-left: 2px;height: 14px' class='fa fa-database fa-lg' title='Выполнить свод' />");
+    let filter = $("<i style='margin-left: 2px;height: 14px' class='fal fa-filter fa-lg' title='Очистить фильтр' />");
+    let editform = $("<i style='margin-left: 2px;height: 14px' class='fal fa-eye fa-lg' title='Просмотр/редактирование сводного отчета' />");
+    let makeaggregation = $("<i style='margin-left: 2px;height: 14px' class='fal fa-database fa-lg' title='Выполнить свод' />");
 /*    if (audit_permission) {
         let change_audit_status = $("<input id='ChangeAudutStatus' type='button' value='Проверка отчета' />");
         change_audit_status.click(function () {
@@ -587,9 +658,9 @@ renderaggregatetoolbar = function(toolbar) {
             $("#BatchChangeAuditStateWindow").jqxWindow('open');
         });
     }*/
-    let word_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-word-o fa-lg' title='Экспортировать документ в MS Word'></i>");
-    let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fa fa-file-excel-o fa-lg' title='Экспортировать данные документа в MS Excel'></i>");
-    let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='fa fa-refresh fa-lg' title='Обновить список'></i>");
+    let word_export = $("<i style='margin-left: 2px;height: 14px' class='fal fa-file-word fa-lg' title='Экспортировать документ в MS Word'></i>");
+    let excel_export = $("<i style='margin-left: 2px;height: 14px' class='fal fa-file-excel fa-lg' title='Экспортировать данные документа в MS Excel'></i>");
+    let refresh_list = $("<i style='margin-left: 2px;height: 14px' class='far fa-sync-alt' title='Обновить список'></i>");
     toolbar.append(container);
     container.append(input1);
     container.append(filter);
@@ -1031,8 +1102,8 @@ initdocumentstabs = function() {
             localization: localize(),
             theme: theme,
             columnsresize: true,
-            showtoolbar: true,
-            rendertoolbar: renderdoctoolbar,
+            showtoolbar: false,
+            //rendertoolbar: renderdoctoolbar,
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
                 { text: 'Код МО', datafield: 'unit_code', width: 70 },
