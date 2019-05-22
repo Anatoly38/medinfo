@@ -90,13 +90,13 @@
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <h3 style="margin-left: 30px">Первичные отчеты</h3>
                             </div>
-                            <div class="col-md-9">
-                                <h4 class="pull-right" style="padding-right: 10px" title="Выделенная организационная единица входит в состав">
+                            <div class="col-md-8">
+                                <p class="pull-right" style="padding-right: 10px" title="Выделенная организационная единица входит в состав">
                                     <small class="text-info" id="mo_parents_breadcrumb">...</small>
-                                </h4>
+                                </p>
                             </div>
                         </div>
 
@@ -114,22 +114,25 @@
                                     </div>
                                 </form>
                                 <div class="btn-group">
-                                <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
-                                    <i class='fa fa-edit'></i>
-                                </button>
-                                <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
-                                    <i class='far fa-comment'></i>
-                                </button>
+                                    <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
+                                        <i class='fa fa-edit'></i>
+                                    </button>
+                                    <button class="btn btn-default navbar-btn" id="changeDocumentState" title="Изменить статус документа">
+                                        <i class='far fa-tasks fa-lg'></i>
+                                    </button>
+                                    <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
+                                        <i class='far fa-comment'></i>
+                                    </button>
                                 </div>
                                 <div class="btn-group">
-                                <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
-                                    <span class='far fa-download'></span>
-                                    <i class='fal fa-file-word'></i>
-                                </button>
-                                <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
-                                    <span class='far fa-download'></span>
-                                    <i class='fal fa-file-excel'></i>
-                                </button>
+                                    <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
+                                        <span class='far fa-download'></span>
+                                        <i class='fal fa-file-word'></i>
+                                    </button>
+                                    <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
+                                        <span class='far fa-download'></span>
+                                        <i class='fal fa-file-excel'></i>
+                                    </button>
                                 </div>
                                 <button class="btn btn-default navbar-btn" id="documentInfo" title="Информация о документе">
                                     <i class='fas fa-info'></i>
@@ -137,6 +140,7 @@
                                 <button class="btn btn-default navbar-btn" id="refreshPrimaryDocumentList" title="Обновить список документов">
                                     <i class="far fa-sync-alt"></i>
                                 </button>
+                                <button type="button" class="btn btn-link pull-right" style="margin-top: 10px">Документов: <span id="totalrecords">0</span></button>
                             </div>
                             <div id="Documents"></div>
                         </div>
@@ -192,7 +196,7 @@
 @endpush
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=182') }}"></script>
+    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=000') }}"></script>
 {{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else
