@@ -90,81 +90,109 @@
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-12">
                                 <h3 style="margin-left: 30px">Первичные отчеты</h3>
                             </div>
-                            <div class="col-md-8">
-                                <p class="pull-right" style="padding-right: 10px" title="Выделенная организационная единица входит в состав">
-                                    <small class="text-info" id="mo_parents_breadcrumb">...</small>
-                                </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="margin-left: 20px">
+                                <p class="text-info" id="mo_parents_breadcrumb">...</p>
                             </div>
                         </div>
-
-                    <div id="DocumentPanelSplitter">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <form class="navbar-form navbar-left">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" style="width: 220px" id="searchUnit"  placeholder="Медицинская организация">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-default" id="clearFilter" type="button" title="Очистить фильтр">
-                                                <i class="far fa-times"></i>
-                                            </button>
+                        <div id="DocumentPanelSplitter">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form class="navbar-form navbar-left">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" style="width: 220px" id="searchUnit"  placeholder="Медицинская организация">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-default" id="clearFilter" type="button" title="Очистить фильтр">
+                                                    <i class="far fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="btn-group">
+                                        <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
+                                            <i class='fa fa-edit'></i>
+                                        </button>
+                                        <button class="btn btn-default navbar-btn" id="changeDocumentState" title="Изменить статус документа">
+                                            <i class='far fa-tasks fa-lg'></i>
+                                        </button>
+                                        <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
+                                            <i class='far fa-comment'></i>
+                                        </button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
+                                            <i class='fal fa-file-word fa-lg'></i>
+                                        </button>
+                                        <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
+                                            <i class='fal fa-file-excel fa-lg'></i>
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-default navbar-btn" id="documentInfo" title="Информация о документе">
+                                        <i class='fas fa-info'></i>
+                                    </button>
+                                    <button class="btn btn-default navbar-btn" id="refreshPrimaryDocumentList" title="Обновить список документов">
+                                        <i class="far fa-sync-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-link pull-right" style="margin-top: 10px">Документов: <span id="totalrecords">0</span></button>
+                                </div>
+                                <div id="Documents"></div>
+                            </div>
+                            <div class="jqx-hideborder">
+                                {{--<div id="DocumentPropertiesSplitter">--}}
+                                    <div id="messagesExpander" class="panel panel-default panel" style="height: 95%">
+                                        <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
+                                        <div id="DocumentMessages" class="panel-body" style="height: 85%; padding: 0; overflow-y: auto"></div>
+                                    </div>
+    {{--                                <div class="jqx-hideborder" >
+                                        <div id="auditExpander">
+                                            <div>Статус проверки документа <a href="#" id="openAuditionListWindow"><...></a></div>
+                                            <div id="DocumentAuditions"></div>
                                         </div>
                                     </div>
-                                </form>
-                                <div class="btn-group">
-                                    <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
-                                        <i class='fa fa-edit'></i>
-                                    </button>
-                                    <button class="btn btn-default navbar-btn" id="changeDocumentState" title="Изменить статус документа">
-                                        <i class='far fa-tasks fa-lg'></i>
-                                    </button>
-                                    <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
-                                        <i class='far fa-comment'></i>
-                                    </button>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
-                                        <span class='far fa-download'></span>
-                                        <i class='fal fa-file-word'></i>
-                                    </button>
-                                    <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
-                                        <span class='far fa-download'></span>
-                                        <i class='fal fa-file-excel'></i>
-                                    </button>
-                                </div>
-                                <button class="btn btn-default navbar-btn" id="documentInfo" title="Информация о документе">
-                                    <i class='fas fa-info'></i>
-                                </button>
-                                <button class="btn btn-default navbar-btn" id="refreshPrimaryDocumentList" title="Обновить список документов">
-                                    <i class="far fa-sync-alt"></i>
-                                </button>
-                                <button type="button" class="btn btn-link pull-right" style="margin-top: 10px">Документов: <span id="totalrecords">0</span></button>
+                                </div>--}}
                             </div>
-                            <div id="Documents"></div>
                         </div>
-                        <div class="jqx-hideborder">
-                            {{--<div id="DocumentPropertiesSplitter">--}}
-                                <div id="messagesExpander" class="panel panel-default panel" style="height: 95%">
-                                    <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
-                                    <div id="DocumentMessages" class="panel-body" style="height: 85%; padding: 0; overflow-y: auto"></div>
-                                </div>
-{{--                                <div class="jqx-hideborder" >
-                                    <div id="auditExpander">
-                                        <div>Статус проверки документа <a href="#" id="openAuditionListWindow"><...></a></div>
-                                        <div id="DocumentAuditions"></div>
-                                    </div>
-                                </div>
-                            </div>--}}
-                        </div>
-                    </div>
-
                     </div>
                 </div>
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
                         <h3 style="margin-left: 30px">Сводные отчеты</h3>
+                        <div class="col-md-12">
+                            <form class="navbar-form navbar-left">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" style="width: 220px" id="searchAggregateUnit"  placeholder="Территория/МО">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-default" id="clearAggregateFilter" type="button" title="Очистить фильтр">
+                                            <i class="far fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="btn-group">
+                                <button class="btn btn-default navbar-btn" id="viewDocument" title="Просмотр документа">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                                <button class="btn btn-default navbar-btn" id="aggregateDocument" title="Выполнить свод">
+                                    <i class="far fa-layer-plus fa-lg"></i>
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-default navbar-btn" id="aggregateWordExport" title="Экспорт в формат MS Word">
+                                    <i class='fal fa-file-word fa-lg'></i>
+                                </button>
+                                <button class="btn btn-default navbar-btn" id="aggregateExcelExport" title="Экспорт в формат MS Excel">
+                                    <i class='fal fa-file-excel fa-lg'></i>
+                                </button>
+                            </div>
+                            <button class="btn btn-default navbar-btn" id="refreshAggregateDocumentList" title="Обновить список документов">
+                                <i class="far fa-sync-alt"></i>
+                            </button>
+                            <button type="button" class="btn btn-link pull-right" style="margin-top: 10px">Документов: <span id="totalaggregates">0</span></button>
+                        </div>
                         <div id="Aggregates"></div>
                     </div>
                 </div>
@@ -245,5 +273,6 @@
         initRecentDocuments();
         initpopupwindows();
         primaryDocToolbar();
+        aggregateDocToolbar();
     </script>
 @endsection

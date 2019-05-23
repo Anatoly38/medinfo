@@ -287,10 +287,10 @@ function getLatestMessages() {
                     '<div class="col-md-11"><p class="text text-info small" style="margin: 0"><strong>' + description + ': </strong>' + m[i].message +'</p></div>';
                 let dpanel = $('<div class="row '+ mark + '" style="margin:0; border-bottom-color:#00a7d0; border-bottom-style:dotted; border-bottom-width: 1px"></div>');
                 let dcontent = '<div class="col-md-1"></div>' +
-                    '<div class="col-md-7"><p class="text small"><i class="fa fa-map-o"></i> ' +
+                    '<div class="col-md-7"><p class="text small"><i class="fal fa-map"></i> ' +
                     '<a href="/datainput/formdashboard_v2/'+ m[i].document.id + '" target="_blank">Форма ' + m[i].document.form.form_code + ' ' + m[i].document.unit.unit_name +'</a>' +
                     '</p></div>' +
-                    '<div class="col-md-4"><p class="text small"><i class="fa fa-clock-o"></i> ' + formatDate(m[i].created_at) + '</p></div>';
+                    '<div class="col-md-4"><p class="text small"><i class="fal fa-clock"></i> ' + formatDate(m[i].created_at) + '</p></div>';
                 mpanel.append(mcontent);
                 dpanel.append(dcontent);
                 if (data.ts < m[i].CreatedTS) {

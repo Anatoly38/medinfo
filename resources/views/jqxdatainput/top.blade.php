@@ -11,10 +11,10 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li><a><strong class="text-info">{{ Auth::guard('datainput')->user()->description }}</strong></a></li>
-                    <li><a href="#" id="openProfileEditor"><span class="fa fa-user"></span> Профиль</a></li>
+                    <li><a href="#" id="openProfileEditor"><span class="fas fa-user"></span> Профиль</a></li>
                     {{--<li><a href="#"><span class="fa fa-cog"></span> Настройки</a></li>--}}
-                    <li><a href="{{ config('medinfo.infolink') }}" target="_blank"><span class="fa fa-info-circle"></span> Информация</a></li>
-                    <li><a href="/workerlogout"><span class="glyphicon glyphicon-log-out"></span> Выход</a></li>
+                    <li><a href="{{ config('medinfo.infolink') }}" target="_blank"><span class="fas fa-info-circle"></span> Информация</a></li>
+                    <li><a href="/workerlogout"><i class="fas fa-sign-out"></i> Выход</a></li>
                 </ul>
             </li>
 
@@ -31,7 +31,7 @@
                             <h6 class="text-info"><a href="#" id="markAllAsRead">Пометить все как прочтенные</a></h6>
                         </div>
                         <div class="col-md-1">
-                            <h6 class="text-info"><a href="#" id="refreshMessageFeed"><i class="fa fa-refresh text-info"></i></a></h6>
+                            <h6 class="text-info"><a href="#" id="refreshMessageFeed"><i class="far fa-sync-alt"></i></a></h6>
                         </div>
                     </div>
                     <div>
