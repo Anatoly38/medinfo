@@ -258,8 +258,8 @@
         datasources();
         initSplitters();
         initMonitoringTree();
-        initmotree();
-        initgrouptree();
+        initGroupTree();
+        initMoTree();
         initPeriodTree();
         initStateList();
         initDataPresens();
