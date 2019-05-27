@@ -17,7 +17,7 @@
 				</div>
 			@endif
 			<p class="login-box-msg">Авторизация пользователя - администратора системы</p>
-				<form role="form" method="POST" action="{{ url('/login') }}">
+				<form role="form" method="POST" action="{{ secure_url('/login') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="form-group has-feedback">
 						<input type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">
@@ -34,7 +34,7 @@
 									<input type="checkbox" name="remember"> Запомнить меня
 								</label>
 							</div>
-                            {{--<a class="btn btn-link" href="{{ url('/password/reset') }}">Забыли Ваш пароль?</a>--}}
+                            {{--<a class="btn btn-link" href="{{ secure_url('/password/reset') }}">Забыли Ваш пароль?</a>--}}
 						</div>
 						<!-- /.col -->
 						<div class="col-xs-4">

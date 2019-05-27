@@ -75,6 +75,7 @@ class AdminAuthController extends Controller
         if (method_exists($this, 'authenticated')) {
             return $this->authenticated($request, Auth::guard('admins')->user());
         }
+        //return redirect()->intended('admin');
         return redirect()->intended('admin');
     }
 
