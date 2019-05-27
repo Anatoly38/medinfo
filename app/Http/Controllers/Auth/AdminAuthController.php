@@ -76,7 +76,7 @@ class AdminAuthController extends Controller
             return $this->authenticated($request, Auth::guard('admins')->user());
         }
         //return redirect()->intended('admin');
-        return redirect()->intended('admin');
+        return redirect()->secure('admin');
     }
 
     /**
