@@ -3,14 +3,14 @@
 @section('title')
     <p class="text-info small">
         Форма №<span class="text-info">{{ $form->form_code  }} </span>
-        <i class="fa fa-hospital-o fa-lg"></i>
+        <i class="fal fa-hospital fa-lg"></i>
         <span class="text-info" title="{{ $current_unit->unit_name ? $current_unit->unit_name : $current_unit->group_name }}">
             {{ str_limit($current_unit->unit_name ? $current_unit->unit_name : $current_unit->group_name, 60) }}
         </span>
-        <i class="fa fa-map-o fa-lg"></i> <span class="text-info">{{ $monitoring->name }} </span>
-        <i class="fa fa-calendar-o fa-lg"></i> <span class="text-info">{{ $period->name }} </span>
-        <i class="fa fa-star fa-lg"></i> <span class="text-info" id="StateInfo">{{ $statelabel }} </span>
-        <i class="fa fa-edit fa-lg"></i> <span class="text-info">{{ $editmode }} </span>
+        <i class="fal fa-map fa-lg"></i> <span class="text-info">{{ $monitoring->name }} </span>
+        <i class="fal fa-calendar fa-lg"></i> <span class="text-info">{{ $period->name }} </span>
+        <i class="fal fa-star fa-lg"></i> <span class="text-info" id="StateInfo">{{ $statelabel }} </span>
+        <i class="fal fa-edit fa-lg"></i> <span class="text-info">{{ $editmode }} </span>
     </p>
 @endsection
 
@@ -25,10 +25,10 @@
             <i class="fa fa-ellipsis-v fa-lg text-info"></i> <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li><a href="#" id="openSendMessageWindow"><span class="fa fa-commenting-o"></span> Сообщение</a></li>
-           <li><a href="#" id="openChangeStateWindow"><span class="fa fa-check-circle-o"></span> Смена статуса</a></li>
+            <li><a href="#" id="openSendMessageWindow"><span class="far fa-comment"></span> Сообщение</a></li>
+           <li><a href="#" id="openChangeStateWindow"><span class="far fa-check"></span> Смена статуса</a></li>
            @if (Auth::guard('datainput')->user()->role === 3 or Auth::guard('datainput')->user()->role === 4)
-            <li><a href="#" id="openDocumentInfoWindow"><span class="fa fa-info-circle"></span> Информация о документе</a></li>
+            <li><a href="#" id="openDocumentInfoWindow"><span class="far fa-info-circle"></span> Информация о документе</a></li>
            @endif
         </ul>
     </li>
@@ -37,7 +37,7 @@
 @section('tableAggregateButton')
     {{-- Экспорт в Медстат ЦНИИОИЗ--}}
     <button style="display: none" class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
-        <span class='fa fa-download fa-lg' ></span>
+        <span class='fas fa-download fa-lg' ></span>
         <span>МС</span>
     </button>
 @endsection
