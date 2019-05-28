@@ -894,7 +894,7 @@ initdocumentstabs = function() {
     dgrid.jqxGrid(
         {
             width: '100%',
-            height: '100%',
+            height: '90%',
             source: dgridDataAdapter,
             localization: localize(),
             theme: theme,
@@ -944,7 +944,7 @@ initdocumentstabs = function() {
     agrid.jqxGrid(
         {
             width: '100%',
-            height: '94%',
+            height: '88%',
             theme: theme,
             source: aggregate_report_table,
             columnsresize: true,
