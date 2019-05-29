@@ -21,7 +21,6 @@
             <tr>
                 <th>Код</th>
                 <th width="300px">Территория/Медицинская организация</th>
-
                 @foreach( $structure['content'] as $index => $description)
                     <th title="{{ $description['value'] }}" width="100px">{{ $description['title'] }} </th>
                 @endforeach
@@ -30,7 +29,7 @@
             <tbody>
             @foreach($indexes as $index)
             <tr>
-                <td>{{ $index['unit_code'] }}</td>}
+                <td>{{ $index['unit_code'] }}</td>
                 <td>{{ $index['unit_name'] }}</td>
                 @for($i = 0; $i < $count_of_indexes; $i++)
                     <td>{{ $index[$i]['value'] }}</td>
