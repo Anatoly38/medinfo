@@ -17,12 +17,16 @@
     @include('reports.calc_error_alert')
     <div class="row">
         <table class="table table-bordered table-striped">
+            <colgroup>
+                <col style="width: 100px">
+                <col style="width: 300px">
+            </colgroup>
             <thead>
             <tr>
                 <th>Код</th>
-                <th width="300px">Территория/Медицинская организация</th>
+                <th>Территория/Медицинская организация</th>
                 @foreach( $structure['content'] as $index => $description)
-                    <th title="{{ $description['value'] }}" width="100px">{{ $description['title'] }} </th>
+                    <th title="{{ $description['value'] }}">{{ $description['title'] }} </th>
                 @endforeach
             </tr>
             </thead>
