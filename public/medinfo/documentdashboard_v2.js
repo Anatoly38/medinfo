@@ -22,7 +22,7 @@ let motree = $("#moTree");
 let ouarray = [];
 let oucount = 0;
 let grouptree = $("#groupTree");
-let periodTree = $("#periodTree");
+
 let stateList = $("#statesListbox");
 let dgrid = $("#Documents"); // сетка для первичных документов
 let primary_mo_bc = $("#mo_parents_breadcrumb");
@@ -32,7 +32,7 @@ let rgrid = $("#Recent"); // сетка для последних докумен
 let mondropdown = $("#monitoringSelector");
 let terr = $("#moSelectorByTerritories");
 let groups = $('#moSelectorByGroups');
-let periodDropDown = $('#periodSelector');
+
 let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
 let doc_id;
@@ -182,21 +182,7 @@ checkstatefilter = function() {
     return checkedstates.join();
 };
 
-checkPeriodFilter = function() {
-    let checkedperiods = [];
-    let checkedRows = periodTree.jqxTreeGrid('getCheckedRows');
-    if (typeof checkedRows !== 'undefined') {
-        for (let i = 0; i < checkedRows.length; i++) {
-            checkedperiods.push(checkedRows[i].id);
-        }
-    }
-    if (checkedperiods.length > 0) {
-        updateDropDown(periodDropDown, 'Отчетные периоды', 'Периоды выбраны', true );
-    } else {
-        updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
-    }
-    return checkedperiods.join();
-};
+
 
 checkDataPresenceFilter = function() {
     switch (true) {
@@ -522,6 +508,7 @@ initDropdowns = function () {
     }
     $("#clearAllFilters").click( clearAllFilters );
 };
+
 clearAllFilters = function (event) {
     let checkedMonitorings = montree.jqxTreeGrid('getCheckedRows');
     if (typeof checkedMonitorings !== 'undefined') {
@@ -545,7 +532,6 @@ clearAllFilters = function (event) {
     updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
     updateDropDown(statusDropDown, 'Статусы отчетов', 'Фильтр по статусам документов отключен', false );
     updateDropDown(dataPresenseDDown, 'Наличие данных', 'Фильтр на наличие данных отключен', false );
-
     updatedocumenttable();
 };
 initMonitoringTree = function () {
@@ -752,62 +738,7 @@ initGroupTree = function() {
         }
     );
 };
-// Ининциализация списка отчетных периодов
-initPeriodTree = function () {
-    let uncheckAll = $("#clearAllPeriods");
-    periodDropDown.jqxDropDownButton({width: 350, height: 32, theme: theme});
-    let periods_source =
-        {
-            datatype: "json",
-            datafields: [
-                { name: 'id' },
-                { name: 'name' }
-            ],
-            id: 'id',
-            localdata: periods
-        };
-    periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
-    periodTree.jqxTreeGrid(
-        {
-            width: 345,
-            height: 500,
-            theme: theme,
-            source: periodsDataAdapter,
-            selectionMode: "singleRow",
-            filterable: true,
-            filterMode: "simple",
-            checkboxes: true,
-            localization: localize(),
-            columnsResize: true,
-            ready: function()
-            {
-                periodTree.jqxTreeGrid('expandRow', 0);
-                for (let i = 0; i < checkedperiods.length; i++) {
-                    periodTree.jqxTreeGrid('checkRow', checkedperiods[i]);
-                }
-            },
-            columns: [
-                { text: 'Наименование', dataField: 'name', width: 345 }
-            ]
-        });
-    uncheckAll.click( function (event) {
-        let checkedRows = periodTree.jqxTreeGrid('getCheckedRows');
-        if (typeof checkedRows !== 'undefined') {
-            for (let i = 0; i < checkedRows.length; i++) {
-                periodTree.jqxTreeGrid('uncheckRow', checkedRows[i].id);
-            }
-        }
-    });
-    $("#applyPeriods").click( function (event) {
-        periodDropDown.jqxDropDownButton('close');
-        updatedocumenttable();
-    });
-    if (checkedperiods.length > 0) {
-        updateDropDown(periodDropDown, 'Отчетные периоды', 'Периоды выбраны', true );
-    } else {
-        updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
-    }
-};
+
 // инициализация списка статусов отчетного документа
 initStateList = function() {
     let checkAll = $("#checkAllStates");
@@ -1174,11 +1105,8 @@ filtersource = function() {
     let mon_forms = getCheckedMonsForms();
     let mf = mon_forms.mf.join();
     let periods = checkPeriodFilter();
-    //let forms = checkedforms.join();
     forms = mon_forms.f.join();
     monitorings = mon_forms.m.join();
-
-    //periods = checkedperiods.join();
     return '&filter_mode=' + filter_mode + '&ou=' +current_top_level_node +'&states='+states+
         '&monitorings='+monitorings+'&forms='+forms +'&periods=' + periods + '&mf=' + mf + '&filled=' + filled;
 };

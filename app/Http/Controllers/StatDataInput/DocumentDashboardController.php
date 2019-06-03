@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\StatDataInput;
 
+use App\PeriodsView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests;
@@ -51,7 +52,8 @@ class DocumentDashboardController extends Controller
         //$form_ids = $forms->pluck('value');
         $states = DicDocumentState::orderBy('code')->get();
         $state_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','states')->first(['value']);
-        $periods = Period::orderBy('begin_date', 'desc')->get(['id', 'name']);
+        //$periods = Period::orderBy('begin_date', 'desc')->get();
+        $periods = PeriodsView::all();
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
         //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
         $period_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','periods')->first(['value']);

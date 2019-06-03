@@ -33,7 +33,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="well well-sm">
-                                @include('jqxdatainput.periodfilter')
+                                @include('widgets.periodfilter')
                                 <div id="statusSelector">
                                     <button class="btn btn-default btn-sm" id="checkAllStates">Выбрать все</button>
                                     <button class="btn btn-default btn-sm" id="clearAllStates">Очистить</button>
@@ -224,7 +224,8 @@
 @endpush
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=001') }}"></script>
+    <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=002') }}"></script>
+    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=002') }}"></script>
 {{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else
