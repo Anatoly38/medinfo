@@ -182,8 +182,6 @@ checkstatefilter = function() {
     return checkedstates.join();
 };
 
-
-
 checkDataPresenceFilter = function() {
     switch (true) {
         case $("#alldoc").prop("checked") :
@@ -209,7 +207,6 @@ function updateDropDown(dd, caption, title, on) {
         dd.jqxDropDownButton('setContent', '<div style="margin: 9px">' + caption +'</div>');
     }
 }
-
 // обновление таблиц первичных и сводных документов в зависимости от выделенных форм, периодов, статусов документов
 updatedocumenttable = function() {
     let old_doc_url = docsource.url;
@@ -827,19 +824,20 @@ initdocumentstabs = function() {
             width: '100%',
             height: '90%',
             source: dgridDataAdapter,
-            localization: localize(),
+            localization: localize_docgrid(),
             theme: theme,
             columnsresize: true,
             showtoolbar: false,
-            //rendertoolbar: renderdoctoolbar,
+            pageable: true,
+            pagesizeoptions: ['10', '50', '100'],
+            pagesize: 50,
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
                 { text: 'Код МО', datafield: 'unit_code', width: 70 },
                 { text: 'Наименование МО', datafield: 'unit_name', width: '25%' },
                 { text: 'Мониторинг', datafield: 'monitoring', width: 320 },
                 { text: 'Код формы', datafield: 'form_code', width: 80 },
-                //{ text: 'Наименование формы', datafield: 'form_name', width: '20%' },
-                { text: 'Период', datafield: 'period', width: 120 },
+                { text: 'Период', datafield: 'period', width: 210 },
                 { text: 'Статус', datafield: 'state', width: 170, cellclassname: formStatusclass },
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
             ]
@@ -860,7 +858,6 @@ initdocumentstabs = function() {
         bc = makeMOBreadcrumb(row.ou_id);
         primary_mo_bc.html(bc);
         getDocumentMessages(doc_id);
-
         if ($("#DocumentInfoWindow").jqxWindow('isOpen')) {
             setDocInfo();
         }

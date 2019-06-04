@@ -24,7 +24,7 @@ raiseEventMessage = function(comment) {
     $("#eventNotification").jqxNotification("open");
 };
 localize = function() {
-    let localizationobj = {};
+    let localizationobj = getLocalization('ru');
     localizationobj.thousandsseparator = " ";
     localizationobj.decimalseparator = ',';
     localizationobj.emptydatastring = "Нет данных. Установите условия отбора отчетных документов";
@@ -33,6 +33,15 @@ localize = function() {
     localizationobj.filtersearchstring = "Поиск:";
     return localizationobj;
 };
+localize_docgrid = function() {
+    let localizationobj = getLocalization('ru');
+    //localizationobj.thousandsseparator = " ";
+    //localizationobj.decimalseparator = ',';
+    localizationobj.emptydatastring = "Нет данных. Установите условия отбора отчетных документов";
+    localizationobj.loadtext = "Загрузка";
+    return localizationobj;
+};
+
 initnotifications = function() {
     $("#serverErrorNotification").jqxNotification({
         width: 250, position: "top-right", opacity: 0.9,

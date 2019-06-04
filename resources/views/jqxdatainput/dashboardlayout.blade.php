@@ -65,9 +65,11 @@
 @if(config('medinfo.websocket'))
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 @endif
+
     <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>
-    <script src="{{ secure_asset('/medinfo/dashboard.js?v=095') }}"></script>
+    <script src="{{ secure_asset('/jqwidgets/globalization/globalize.js') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/localization.js?v=003') }}"></script>
+    <script src="{{ secure_asset('/medinfo/dashboard.js?v=096') }}"></script>
     <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=004') }}"></script>
     <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 {{--@if(config('medinfo.ssl_connection'))
