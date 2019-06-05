@@ -53,13 +53,15 @@ class DocumentDashboardController extends Controller
         $states = DicDocumentState::orderBy('code')->get();
         $state_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','states')->first(['value']);
         //$periods = Period::orderBy('begin_date', 'desc')->get();
+        $period_years = Period::groupBy('year')->orderBy('year')->pluck('year');
+        //dd($period_years);
         $periods = PeriodsView::all();
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
         //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
         $period_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','periods')->first(['value']);
         $filleddocs = WorkerSetting::where('worker_id', $worker->id)->where('name','filleddocs')->first(['value']);
-        return view('jqxdatainput.documentdashboard', compact( 'worker', 'worker_scope', 'last_scope', 'filter_mode', 'periods', 'period_ids',
-            'disabled_states', 'audit_permission', 'mf', 'mon_ids', 'form_ids', 'states', 'state_ids', 'filleddocs'));
+        return view('jqxdatainput.documentdashboard', compact( 'worker', 'worker_scope', 'last_scope', 'filter_mode', 'periods',
+            'period_years', 'period_ids', 'disabled_states', 'audit_permission', 'mf', 'mon_ids', 'form_ids', 'states', 'state_ids', 'filleddocs'));
     }
 
     public function fetch_monitorings()

@@ -2,13 +2,14 @@
 let periodTree = $("#periodTree");
 let periodDropDown = $('#periodSelector');
 
+
 initPeriodTree = function () {
     let uncheckAll = $("#clearAllPeriods");
     periodDropDown.jqxDropDownButton(
         {
             width: 350,
             height: 32,
-            dropDownWidth: 500,
+            dropDownWidth: 520,
             theme: theme
         });
     let periods_source =
@@ -40,7 +41,7 @@ initPeriodTree = function () {
             source: periodsDataAdapter,
             selectionMode: "singleRow",
             filterable: true,
-            filterMode: "simple",
+            filterMode: 'simple',
             localization: localize(),
             checkboxes: true,
             hierarchicalCheckboxes: true,
@@ -66,7 +67,7 @@ initPeriodTree = function () {
             periodTree.jqxTreeGrid('expandAll');
         }
     );
-   uncheckAll.click( function (event) {
+    uncheckAll.click( function (event) {
         let checkedRows = periodTree.jqxTreeGrid('getCheckedRows');
         if (typeof checkedRows !== 'undefined') {
             for (let i = 0; i < checkedRows.length; i++) {
@@ -83,6 +84,31 @@ initPeriodTree = function () {
     } else {
         updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
     }
+
+    $( "#filterYear").change(function() {
+        let year = $("#filterYear").val();
+        if (year === 'allperiods') {
+            periodTree.jqxTreeGrid('clearFilters');
+            periodTree.jqxTreeGrid('collapseAll');
+            periodTree.jqxTreeGrid('expandRow', 1000000);
+        } else {
+            applyFilter('year', year);
+        }
+
+    });
+};
+
+applyFilter = function (dataField, value) {
+    periodTree.jqxTreeGrid('clearFilters');
+    var filtertype = 'stringfilter';
+    var filtergroup = new $.jqx.filter();
+    var filter_or_operator = 1;
+    var filtervalue = value;
+    var filtercondition = 'equal';
+    var filter = filtergroup.createfilter(filtertype, filtervalue, filtercondition);
+    filtergroup.addfilter(filter_or_operator, filter);
+    periodTree.jqxTreeGrid('addFilter', dataField, filtergroup);
+    periodTree.jqxTreeGrid('applyFilters');
 };
 
 checkPeriodFilter = function() {

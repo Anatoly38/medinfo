@@ -35,8 +35,6 @@ localize = function() {
 };
 localize_docgrid = function() {
     let localizationobj = getLocalization('ru');
-    //localizationobj.thousandsseparator = " ";
-    //localizationobj.decimalseparator = ',';
     localizationobj.emptydatastring = "Нет данных. Установите условия отбора отчетных документов";
     localizationobj.loadtext = "Загрузка";
     return localizationobj;
