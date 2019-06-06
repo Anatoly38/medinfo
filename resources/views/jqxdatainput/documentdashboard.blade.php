@@ -89,64 +89,76 @@
                 </ul>
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" style="width: 100%; height: 100%">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h3 style="margin-left: 30px">Первичные отчеты</h3>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12" style="margin-left: 20px">
-                                <p class="text-info" id="mo_parents_breadcrumb">...</p>
-                            </div>
-                        </div>
-                        <div id="DocumentPanelSplitter">
+                        <div id="DocumentPanelSplitter" style="border-top-style: none">
                             <div class="row">
-                                <div class="col-md-12">
-                                    <form class="navbar-form navbar-left">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" style="width: 220px" id="searchUnit"  placeholder="Медицинская организация">
-                                            <div class="input-group-btn">
-                                                <button class="btn btn-default" id="clearFilter" type="button" title="Очистить фильтр">
-                                                    <i class="far fa-times"></i>
+                                <div class="col-md-12" style="display: flex; flex-flow: column; height: 100%">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h3>Первичные отчеты</h3>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p class="text-info" id="mo_parents_breadcrumb">...</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <form class="navbar-form navbar-left">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" style="width: 220px" id="searchUnit"  placeholder="Медицинская организация">
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-default" id="clearFilter" type="button" title="Очистить фильтр">
+                                                            <i class="far fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="btn-group">
+                                                <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
+                                                    <i class='fa fa-edit'></i>
+                                                </button>
+                                                <button class="btn btn-default navbar-btn" id="changeDocumentState" title="Изменить статус документа">
+                                                    <i class='far fa-tasks fa-lg'></i>
+                                                </button>
+                                                <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
+                                                    <i class='far fa-comment'></i>
                                                 </button>
                                             </div>
+                                            <div class="btn-group">
+                                                <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
+                                                    <i class='fal fa-file-word fa-lg'></i>
+                                                </button>
+                                                <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
+                                                    <i class='fal fa-file-excel fa-lg'></i>
+                                                </button>
+                                            </div>
+                                            <button class="btn btn-default navbar-btn" id="documentInfo" title="Информация о документе">
+                                                <i class='fas fa-info'></i>
+                                            </button>
+                                            <button class="btn btn-default navbar-btn" id="refreshPrimaryDocumentList" title="Обновить список документов">
+                                                <i class="far fa-sync-alt"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link pull-right" style="margin-top: 10px">Документов: <span id="totalrecords">0</span></button>
                                         </div>
-                                    </form>
-                                    <div class="btn-group">
-                                        <button class="btn btn-default navbar-btn" id="editPrimaryDocument" title="Редактировать форму">
-                                            <i class='fa fa-edit'></i>
-                                        </button>
-                                        <button class="btn btn-default navbar-btn" id="changeDocumentState" title="Изменить статус документа">
-                                            <i class='far fa-tasks fa-lg'></i>
-                                        </button>
-                                        <button class="btn btn-default navbar-btn" id="commentingDocument" title="Сообщение/комментарий к документу">
-                                            <i class='far fa-comment'></i>
-                                        </button>
                                     </div>
-                                    <div class="btn-group">
-                                        <button class="btn btn-default navbar-btn" id="documentWordExport" title="Экспорт в формат MS Word">
-                                            <i class='fal fa-file-word fa-lg'></i>
-                                        </button>
-                                        <button class="btn btn-default navbar-btn" id="documentExcelExport" title="Экспорт в формат MS Excel">
-                                            <i class='fal fa-file-excel fa-lg'></i>
-                                        </button>
+                                    <div class="row" style="flex-grow: 1; flex-shrink: 1; flex-basis: auto">
+                                        <div class="col-md-12" style="height: 100%; padding-left: 0; padding-right: 1px">
+                                            <div id="Documents"></div>
+                                        </div>
                                     </div>
-                                    <button class="btn btn-default navbar-btn" id="documentInfo" title="Информация о документе">
-                                        <i class='fas fa-info'></i>
-                                    </button>
-                                    <button class="btn btn-default navbar-btn" id="refreshPrimaryDocumentList" title="Обновить список документов">
-                                        <i class="far fa-sync-alt"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-link pull-right" style="margin-top: 10px">Документов: <span id="totalrecords">0</span></button>
                                 </div>
-                                <div id="Documents"></div>
                             </div>
                             <div class="jqx-hideborder">
                                 {{--<div id="DocumentPropertiesSplitter">--}}
-                                    <div id="messagesExpander" class="panel panel-default panel" style="height: 95%">
-                                        <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
-                                        <div id="DocumentMessages" class="panel-body" style="height: 85%; padding: 0; overflow-y: auto"></div>
+                                <div class="row" style="height: 100%">
+                                    <div class="col-md-12" style="height: 100%">
+                                        <div id="messagesExpander" class="panel panel-default panel" style="display: flex; flex-flow: column; height: 100%">
+                                            <div id="messagesTitle" class="panel-heading">Сообщения и комментарии <a href="#" id="openMessagesListWindow"><...></a></div>
+                                            <div id="DocumentMessages" class="panel-body" style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; padding: 0; overflow-y: auto" ></div>
+                                        </div>
                                     </div>
+                                </div>
     {{--                                <div class="jqx-hideborder" >
                                         <div id="auditExpander">
                                             <div>Статус проверки документа <a href="#" id="openAuditionListWindow"><...></a></div>
@@ -224,8 +236,8 @@
 @endpush
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=003') }}"></script>
-    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=003') }}"></script>
+    <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=004') }}"></script>
+    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=007') }}"></script>
 {{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else

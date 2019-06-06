@@ -67,10 +67,10 @@ initSplitters = function () {
     );
     $('#DocumentPanelSplitter').jqxSplitter({
         width: '100%',
-        height: '95%',
+        height: '100%',
         theme: theme,
         orientation: 'horizontal',
-        panels: [{ size: '65%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
+        panels: [{ size: '70%', min: 100, collapsible: false }, { min: '100px', collapsible: true}]
     });
 };
 // Инициализация источников данных для таблиц
@@ -809,9 +809,9 @@ initDataPresens = function() {
 // инициализация вкладок с документами
 initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
-    //let bc = makeMOBreadcrumb(current_top_level_node);
-    //primary_mo_bc.html(bc);
+    // Инициализация таблицы первичных документов
     dgrid.on("bindingcomplete", function (event) {
+        dgrid.jqxGrid({ pageable: true});
         let reccount = dgridDataAdapter.totalrecords;
         $("#totalrecords").html(reccount);
         if (reccount === 0) {
@@ -822,24 +822,23 @@ initdocumentstabs = function() {
     dgrid.jqxGrid(
         {
             width: '100%',
-            height: '90%',
+            height: '100%',
             source: dgridDataAdapter,
             localization: localize_docgrid(),
             theme: theme,
             columnsresize: true,
             showtoolbar: false,
-            pageable: true,
             pagesizeoptions: ['10', '50', '100'],
             pagesize: 50,
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
-                { text: 'Код МО', datafield: 'unit_code', width: 70 },
-                { text: 'Наименование МО', datafield: 'unit_name', width: '25%' },
-                { text: 'Мониторинг', datafield: 'monitoring', width: 320 },
-                { text: 'Код формы', datafield: 'form_code', width: 80 },
-                { text: 'Период', datafield: 'period', width: 210 },
-                { text: 'Статус', datafield: 'state', width: 170, cellclassname: formStatusclass },
-                { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
+                { text: 'Код МО', datafield: 'unit_code', width: '70px' },
+                { text: 'Наименование МО', datafield: 'unit_name', width: '30%' },
+                { text: 'Мониторинг', datafield: 'monitoring', width: '320px' },
+                { text: 'Код формы', datafield: 'form_code', width: '80px' },
+                { text: 'Период', datafield: 'period', width: '240px' },
+                { text: 'Статус', datafield: 'state', width: '170px', cellclassname: formStatusclass },
+                { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: '90px' }
             ]
         });
     dgrid.on('rowselect', function (event)
@@ -869,6 +868,12 @@ initdocumentstabs = function() {
         let document_id = dgrid.jqxGrid('getrowid', rowindex);
         let editWindow = window.open(edit_form_url + document_id);
     });
+    // Инициализация таблицы сводных документов
+    agrid.on("bindingcomplete", function (event) {
+        let reccount = aggregate_report_table.totalrecords;
+        $("#totalaggregates").html(reccount);
+        agrid.jqxGrid('selectrow', 0);
+    });
     agrid.jqxGrid(
         {
             width: '100%',
@@ -890,11 +895,6 @@ initdocumentstabs = function() {
                 { text: 'Данные', datafield: 'filled', columntype: 'checkbox', width: 120 }
             ]
         });
-    agrid.on("bindingcomplete", function (event) {
-        let reccount = aggregate_report_table.totalrecords;
-        $("#totalaggregates").html(reccount);
-        agrid.jqxGrid('selectrow', 0);
-    });
     agrid.on('rowdoubleclick', function (event)
     {
         let args = event.args;
@@ -929,6 +929,9 @@ function getDocumentMessages(document_id) {
             }
             else {
                 let items = [];
+                let html = '<table class="table table-bordered table-condensed table-hover table-striped">';
+                html += '<colgroup><col style="width: 120px"><col style="width: 300px"><col style="width: 70%"></colgroup>';
+                html += '<thead><tr><th>Дата</th><th>Автор</th><th>Сообщение</th></tr></thead>';
                 $.each( data, function( key, val ) {
                     let worker = 'н/д';
                     let description = '';
@@ -964,9 +967,9 @@ function getDocumentMessages(document_id) {
                     //let m = "<tr class='"+ mark_as_unread + "'>";
                     let m = "<tr class='"+ "'>";
                     m += "<td style='width: 120px'><p class='text-info'>" + formatDate(val.created_at) + "</p></td>";
-                    m += '<td style="width: 20%">' +
+                    m += '<td style="width: 300px">' +
                         '<div class="dropdown">' +
-                        '  <button class="btn btn-sm btn-link dropdown-toggle" style="padding: 0" type="button" id="menu1" data-toggle="dropdown">' + description + '</button>' +
+                        '  <p class="dropdown-toggle text-info" style="padding: 0; text-underline: #1c4000" id="menu1" data-toggle="dropdown">' + description + '</p>' +
                         '  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">' +
                         '    <li role="presentation"><a role="menuitem" href="mailto:' + val.worker.email + '?subject=Вопрос по заполнению формы ' + current_document_form_code +'">' +
                         '       <small>e-mail: ' + val.worker.email + '</small></a></li>' +
@@ -975,11 +978,11 @@ function getDocumentMessages(document_id) {
                         '  </ul>' +
                         '</div>' +
                         '</td>';
-                    m += "<td><p class='text-info'>" + val.message + "</p></td>";
+                    m += "<td style='width: 70%'><p class='text-info'>" + val.message + "</p></td>";
                     m +="</tr>";
                     items.push(m);
                 });
-                $("#DocumentMessages").html("<table class='table table-bordered table-condensed table-hover table-striped' style='width: 100%'>" + items.join( "" ) + "</table>");
+                $("#DocumentMessages").html(html + items.join( "" ) + "</table>");
             }
         },
         error: xhrErrorNotificationHandler

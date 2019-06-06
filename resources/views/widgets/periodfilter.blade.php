@@ -2,10 +2,10 @@
     <div class="row">
         <div class="col-md-12">
             <form class="navbar-form navbar-left">
-                <label class="radio-inline"><input type="radio" name="optradio" checked>Все периоды</label>
-                <label class="radio-inline"><input type="radio" name="optradio">Годовые</label>
-                <label class="radio-inline"><input type="radio" name="optradio">Квартальные</label>
-                <label class="radio-inline"><input type="radio" name="optradio">Месячные</label>
+                <label class="radio-inline periodtype"><input type="radio" name="periodtype" value="0" checked >Все периоды</label>
+                <label class="radio-inline periodtype"><input type="radio" name="periodtype" value="1" >Годовые</label>
+                <label class="radio-inline periodtype"><input type="radio" name="periodtype" value="3" >Квартальные</label>
+                <label class="radio-inline periodtype"><input type="radio" name="periodtype" value="5" >Месячные</label>
             </form>
         </div>
     </div>

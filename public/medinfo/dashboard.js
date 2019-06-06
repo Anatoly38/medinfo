@@ -467,7 +467,7 @@ function initChangeState() {
             let selected_state;
             radiostates.each(function() {
                 if ($(this).jqxRadioButton('checked')) {
-                    selected_state = $(this).attr('id');
+                    selected_state = $(this).prop('id');
                 }
             });
             if (selected_state === stateCodeIds[docstate_id] ) {

@@ -2,7 +2,6 @@
 let periodTree = $("#periodTree");
 let periodDropDown = $('#periodSelector');
 
-
 initPeriodTree = function () {
     let uncheckAll = $("#clearAllPeriods");
     periodDropDown.jqxDropDownButton(
@@ -22,6 +21,7 @@ initPeriodTree = function () {
                 { name: 'year', type: 'string' },
                 { name: 'begin_date', type: 'date' },
                 { name: 'end_date', type: 'date' },
+                { name: 'periodicity', map: 'periodpattern>periodicity', type: 'int' }
             ],
             hierarchy:
                 {
@@ -33,6 +33,7 @@ initPeriodTree = function () {
             localdata: periods
         };
     periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
+    console.log(periodsDataAdapter);
     periodTree.jqxTreeGrid(
         {
             width: '100%',
@@ -85,7 +86,7 @@ initPeriodTree = function () {
         updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
     }
 
-    $( "#filterYear").change(function() {
+    $("#filterYear").change(function() {
         let year = $("#filterYear").val();
         if (year === 'allperiods') {
             periodTree.jqxTreeGrid('clearFilters');
@@ -94,18 +95,34 @@ initPeriodTree = function () {
         } else {
             applyFilter('year', year);
         }
+    });
 
+    $(".periodtype").change(function() {
+        //console.log($("input[name='periodtype'][value='1']").prop('checked'));
+        //console.log($("input[name='periodtype'][value='1']").is(":checked"));
+        switch (true) {
+            case $("input[name='periodtype'][value='1']").prop('checked') :
+                applyFilter('periodicity', '1');
+                break;
+            case $("input[name='periodtype'][value='3']").prop('checked') :
+                applyFilter('periodicity', '3');
+                break;
+            default:
+                periodTree.jqxTreeGrid('clearFilters');
+                periodTree.jqxTreeGrid('collapseAll');
+                periodTree.jqxTreeGrid('expandRow', 1000000);
+        }
     });
 };
 
 applyFilter = function (dataField, value) {
     periodTree.jqxTreeGrid('clearFilters');
-    var filtertype = 'stringfilter';
-    var filtergroup = new $.jqx.filter();
-    var filter_or_operator = 1;
-    var filtervalue = value;
-    var filtercondition = 'equal';
-    var filter = filtergroup.createfilter(filtertype, filtervalue, filtercondition);
+    let filtertype = 'stringfilter';
+    let filtergroup = new $.jqx.filter();
+    let filter_or_operator = 1;
+    let filtervalue = value;
+    let filtercondition = 'equal';
+    let filter = filtergroup.createfilter(filtertype, filtervalue, filtercondition);
     filtergroup.addfilter(filter_or_operator, filter);
     periodTree.jqxTreeGrid('addFilter', dataField, filtergroup);
     periodTree.jqxTreeGrid('applyFilters');

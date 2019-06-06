@@ -8,4 +8,9 @@ class PeriodsView extends Model
 {
     //
     protected $table = 'periods_view';
+
+    public function periodpattern()
+    {
+        return $this->belongsTo('App\PeriodPattern', 'pattern_id');
+    }
 }

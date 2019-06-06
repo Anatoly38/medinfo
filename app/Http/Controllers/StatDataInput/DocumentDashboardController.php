@@ -55,7 +55,7 @@ class DocumentDashboardController extends Controller
         //$periods = Period::orderBy('begin_date', 'desc')->get();
         $period_years = Period::groupBy('year')->orderBy('year')->pluck('year');
         //dd($period_years);
-        $periods = PeriodsView::all();
+        $periods = PeriodsView::with('periodpattern')->get();
         // Периоды отображаемые по умолчанию (поставил последний и предпоследний по датам убывания)
         //$period_ids = $periods[0]->id . ',' . $periods[1]->id;
         $period_ids = WorkerSetting::where('worker_id', $worker->id)->where('name','periods')->first(['value']);
