@@ -24,9 +24,9 @@ class CreatePeriodsView extends Migration
                 )
             AS
              SELECT 
-                NULL::character AS "year",
+                NULL::character(4) AS "year",
                 1000000::integer AS id,
-                \'Периоды\'::character AS name,
+                \'Периоды\'::character(8) AS name,
                 NULL::integer AS pattern_id,
                 NULL::integer AS parent_id,
                 NULL::date AS begin_date,
