@@ -106,7 +106,7 @@
                                         <div class="col-md-12">
                                             <form class="navbar-form navbar-left">
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control" style="width: 220px" id="searchUnit"  placeholder="Медицинская организация">
+                                                    <input type="text" class="form-control" style="width: 220px" id="searchUnit" spellcheck="false" placeholder="Медицинская организация">
                                                     <div class="input-group-btn">
                                                         <button class="btn btn-default" id="clearFilter" type="button" title="Очистить фильтр">
                                                             <i class="far fa-times"></i>
@@ -237,7 +237,7 @@
 
 @push('loadjsscripts')
     <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=004') }}"></script>
-    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=007') }}"></script>
+    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=008') }}"></script>
 {{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else

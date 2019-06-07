@@ -8,7 +8,7 @@ initPeriodTree = function () {
         {
             width: 350,
             height: 32,
-            dropDownWidth: 520,
+            dropDownWidth: 550,
             theme: theme
         });
     let periods_source =
@@ -58,6 +58,7 @@ initPeriodTree = function () {
             columns: [
                 { text: 'Наименование', dataField: 'name', width: '70%' },
                 { text: 'Отчетный год', dataField: 'year', width: '30%' },
+                { text: 'Периодичность', dataField: 'periodicity', width: '30px', hidden: true }
             ]
         });
     periodTree.on('filter',
@@ -76,20 +77,25 @@ initPeriodTree = function () {
             }
         }
     });
+    $("#collapseAllPeriods").click( function (event) {
+        periodTree.jqxTreeGrid('collapseAll');
+        periodTree.jqxTreeGrid('expandRow', 1000000);
+    });
+    $("#expandAllPeriods").click( function (event) {
+        periodTree.jqxTreeGrid('expandAll');
+    });
+
     $("#applyPeriods").click( function (event) {
         periodDropDown.jqxDropDownButton('close');
         updatedocumenttable();
     });
-    if (checkedperiods.length > 0) {
-        updateDropDown(periodDropDown, 'Отчетные периоды', 'Периоды выбраны', true );
-    } else {
-        updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
-    }
+
 
     $("#filterYear").change(function() {
         let year = $("#filterYear").val();
+        periodTree.jqxTreeGrid('removeFilter', 'year');
         if (year === 'allperiods') {
-            periodTree.jqxTreeGrid('clearFilters');
+            //periodTree.jqxTreeGrid('clearFilters');
             periodTree.jqxTreeGrid('collapseAll');
             periodTree.jqxTreeGrid('expandRow', 1000000);
         } else {
@@ -97,27 +103,50 @@ initPeriodTree = function () {
         }
     });
 
-    $(".periodtype").change(function() {
-        //console.log($("input[name='periodtype'][value='1']").prop('checked'));
-        //console.log($("input[name='periodtype'][value='1']").is(":checked"));
+    $("#filterType").change(function() {
+        let periodtype = $("#filterType").val();
+        periodTree.jqxTreeGrid('removeFilter', 'periodicity');
+        if (periodtype === '0') {
+            periodTree.jqxTreeGrid('collapseAll');
+            periodTree.jqxTreeGrid('expandRow', 1000000);
+        } else {
+            applyFilter('periodicity', periodtype);
+        }
+    });
+
+/*    $(".periodtype").change(function() {
+        periodTree.jqxTreeGrid('removeFilter', 'periodicity');
         switch (true) {
             case $("input[name='periodtype'][value='1']").prop('checked') :
-                applyFilter('periodicity', '1');
+                applyFilter('periodicity', 1);
                 break;
             case $("input[name='periodtype'][value='3']").prop('checked') :
-                applyFilter('periodicity', '3');
+                applyFilter('periodicity', 3);
+                break;
+            case $("input[name='periodtype'][value='5']").prop('checked') :
+                applyFilter('periodicity', 5);
                 break;
             default:
-                periodTree.jqxTreeGrid('clearFilters');
                 periodTree.jqxTreeGrid('collapseAll');
                 periodTree.jqxTreeGrid('expandRow', 1000000);
         }
-    });
+    });*/
+
+    if (checkedperiods.length > 0) {
+        updateDropDown(periodDropDown, 'Отчетные периоды', 'Периоды выбраны', true );
+    } else {
+        updateDropDown(periodDropDown, 'Отчетные периоды', 'Фильтр по отчетным периодам отключен', false );
+    }
+
 };
 
 applyFilter = function (dataField, value) {
-    periodTree.jqxTreeGrid('clearFilters');
-    let filtertype = 'stringfilter';
+    let filtertype ='';
+    if (typeof value == 'number'){
+        filtertype = 'numericfilter';
+    } else {
+        filtertype = 'stringfilter';
+    }
     let filtergroup = new $.jqx.filter();
     let filter_or_operator = 1;
     let filtervalue = value;

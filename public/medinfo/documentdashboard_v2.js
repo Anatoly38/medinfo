@@ -828,8 +828,10 @@ initdocumentstabs = function() {
             theme: theme,
             columnsresize: true,
             showtoolbar: false,
+            pagermode: "simple",
             pagesizeoptions: ['10', '50', '100'],
             pagesize: 50,
+            pagerbuttonscount: 12,
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
                 { text: 'Код МО', datafield: 'unit_code', width: '70px' },
