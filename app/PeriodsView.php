@@ -13,4 +13,9 @@ class PeriodsView extends Model
     {
         return $this->belongsTo('App\PeriodPattern', 'pattern_id');
     }
+
+    public function documents()
+    {
+        return $this->hasMany('App\Document', 'period_id', 'id');
+    }
 }

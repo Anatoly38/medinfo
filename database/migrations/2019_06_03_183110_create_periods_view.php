@@ -51,7 +51,7 @@ class CreatePeriodsView extends Migration
                  begin_date,
                  end_date
                 FROM periods
-            ORDER BY 1;');
+            ORDER BY 1,4,6;');
     }
 
     /**
