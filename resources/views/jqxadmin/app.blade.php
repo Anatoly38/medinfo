@@ -18,17 +18,14 @@
     </style>
     <title id="Description">@yield('headertitle')</title>
     <!-- Bootstrap core CSS -->
-    <link href="{{ asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- jQWidgets CSS -->
-    <link href="{{ asset('/jqwidgets/styles/jqx.base.css?v=004') }}" rel="stylesheet">
-    <link href="{{ asset('/jqwidgets/styles/jqx.bootstrap.css?v=001') }}" rel="stylesheet">
-    {{--<link href="{{ asset('/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">--}}
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=005') }}" rel="stylesheet">
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css?v=001') }}" rel="stylesheet">
     <link href="{{ secure_asset('/fa582/css/all.min.css') }}" rel="stylesheet" type="text/css">
 </head>
 
 <body>
-{{--<div id="alertmessage" class="col-md-4 "></div>--}}
-
 <div class="container-fluid" >
     @include('jqxadmin.navbar')
     <div id="content" style="display: none">
@@ -42,10 +39,10 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 {{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>--}}
-<script src="{{ asset('/jqwidgets/jqx-all.js?v=003') }}"></script>
-<script src="{{ asset('/jqwidgets/localization.js') }}"></script>
-<script src="{{ asset('/medinfo/admin/admin.js?v=004') }}"></script>
-<script src="{{ asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+<script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=003') }}"></script>
+<script src="{{ secure_asset('/jqwidgets/localization.js') }}"></script>
+<script src="{{ secure_asset('/medinfo/admin/admin.js?v=004') }}"></script>
+<script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 @stack('loadjsscripts')
 <script type="text/javascript">
     let theme = 'bootstrap';

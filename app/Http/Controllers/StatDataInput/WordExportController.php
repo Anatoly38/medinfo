@@ -37,7 +37,17 @@ class WordExportController extends Controller
         $this->unit = UnitsView::find($document->ou_id);
         $this->form = Form::getRealForm($document->form_id);
         $this->period = Period::find($document->period_id);
-        $this->openTemplate();
+        try {
+            $this->openTemplate();
+        } catch (\Exception $e ) {
+            if ($e->getCode() === 404) {
+                return view('errors.word_template_absent');
+            }
+        }
+
+
+
+
         $this->modifyDOM();
         $this->saveWordDocument();
         return response()->download($this->path);
@@ -47,7 +57,7 @@ class WordExportController extends Controller
         $template_path = storage_path('app/templates/word/' . rtrim($this->form->short_ms_code) .'.docx');
         //dd($template_path);
         if (!is_file($template_path)) {
-            throw new \Exception('Файл шаблона отчета не существует');
+            throw new \Exception('Файл шаблона отчета не существует', 404);
         }
         $export_path = storage_path(WordExportController::EXPORT_PATH . $this->document->id . '.docx');
         if (copy($template_path, $export_path)) {
