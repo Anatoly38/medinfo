@@ -5,8 +5,8 @@
     <div class="container">
         <!-- Jumbotron -->
         <div class="jumbotron">
-            <h1><i class="fa fa-frown-o red"></i> {{ 'Ошибка 4004' }}</h1>
-            <p class="lead">Шаблон для экспорта документа в формате <em>MS WORD</em> не найден.</p>
+            <h1><i class="fa fa-frown-o red"></i>Ошибка 4004</h1>
+            <p class="lead">Шаблон для экспорта документа по форме "{{ $form->form_code }}" в формате <em>MS WORD</em> не найден.</p>
             <p><a onclick="checkSite();" class="btn btn-default btn-lg"><span class="green">Вернуться на начальную страницу</span></a>
                 <script type="text/javascript">
                     function checkSite(){
