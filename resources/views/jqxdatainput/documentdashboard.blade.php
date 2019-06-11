@@ -237,7 +237,7 @@
 
 @push('loadjsscripts')
     <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=005') }}"></script>
-    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=010') }}"></script>
+    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=011') }}"></script>
 {{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else
@@ -261,8 +261,6 @@
         let checkedfilled = '{{ $filleddocs->value or '-1' }}';
         let disabled_states = [{!! $disabled_states or '' !!}];
         let filter_mode = {!! $filter_mode->value or 1 !!}; // 1 - по территориям; 2 - по группам
-        //let current_top_level_node = '{{ is_null($worker_scope) ? 'null' : $worker_scope }}';
-        //let current_top_level_node = {{ is_null($worker_scope) ? 0 : $worker_scope }};
         let current_top_level_node = {{ is_null($last_scope) ? $worker_scope : $last_scope }};
         let current_filter = '&filter_mode=' + filter_mode + '&ou=' + lasstscope + '&states='
             + checkedstates.join() + '&mf=' + checkedmf.join() + '&monitorings=' + checkedmonitorings.join()

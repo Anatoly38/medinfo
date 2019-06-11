@@ -35,8 +35,14 @@ class FormAdminController extends Controller
     {
         // TODO: Добавить проверку для кода формы -  допустимые символы: цифры, строчные кириллические буквы, точка, дефис
         $this->validate($request, $this->validateRules());
+        if (!Form::isValidFormCode($request->form_code)) {
+            return ['error' => 5003, 'message' => 'Новая запись не создана. Код формы содержит недопустимые символы.'];
+        }
         try {
-            $newform = Form::create(['form_index' => $request->form_index, 'form_name' => $request->form_name, 'form_code' => $request->form_code] );
+            $newform = new Form();
+            $newform->form_index = $request->form_index;
+            $newform->form_name = $request->form_name;
+            $newform->form_code = $request->form_code;
             $newform->medstat_code = empty($request->medstat_code) ? null : $request->medstat_code;
             $newform->short_ms_code = empty($request->short_ms_code) ? null : $request->short_ms_code;
             $newform->relation = empty($request->relation) ? null : (int)$request->relation;
@@ -54,7 +60,9 @@ class FormAdminController extends Controller
     public function update(Request $request, Form $form)
     {
         $this->validate($request, $this->validateRules());
-        //$form = Form::find($request->id);
+        if (!Form::isValidFormCode($request->form_code)) {
+            return ['error' => 5003, 'message' => 'Запись не сохранена. Код формы содержит недопустимые символы.'];
+        }
         $form->form_index = $request->form_index;
         $form->form_code = $request->form_code;
         $form->form_name = $request->form_name;

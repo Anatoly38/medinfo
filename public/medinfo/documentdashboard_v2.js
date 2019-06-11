@@ -320,6 +320,7 @@ mo_name_aggrfilter = function (needle) {
 // Новый рендеринг панели инструментов для первичных документов
 primaryDocToolbar = function() {
     let searchField = $("#searchUnit");
+    let di = $("#documentInfo");
     let oldVal = '';
     let me = {};
     searchField.on('keydown', function (event) {
@@ -443,7 +444,7 @@ primaryDocToolbar = function() {
             raiseError('Не выбран документ для экспорта в MS Excel');
         }
     });
-    $("#documentInfo").click(function () {
+    di.click(function () {
         $("#DocumentInfoWindow").jqxWindow('open');
     });
     $("#refreshPrimaryDocumentList").click(function () {
@@ -453,6 +454,9 @@ primaryDocToolbar = function() {
         $("#DocumentAuditions").html('');
     });
 
+    if (current_user_role === '1' || current_user_role === '2') {
+        di.hide();
+    }
 };
 // Новый рендеринг панели инструментов для сводных документов
 aggregateDocToolbar = function() {

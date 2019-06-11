@@ -80,4 +80,13 @@ class Form extends Model
         }
     }
 
+    public static function isValidFormCode($code)
+    {
+        if (preg_match('/^[а-я0-9.-]+\z/u', $code) === 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

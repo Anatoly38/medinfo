@@ -386,6 +386,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/sectioncheck', 'Tests\SectionCheckTestController@SectionCheckTest');
     Route::get('tests/limitsection', 'Tests\SectionCheckTestController@setLimitByFormSection');
     Route::get('tests/foldcheck', 'Tests\ControlFunctionTestController@fold');
+    Route::get('tests/comparecheck', 'Tests\ControlFunctionTestController@compare');
     // mail test
     Route::get('mailtest', 'Tests\MailerTestController@testmail');
     // websocket test
