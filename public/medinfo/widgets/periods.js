@@ -33,7 +33,6 @@ initPeriodTree = function () {
             localdata: periods
         };
     periodsDataAdapter = new $.jqx.dataAdapter(periods_source);
-    console.log(periodsDataAdapter);
     periodTree.jqxTreeGrid(
         {
             width: '100%',

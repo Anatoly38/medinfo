@@ -574,6 +574,12 @@ initDocumentInfoWindow = function() {
 function setDocInfo() {
     let docinfo_url = '/datainput/fetchdocinfo/';
     let docinfoWindow = $('#DocumentInfoWindow');
+
+    if (doc_id === null) {
+        raiseError('Не выбран документ для вывода информации');
+        return false;
+    }
+
     docinfoWindow.jqxWindow('setTitle', 'Сводная информация по документу №' + doc_id);
     $.getJSON( docinfo_url + doc_id, function( data ) {
         let rec = data.records;

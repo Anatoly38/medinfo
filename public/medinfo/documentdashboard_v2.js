@@ -35,7 +35,7 @@ let groups = $('#moSelectorByGroups');
 
 let statusDropDown = $('#statusSelector');
 let dataPresenseDDown = $('#dataPresenceSelector');
-let doc_id;
+let doc_id = null;
 let docstate_id;
 let current_document_form_code;
 let current_document_form_name;
@@ -348,6 +348,10 @@ primaryDocToolbar = function() {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         if (rowindex !== -1 && typeof rowindex !== 'undefined') {
             let document_id = dgrid.jqxGrid('getrowid', rowindex);
+            if (document_id === null) {
+                raiseError('Не выбран документ для редактирования');
+                return false;
+            }
             let editWindow = window.open(edit_form_url + document_id);
         }
     });
@@ -355,14 +359,16 @@ primaryDocToolbar = function() {
     $("#changeDocumentState").click(function () {
         let stateWindow = $('#changeStateWindow');
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        //let alert_message;
         let this_document_state = '';
-        if (rowindex === -1 && typeof rowindex !== 'undefined') {
+        if (rowindex === -1 || typeof rowindex === 'undefined') {
+            raiseError('Не выбран документ для для смены статуса');
             return false;
         }
-        //let offset = dgrid.offset();
-        //stateWindow.jqxWindow({ position: { x: parseInt(offset.left) + 100, y: parseInt(offset.top) + 100 } });
         let data = dgrid.jqxGrid('getrowdata', rowindex);
+        if (typeof data === 'undefined') {
+            raiseError('Не выбран документ для смены статуса');
+            return false;
+        }
         if (!data.filled && current_user_role === '1') {
             raiseError('Внимание! Документ не содержит данные. Необходимо, В ОБЯЗАТЕЛЬНОМ ПОРЯДКЕ, пояснить в сообщении по какой причине!');
             $("#statusChangeMessage").val('Документ не заполнен по причине: ');
@@ -408,7 +414,12 @@ primaryDocToolbar = function() {
     $("#commentingDocument").click(function () {
         let sm = $("#sendMessageWindow");
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
-        if (rowindex === -1) {
+        if (rowindex === -1 || typeof rowindex === 'undefined') {
+            raiseError('Не выбран документ для отправки сообщения/комментирования');
+            return false;
+        }
+        if (doc_id === null) {
+            raiseError('Не выбран документ для отправки сообщения/комментирования');
             return false;
         }
         $("#message").val("");
@@ -417,15 +428,19 @@ primaryDocToolbar = function() {
     $("#documentWordExport").click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         let document_id = dgrid.jqxGrid('getrowid', rowindex);
-        if (rowindex !== -1) {
+        if (document_id !== null) {
             location.replace(export_word_url + document_id);
+        } else {
+            raiseError('Не выбран документ для экспорта в MS Word');
         }
     });
     $("#documentExcelExport").click(function () {
         let rowindex = dgrid.jqxGrid('getselectedrowindex');
         let document_id = dgrid.jqxGrid('getrowid', rowindex);
-        if (rowindex !== -1) {
+        if (document_id !== null) {
             location.replace(export_form_url + document_id);
+        } else {
+            raiseError('Не выбран документ для экспорта в MS Excel');
         }
     });
     $("#documentInfo").click(function () {
@@ -848,6 +863,7 @@ initdocumentstabs = function() {
         let row = event.args.row;
         let bc = '';
         if (typeof row === 'undefined') {
+            doc_id = null;
             return false;
         }
         doc_id = row.id;

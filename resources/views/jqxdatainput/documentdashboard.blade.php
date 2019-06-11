@@ -236,8 +236,8 @@
 @endpush
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=004') }}"></script>
-    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=008') }}"></script>
+    <script src="{{ secure_asset('/medinfo/widgets/periods.js?v=005') }}"></script>
+    <script src="{{ secure_asset('/medinfo/documentdashboard_v2.js?v=010') }}"></script>
 {{--    @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/documentdashboard.js?v=181') }}"></script>
     @else

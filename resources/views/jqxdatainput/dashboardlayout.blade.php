@@ -69,7 +69,7 @@
     <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/globalization/globalize.js') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/localization.js?v=003') }}"></script>
-    <script src="{{ secure_asset('/medinfo/dashboard.js?v=097') }}"></script>
+    <script src="{{ secure_asset('/medinfo/dashboard.js?v=098') }}"></script>
     <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=004') }}"></script>
     <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 
