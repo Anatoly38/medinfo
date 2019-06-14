@@ -56,7 +56,7 @@ class TableAdminController extends Controller
         $this->validate($request, [
                 'form_id' => 'required|integer|exists:forms,id',
                 'table_name' => 'required|max:256',
-                'table_code' => 'required|max:4',
+                'table_code' => 'required|digits:4',
                 'table_index' => 'integer',
                 'medstat_code' => 'digits:4',
                 'medstatnsk_id' => 'integer',
@@ -110,6 +110,7 @@ class TableAdminController extends Controller
         $this->validate($request, [
                 'table_name' => 'required',
                 'table_index' => 'integer',
+                'table_code' => 'required|digits:4',
                 'transposed' => 'boolean',
                 'medstat_code' => 'digits:4',
                 'medstatnsk_id' => 'integer',

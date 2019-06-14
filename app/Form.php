@@ -89,4 +89,10 @@ class Form extends Model
         }
     }
 
+    public static function invalidCharactersInFormCode($code)
+    {
+        $contains = preg_match_all('/[^а-я^0-9^.^-]+/u', $code, $matches, PREG_PATTERN_ORDER);
+        return $matches;
+    }
+
 }

@@ -273,7 +273,7 @@ class ControlFunctionLexer extends Lexer
         $c = '';
         $rc = '';
         $p = '';
-        if ($this->c == 'Ф') {
+        if ($this->c === 'Ф') {
             do {
                 //$buf .= $this->c;
                 $f .= $this->c;
@@ -281,7 +281,7 @@ class ControlFunctionLexer extends Lexer
             } while ($this->isFORMCODE());
 
         }
-        if ($this->c == 'Т') {
+        if ($this->c === 'Т') {
             do {
                 $t .= $this->c;
                 $this->consume();
@@ -289,7 +289,7 @@ class ControlFunctionLexer extends Lexer
 
         }
         // Если не указан код таблицы, код формы обнуляем (это ошибка)
-        if ($this->c == 'С') {
+        if ($this->c === 'С') {
             do {
                 $r .= $this->c;
                 $this->consume();
@@ -298,7 +298,7 @@ class ControlFunctionLexer extends Lexer
         // Если код строки пуст, то убираем и ссылки на форму и таблицу.
         // "Неполные" адреса строк и граф могут относится только к текущей форме
 
-        if ($this->c == 'Г') {
+        if ($this->c === 'Г') {
             do {
                 $c .= $this->c;
                 $this->consume();

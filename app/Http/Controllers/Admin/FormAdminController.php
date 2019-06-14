@@ -36,7 +36,9 @@ class FormAdminController extends Controller
         // TODO: Добавить проверку для кода формы -  допустимые символы: цифры, строчные кириллические буквы, точка, дефис
         $this->validate($request, $this->validateRules());
         if (!Form::isValidFormCode($request->form_code)) {
-            return ['error' => 5003, 'message' => 'Новая запись не создана. Код формы содержит недопустимые символы.'];
+            $invalid_symbols = Form::invalidCharactersInFormCode($request->form_code);
+
+            return ['error' => 5003, 'message' => 'Новая запись не создана. Код формы содержит недопустимые символы: ' . implode(' ', $invalid_symbols[0]) , 'invalid_symbols' => $invalid_symbols[0] ];
         }
         try {
             $newform = new Form();
@@ -61,7 +63,8 @@ class FormAdminController extends Controller
     {
         $this->validate($request, $this->validateRules());
         if (!Form::isValidFormCode($request->form_code)) {
-            return ['error' => 5003, 'message' => 'Запись не сохранена. Код формы содержит недопустимые символы.'];
+            $invalid_symbols = Form::invalidCharactersInFormCode($request->form_code);
+            return ['error' => 5003, 'message' => 'Запись не сохранена. Код формы содержит недопустимые символы: ' . implode(' ', $invalid_symbols[0]) , 'invalid_symbols' => $invalid_symbols[0]];
         }
         $form->form_index = $request->form_index;
         $form->form_code = $request->form_code;
