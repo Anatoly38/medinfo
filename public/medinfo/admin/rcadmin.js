@@ -139,6 +139,7 @@ showRowProperties = function(row) {
         $("#aggregatedRowElements").hide();
         rowids = '';
     }
+    $("#RowPropsJsonString").html(row.prop);
     return true;
 };
 
@@ -223,6 +224,7 @@ showColumnProperties = function(column) {
     } else {
         $("#AllowNegatives").prop('checked', false);
     }
+    $("#ColumnPropsJsonString").html(column.prop);
     return true;
 };
 

@@ -974,7 +974,7 @@ let initdatagrid = function() {
                 }
                 let aggregatingrows = checkIsAggregatedRowCell(parseInt(rowid));
                 let aggregatingcolumns = checkIsAggregatedColumnCell(parseInt(editedcell_column));
-
+                console.log(aggregatingcolumns);
                 current_edited_cell.t = current_table;
                 current_edited_cell.r = rowdata.boundindex;
                 current_edited_cell.c = editedcell_column;
@@ -1180,18 +1180,29 @@ function checkIsAggregatingdRow(rowid) {
 }
 // Проверяем участвует ли ячейка при расчете итоговой строки
 function checkIsAggregatedRowCell(rowid) {
-    let aggregatedrows = [];
+    let aggregatingrows = [];
     for (let i = 0; i < rowprops.length; i++ ) {
-        let rowcollection = typeof rowprops[i].aggregated_rows !== 'undefined' ? rowprops[i].aggregated_rows : [];
-        for (let j = 0; j < rowcollection.length; j++) {
-            if (rowcollection[j] === rowid ) {
-                //return rowprops[i].row;
-                aggregatedrows.push(rowprops[i].row);
+        if (rowprops[i].aggregate) {
+            let rowcollection = typeof rowprops[i].aggregated_rows !== 'undefined' ? rowprops[i].aggregated_rows : [];
+            for (let j = 0; j < rowcollection.length; j++) {
+                if (rowcollection[j] === rowid ) {
+                    aggregatingrows.push(rowprops[i].row);
+                }
             }
         }
     }
-    return aggregatedrows;
+    return aggregatingrows;
 }
+// Получение списка Id строк для подсчета итоговой строки при условии, если свойство строки aggregate == true
+function getAggregatedRows(aggregating_row) {
+    for (let i = 0; i < rowprops.length; i++ ) {
+        if (rowprops[i].row === aggregating_row && rowprops[i].aggregate) {
+            return rowprops[i].aggregated_rows;
+        }
+    }
+    return [];
+}
+
 // ПОлучаем свойства графы
 function getColumnProperties(colid) {
     for (let i = 0; i < colprops.length; i++ ) {
@@ -1201,19 +1212,10 @@ function getColumnProperties(colid) {
     }
     return null;
 }
-// Получение списка Id строк для подсчета итоговой строки
-function getAggregatedRows(aggregating_row) {
-    for (let i = 0; i < rowprops.length; i++ ) {
-        if (rowprops[i].row === aggregating_row ) {
-            return rowprops[i].aggregated_rows;
-        }
-    }
-    return null;
-}
 // Проверяем - итоговая ли графа?
 function checkIsAggregatingColumn(colid) {
     for (let i = 0; i < colprops.length; i++ ) {
-        if (colprops[i].column === colid && colprops[i].aggregate === true) {
+        if (colprops[i].column === colid && colprops[i].aggregate) {
             return true;
         }
     }
@@ -1221,28 +1223,28 @@ function checkIsAggregatingColumn(colid) {
 }
 // Проверяем участвует ли ячейка при расчете итоговой графы
 function checkIsAggregatedColumnCell(colid) {
-    //console.log(colid);
-    let aggregatedcolumns = [];
+    let aggregatingcolumns = [];
     for (let i = 0; i < colprops.length; i++ ) {
-        let colcollection = typeof colprops[i].aggregated_columns !== 'undefined' ? colprops[i].aggregated_columns : [];
-        for (let j = 0; j < colcollection.length; j++) {
-            if (colcollection[j] === colid ) {
-                //return colprops[i].column;
-                aggregatedcolumns.push(colprops[i].column);
+        if (colprops[i].aggregate) {
+            let colcollection = typeof colprops[i].aggregated_columns !== 'undefined' ? colprops[i].aggregated_columns : [];
+            for (let j = 0; j < colcollection.length; j++) {
+                if (colcollection[j] === colid ) {
+                    //return colprops[i].column;
+                    aggregatingcolumns.push(colprops[i].column);
+                }
             }
         }
     }
-    //return null;
-    return aggregatedcolumns;
+    return aggregatingcolumns;
 }
 // Получение списка Id граф для подсчета итоговой графы
 function getAggregatedColumns(aggregating_column) {
     for (let i = 0; i < colprops.length; i++ ) {
-        if (colprops[i].column === aggregating_column ) {
+        if (colprops[i].column === aggregating_column && colprops[i].aggregate ) {
             return colprops[i].aggregated_columns;
         }
     }
-    return null;
+    return [];
 }
 // Расчет ячейки входящей в итоговую строку
 function calculateAggregatingRowCell(rowid, colid) {

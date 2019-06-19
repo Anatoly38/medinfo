@@ -135,6 +135,7 @@ class RowColumnAdminController extends Controller
             $props->aggregated_rows = $corrected;
         } else {
             $props->aggregate = false;
+            $props->aggregated_rows = [];
         }
         $rowprop_record->properties = json_encode($props);
         $rowprop_record->save();
@@ -279,6 +280,7 @@ class RowColumnAdminController extends Controller
             $props->aggregated_columns = $corrected;
         } else {
             $props->aggregate = false;
+            $props->aggregated_columns = [];
         }
         if (!isset($props->validation)) {
             $props->validation = new \stdClass();

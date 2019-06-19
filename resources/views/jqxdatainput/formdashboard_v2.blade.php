@@ -64,9 +64,9 @@
 
 @push('loadjsscripts')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=027') }}"></script>
+        <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=028') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/editdashboard_v2.js?v=027') }}"></script>
+        <script src="{{ asset('/medinfo/editdashboard_v2.js?v=028') }}"></script>
     @endif
 @endpush('loadjsscripts')
 

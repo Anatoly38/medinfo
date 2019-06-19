@@ -72,7 +72,7 @@
                     <div id="rowprops" class="tab-pane fade" style="height: 360px">
                         <form id="RowProps" style="padding-top: 10px" class="form-horizontal" >
                             <div class="form-group">
-                                <div class="col-sm-offset-1 col-sm-11">
+                                <div class="col-md-offset-1 col-sd-11">
                                     <div class="checkbox">
                                         <label for="IsAggregatedRow">
                                             <input type="checkbox" id="IsAggregatedRow" name="IsAggregatedRow" value="1" style="zoom: 1.7">
@@ -98,6 +98,12 @@
                                 </div>
                                 <input id="rowids" name="rowids" type="hidden" value="">
                                 <input id="selectedallrows" name="selectedallrows" type="hidden" value="">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-offset-1 col-md-3">
+                                    <label>Свойства строки в формате JSON (для сведения)</label>
+                                </div>
+                                <div class="col-md-8" id="RowPropsJsonString"></div>
                             </div>
                         </form>
                     </div>
@@ -177,7 +183,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <div class="col-sm-offset-1 col-sm-11">
+                                    <div class="col-md-offset-1 col-md-11">
                                         <div class="checkbox">
                                             <label for="excludedColumn">
                                                 <input type="checkbox" id="excludedColumn" name="excludedColumn" value="1" style="zoom: 1.7">
@@ -194,7 +200,6 @@
                             </form>
                         </div>
                     </div>
-
                 </div>
                 <div id="columnprops" class="tab-pane fade" style="height: 360px">
                     <form id="ColumnProps" style="padding-top: 10px" class="form-horizontal" >
@@ -237,6 +242,12 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-offset-1 col-md-2">
+                                <label>Свойства графы в формате JSON (для сведения)</label>
+                            </div>
+                            <div class="col-md-8" id="ColumnPropsJsonString"></div>
                         </div>
                     </form>
                 </div>
@@ -288,7 +299,7 @@
 
 @push('loadjsscripts')
     <script src="{{ asset('/medinfo/admin/tablepicker.js?v=016') }}"></script>
-    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=062') }}"></script>
+    <script src="{{ asset('/medinfo/admin/rcadmin.js?v=063') }}"></script>
 @endpush
 
 @section('inlinejs')
