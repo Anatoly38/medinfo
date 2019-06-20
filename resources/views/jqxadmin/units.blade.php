@@ -6,16 +6,25 @@
 @section('content')
 <div id="mainSplitter" >
     <div>
-        <div class="row">
-            <div class="col-md-4"><h3 style="margin: 10px">Организационные единицы</h3></div>
-            <div class="col-md-8">
-                <button class="btn btn-default navbar-btn" id="ExcelExport" title="Экспорт списка ОЕ в формат MS Excel">
-                    <span class='fal fa-download'></span>
-                    <i class='fal fa-file-excel'></i>
-                </button>
+        <div class="row" style="width: 100%; height: 100%">
+            <div class="col-md-12" style="display: flex; flex-flow: column; height: 100%">
+                <div class="row">
+                    <div class="col-md-4"><h3 style="margin: 10px">Организационные единицы</h3></div>
+                    <div class="col-md-8">
+                        <button class="btn btn-default navbar-btn" id="ExcelExport" title="Экспорт списка ОЕ в формат MS Excel">
+                            <span class='fal fa-download'></span>
+                            <i class='fal fa-file-excel'></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row" style="flex-grow: 1; flex-shrink: 1; flex-basis: auto">
+                    <div class="col-md-12" style="height: 100%; padding: 0 0 0 16px">
+                        <div id="unitList"></div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div id="unitList"></div>
+
     </div>
     <div id="formContainer">
         <div id="propertiesForm" class="panel panel-default">

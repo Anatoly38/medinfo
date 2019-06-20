@@ -85,7 +85,7 @@ inittablelist = function() {
     unitlist.jqxGrid(
         {
             width: '100%',
-            height: '98%',
+            height: '100%',
             theme: theme,
             localization: localize(),
             source: unitDataAdapter,
@@ -94,11 +94,11 @@ inittablelist = function() {
             filterable: true,
             sortable: true,
             columns: [
-                { text: 'Id', datafield: 'id', width: '30px' },
+                { text: 'Id', datafield: 'id', width: '40px' },
                 { text: 'Входит в', datafield: 'parent', width: '110px' },
                 { text: 'Код', datafield: 'unit_code', width: '50px'  },
                 { text: 'ИНН', datafield: 'inn', width: '90px'  },
-                { text: 'Имя', datafield: 'unit_name' , width: '440px'},
+                { text: 'Имя', datafield: 'unit_name' , width: '44%'},
                 { text: 'Тип', datafield: 'node_type' , width: '40px'},
                 { text: 'Адрес', datafield: 'adress' , width: '40px'},
                 { text: 'Перв', datafield: 'report' , width: '50px'},
