@@ -139,8 +139,7 @@ class MOAdminController extends Controller
 
     public function unitsExcelExport()
     {
-        $units = Unit::with('parent')->where('node_type', 3)->orderBy('unit_code')->get();
-        //dd($units);
+        $units = Unit::with('parent')->orderBy('unit_code')->get();
         $excel = Excel::create('Units');
         $excel->sheet('Список ОЕ' , function($sheet) use ($units) {
             $sheet->setWidth('A', 10);

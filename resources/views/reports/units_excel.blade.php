@@ -17,7 +17,7 @@
         @foreach($units as $unit)
             <tr>
                 <td>{{ $unit->id }}</td>
-                <td>{{ $unit->parent->unit_name }}</td>
+                <td>{{ isset($unit->parent) ? $unit->parent->unit_name  : '' }}</td>
                 <td>{{ $unit->unit_code }}</td>
                 <td>{{ $unit->inn }}</td>
                 <td>{{ $unit->unit_name }}</td>
