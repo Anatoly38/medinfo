@@ -6,6 +6,15 @@
 @section('content')
 <div id="mainSplitter" >
     <div>
+        <div class="row">
+            <div class="col-md-4"><h3 style="margin: 10px">Организационные единицы</h3></div>
+            <div class="col-md-8">
+                <button class="btn btn-default navbar-btn" id="ExcelExport" title="Экспорт списка ОЕ в формат MS Excel">
+                    <span class='fal fa-download'></span>
+                    <i class='fal fa-file-excel'></i>
+                </button>
+            </div>
+        </div>
         <div id="unitList"></div>
     </div>
     <div id="formContainer">
@@ -31,12 +40,6 @@
                             <input type="text" class="form-control" id="unit_code">
                         </div>
                     </div>
-{{--                    <div class="form-group">
-                        <label class="control-label col-sm-3" for="unit_code">Тип территории (1-город, 2-район, 3-район округа):</label>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="territory_type">
-                        </div>
-                    </div>--}}
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="inn">Индивидуальный налоговый номер:</label>
                         <div class="col-sm-2">
@@ -94,7 +97,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ asset('/medinfo/admin/unitadmin.js?v=009') }}"></script>
+    <script src="{{ secure_asset('/medinfo/admin/unitadmin.js?v=010') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -111,10 +114,12 @@
         let unitcreate_url ='/admin/units/create';
         let unitupdate_url ='/admin/units/update/';
         let unitdelete_url ='/admin/units/delete/';
+        let excelexport_url ='/admin/units/excelexport/';
         initdropdowns();
         initsplitter();
         initdatasources();
         inittablelist();
         initunitactions();
+        initToolbar();
     </script>
 @endsection

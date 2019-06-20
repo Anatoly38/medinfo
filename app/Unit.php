@@ -9,7 +9,8 @@ class Unit extends Model
     //
     protected $table = 'mo_hierarchy';
     protected $fillable = [
-        'parent_id', 'unit_code','territory_type' ,'inn', 'node_type', 'report', 'aggregate', 'unit_name', 'blocked', 'countryside',
+        'parent_id', 'unit_code','territory_type' ,'inn', 'node_type', 'report', 'aggregate', 'unit_name',
+        'blocked', 'countryside', 'adress',
     ];
 
     public function workerScope()

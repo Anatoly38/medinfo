@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Unit;
 use App\Document;
 use App\DicUnitType;
-use PhpParser\Comment\Doc;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MOAdminController extends Controller
 {
@@ -135,6 +135,26 @@ class MOAdminController extends Controller
         } else {
             return ['error' => 422, 'message' => 'БД содержит документы связанные с ОЕ Id' . $unit->id . '. Удаление невозможно.' ];
         }
+    }
+
+    public function unitsExcelExport()
+    {
+        $units = Unit::with('parent')->where('node_type', 3)->orderBy('unit_code')->get();
+        //dd($units);
+        $excel = Excel::create('Units');
+        $excel->sheet('Список ОЕ' , function($sheet) use ($units) {
+            $sheet->setWidth('A', 10);
+            $sheet->setWidth('B', 10);
+            $sheet->setWidth('C', 10);
+            $sheet->setWidth('D', 15);
+            $sheet->setWidth('E', 70);
+            $sheet->setWidth('E', 70);
+            $sheet->setWidth('F', 10);
+            $sheet->setWidth('G', 70);
+            $sheet->setWidth('H', 10);
+            $sheet->loadView('reports.units_excel', compact( 'units'));
+        });
+        $excel->export('xlsx');
     }
 
 }

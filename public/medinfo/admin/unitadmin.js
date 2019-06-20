@@ -138,7 +138,6 @@ setquerystring = function() {
         "&countryside=" + ($("#countryside").val() ? 1 : 0);
 };
 initunitactions = function() {
-
     $('#report').jqxSwitchButton({
         height: 31,
         width: 110,
@@ -243,5 +242,11 @@ initunitactions = function() {
                 raiseError('Ошибка удаления отчетного периода', xhr);
             }
         });
+    });
+};
+
+initToolbar = function () {
+    $("#ExcelExport").click(function () {
+        location.assign(excelexport_url);
     });
 };

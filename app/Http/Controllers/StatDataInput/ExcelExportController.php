@@ -113,7 +113,6 @@ class ExcelExportController extends Controller
     public function excelDataTableRender($excel, $form, $table, $cols, $data)
     {
         $excel->sheet($form->form_code . '__' . $table->table_code , function($sheet) use ($table, $cols, $data) {
-
             $sheet->loadView('reports.datatable_excel_simple', compact('table', 'cols', 'data'));
             $sheet->cell('A1', function($cell) {
                 $cell->setFontSize(16);
