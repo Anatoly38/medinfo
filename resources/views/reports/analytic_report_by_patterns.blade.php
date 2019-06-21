@@ -6,7 +6,24 @@
 @section('content')
     <div id="mainSplitter" >
         <div>
-            <div id="patternList" style="margin: 10px"></div>
+            <div class="row" style="width: 100%; height: 100%">
+                <div class="col-md-12" style="display: flex; flex-flow: column; height: 100%">
+                    <div class="row">
+                        <div class="col-md-12"><h3 style="margin: 10px">Шаблоны отчетов</h3></div>
+                        {{--                        <div class="col-md-8">
+                                                    <button class="btn btn-default navbar-btn" id="ExcelExport" title="Экспорт списка ОЕ в формат MS Excel">
+                                                        <span class='fal fa-download'></span>
+                                                        <i class='fal fa-file-excel'></i>
+                                                    </button>
+                                                </div>--}}
+                    </div>
+                    <div class="row" style="flex-grow: 1; flex-shrink: 1; flex-basis: auto">
+                        <div class="col-md-12" style="height: 100%; padding: 0 0 0 16px">
+                            <div id="patternList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="formContainer">
             <div id="periodPropertiesForm" class="panel panel-default" style="padding-bottom: 3px; width: 90%">
@@ -25,14 +42,17 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-sm-3" for="level">Сортировка:</label>
-                            <div class="col-sm-3">
-                                <div class="radio">
-                                    <label><input type="radio" id="fordigest" name="sortOrder" checked>города, районы, округ</label>
-                                </div>
-                                <div class="radio">
-                                    <label><input type="radio" id="byname" name="sortOrder">по медицинским организациям</label>
-                                </div>
+                            <label class="control-label col-md-3">Группировать данные по:</label>
+                            <div class="col-md-9">
+                                <label class="radio-inline"><input type="radio" id="by_territory" name="GroupBy" checked>города, районы</label>
+                                <label class="radio-inline"><input type="radio" id="by_legals" name="GroupBy">медицинские организации</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Показать:</label>
+                            <div class="col-md-9">
+                                <label class="checkbox-inline"><input type="checkbox" id="ShowINN" name="ShowINN">ИНН</label>
+                                <label class="checkbox-inline"><input type="checkbox" id="ShowNodeType" name="ShowNodeType">Тип ОЕ</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -98,6 +118,7 @@
         let periodDataAdapter;
         let url = '/reports/patterns/perform';
         let sortorder = 2;
+        let group_by = 2;
         let plist = $("#periodList");
         let ilist = $("#patternList");
         let periods = {!! $periods !!};
