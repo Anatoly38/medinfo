@@ -24,7 +24,6 @@
                 </div>
             </div>
         </div>
-
     </div>
     <div id="formContainer">
         <div id="propertiesForm" class="panel panel-default">

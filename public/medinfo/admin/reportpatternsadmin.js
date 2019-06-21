@@ -44,8 +44,8 @@ initdatasources = function() {
 initpatternlist = function() {
     ilist.jqxGrid(
         {
-            width: '98%',
-            height: '93%',
+            width: '100%',
+            height: '100%',
             theme: theme,
             localization: localize(),
             source: patternDataAdapter,
@@ -53,8 +53,8 @@ initpatternlist = function() {
             showfilterrow: true,
             filterable: true,
             columns: [
-                { text: 'Id', datafield: 'id', width: '40px' },
-                { text: 'Имя', datafield: 'name' , width: '885px'}
+                { text: 'Id', datafield: 'id', width: '7%' },
+                { text: 'Имя', datafield: 'name' , width: '93%'}
             ]
         });
     ilist.on('rowselect', function (event) {
@@ -125,7 +125,15 @@ initformactions = function() {
             });
         }, 3000);
         let rowid = ilist.jqxGrid('getrowid', row);
-        let route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
+        let show = [];
+        if ($("#ShowINN").prop('checked')) {
+            show.push('inn');
+        }
+        if ($("#ShowNodeType").prop('checked')) {
+            show.push('node_type');
+        }
+        let route = url + '?pattern=' + rowid + '&period=' + current_period + '&group_by=' + group_by + '&show=' + show.join();
+        //let route = url + rowid + '/' + current_period + '/' + sortorder + '/perform';
         //let report_window = window.open(route);
         //report_window.opener.focus();
         //report_window.blur();
@@ -134,13 +142,11 @@ initformactions = function() {
         //});
         location.assign(route);
     });
-    $("#fordigest").on('click', function() {
-        sortorder = 2;
+    $("#by_territory").on('click', function() {
+        group_by = 2;
     });
-    $("#byname").on('click', function() {
-        sortorder = 1;
+    $("#by_legals").on('click', function() {
+        group_by = 1;
     });
-/*    $("#bycode").on('click', function() {
-        sortorder = 2;
-    });*/
+
 };

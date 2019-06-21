@@ -24,6 +24,8 @@
             <thead>
             <tr>
                 <th>Код</th>
+                {!! in_array('inn', $extrafields) ? '<th>ИНН</th>' : '' !!}
+                {!! in_array('node_type', $extrafields) ? '<th>Тип ОЕ</th>' : '' !!}
                 <th>Территория/Медицинская организация</th>
                 @foreach( $structure['content'] as $index => $description)
                     <th title="{{ $description['value'] }}">{{ $description['title'] }} </th>
@@ -34,6 +36,8 @@
             @foreach($indexes as $index)
             <tr>
                 <td>{{ $index['unit_code'] }}</td>
+                {!! in_array('inn', $extrafields) ? "<td>{$index['inn']}</td>" : '' !!}
+                {!! in_array('node_type', $extrafields) ? "<td>{$index['node_type']}</td>" : '' !!}
                 <td>{{ $index['unit_name'] }}</td>
                 @for($i = 0; $i < $count_of_indexes; $i++)
                     <td>{{ $index[$i]['value'] }}</td>

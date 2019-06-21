@@ -1,7 +1,7 @@
 @extends('reports.app')
 
-@section('title', 'Выполнение отчета по шаблону')
-@section('headertitle', 'Выполнение отчета по шаблону')
+@section('title', 'Выбор шаблона отчета для выполнения')
+@section('headertitle', 'Выбор шаблона отчета для выполнения')
 
 @section('content')
     <div id="mainSplitter" >
@@ -69,7 +69,6 @@
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
                                      data-keyboard="false" style="width:0%" id="progress">
-
                                 </div>
                             </div>
                         </div>
@@ -89,7 +88,7 @@
 @endsection
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=028') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=029') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -97,7 +96,7 @@
     <script type="text/javascript">
         let patternDataAdapter;
         let periodDataAdapter;
-        let url = '/reports/patterns/';
+        let url = '/reports/patterns/perform';
         let sortorder = 2;
         let plist = $("#periodList");
         let ilist = $("#patternList");

@@ -367,8 +367,10 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::patch('/reports/patterns/{pattern}', 'Admin\ReportPatternAdminController@update');
 
     Route::get('reports/map/{level}/{period}', 'ReportControllerOld@consolidateIndexes');
-    Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
-    Route::get('/reports/patterns/progress', 'ReportControllerOld@getProgess');
+    //Route::get('reports/patterns/{pattern}/{period}/{sortorder}/perform', 'ReportControllerOld@performReport');
+    Route::get('reports/patterns/perform', 'Report\ReportController@performReport');
+    //Route::get('/reports/patterns/progress', 'ReportControllerOld@getProgess');
+    Route::get('/reports/patterns/progress', 'Report\ReportController@getProgess');
 
     // Работа с lexer-parser
     Route::get('tests/lexer', 'Tests\LexerParserController@lexerTest');
@@ -395,6 +397,6 @@ Route::group(['middleware' => ['medinfo']], function () {
 
     // Аналитика - отдельный модуль для стастиков и экспертов. Только отчеты, справки, выборочный контроль данных
     Route::get('/analytics', 'Report\ReportController@compose_query');
-    Route::get('/analytics/reports', 'Report\ReportController@performReport');
+    Route::get('/analytics/reports', 'Report\ReportController@selectAnalitycReportToPerform');
 
 });

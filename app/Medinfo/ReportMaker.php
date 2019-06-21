@@ -104,6 +104,8 @@ class ReportMaker
 
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             $report_units[$unit->id]['unit_code'] = $unit->unit_code;
+            $report_units[$unit->id]['inn'] = $unit->inn;
+            $report_units[$unit->id]['node_type'] = $unit->node_type;
             $i = 0;
             $row_sum = 0;
             foreach ($indexes['content'] as $index => $rule) {
