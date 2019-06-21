@@ -17,7 +17,7 @@
 				</div>
 			@endif
 			<p class="login-box-msg">Авторизация пользователя</p>
-				<form role="form" method="POST" action="{{ url('/analyticlogin') }}">
+				<form role="form" method="POST" action="{{ secure_url('/analyticlogin') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="form-group has-feedback">
 						<input type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">
