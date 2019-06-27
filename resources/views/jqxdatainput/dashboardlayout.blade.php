@@ -20,9 +20,15 @@
         }
     </style>
     <title id="Description">@yield('headertitle')</title>
-    <link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css?v=005') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css?v=002') }}" rel="stylesheet" type="text/css" />
+    {{--<link href="{{ secure_asset('/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />--}}
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    {{--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">--}}
+
+
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.base.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ secure_asset('/jqwidgets/styles/jqx.bootstrap.css') }}" rel="stylesheet" type="text/css" />
     {{--    <link href="{{ secure_asset('/jqwidgets/styles/jqx.material.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-green.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ secure_asset('/jqwidgets/styles/jqx.material-purple.css') }}" rel="stylesheet" type="text/css" />--}}
@@ -68,10 +74,12 @@
 
     <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/globalization/globalize.js') }}"></script>
-    <script src="{{ secure_asset('/jqwidgets/localization.js?v=003') }}"></script>
+    <script src="{{ secure_asset('/jqwidgets/localization.js?v=004') }}"></script>
     <script src="{{ secure_asset('/medinfo/dashboard.js?v=098') }}"></script>
     <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=004') }}"></script>
-    <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+{{--    <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>--}}
 
 {{--@if(config('medinfo.ssl_connection'))
     <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>

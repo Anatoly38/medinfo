@@ -623,7 +623,7 @@ let checkform = function () {
             return false;
         }
         raiseError("Ошибка получения протокола контроля с сервера.");
-        formcheck.attr('disabled', false);
+        formcheck.prop('disabled', false);
     });
 };
 let markTableInvalid = function (id) {
@@ -861,9 +861,30 @@ function renderColumnFunctions() {
         //if (typeof properties.createeditor !== 'undefined') {
         //  properties.createeditor =  eval(properties.createeditor);
         //}
-        if (typeof properties.initeditor !== 'undefined') {
-            properties.initeditor = eval(properties.initeditor);
+        //if (typeof properties.initeditor !== 'undefined') {
+            //properties.initeditor = eval(properties.initeditor);
+        //}
+
+        //if (typeof properties.initeditor !== 'undefined') {
+        if (typeof properties.createeditor !== 'undefined') {
+            //properties.initeditor = function () { };
+            //properties.createeditor = eval(properties.initeditor);
+            switch (properties.createeditor) {
+                case 'defaultEditor' :
+                    properties.createeditor = defaultEditor;
+                    break;
+                case 'decimal1Editor' :
+                    properties.createeditor = decimal1Editor;
+                    break;
+                case 'decimal2Editor' :
+                    properties.createeditor = decimal2Editor;
+                    break;
+                case 'decimal3Editor' :
+                    properties.createeditor = decimal3Editor;
+                    break;
+            }
         }
+
         if (typeof properties.validation !== 'undefined') {
             properties.validation = validation;
         }
@@ -954,8 +975,11 @@ let initdatagrid = function() {
             id: 'id',
             url: fetchvalues_url(),
             updaterow: function (rowid, rowdata) {
-                //console.log("Начало выполнения функции update row");
-                //console.log(rowdata);
+                console.log("Начало выполнения функции update row");
+                console.log(window.event);
+                if (typeof window.event === 'undefined') {
+                    return false;
+                }
                 if (checkIsNotEditable(rowid, editedcell_column)) {
                     return false;
                 }
@@ -972,56 +996,14 @@ let initdatagrid = function() {
                 } else {
                     oldvalue = null;
                 }
-                let aggregatingrows = checkIsAggregatedRowCell(parseInt(rowid));
-                let aggregatingcolumns = checkIsAggregatedColumnCell(parseInt(editedcell_column));
-                console.log(aggregatingcolumns);
                 current_edited_cell.t = current_table;
                 current_edited_cell.r = rowdata.boundindex;
                 current_edited_cell.c = editedcell_column;
                 current_edited_cell.valid = true;
                 current_edited_cell.rowid = rowid;
-                let data = "row=" + rowid + "&column=" + editedcell_column + "&value=" + value+ "&oldvalue=" + oldvalue;
-                $.ajax({
-                    dataType: 'json',
-                    url: savevalue_url + current_table ,
-                    //timeout: 1000,
-                    data: data,
-                    method: 'POST',
-                    success: function (data, status, xhr) {
-                        if (data.error === 401) {
-                            raiseError("Данные не сохранены. Пользователь не авторизован!");
-                        }
-                        else if (data.error === 1001) {
-                            raiseError(data.comment);
-                            // возвращаем старое значение
-                            //dgrid.jqxGrid('setcellvalue', rowBoundIndex, colid, oldvalue);
-                        }
-                        else {
-                            if (data.cell_affected) {
-                                editedCells.push({ t: current_table, r: rowdata.boundindex, c: editedcell_column});
-                                if (protocol_control_created) {
-                                    $(".inactual-protocol").show();
-                                }
-                                //commit(true);
-                            }
-                        }
-                        if (autocalculateTotals) {
-                            if (aggregatingrows.length > 0) {
-                                for (let i = 0; aggregatingrows.length > i; i++) {
-                                    calculateAggregatingRowCell(aggregatingrows[i], editedcell_column);
-                                }
-
-                            }
-                            if (aggregatingcolumns.length > 0) {
-                                for (let i = 0; aggregatingcolumns.length > i; i++) {
-                                    calculateAggregatingColumnCell(rowid, aggregatingcolumns[i]);
-                                }
-                            }
-                        }
-                    },
-                    error: xhrErrorNotificationHandler
-                });
-
+                if (oldvalue !== value) {
+                    saveCellValue(rowid, rowdata.boundindex, editedcell_column, value, oldvalue, autocalculateTotals);
+                }
             },
             root: null
         };
@@ -1034,20 +1016,23 @@ let initdatagrid = function() {
             height: initDgridSize(),
             //height: '100%',
             source: dataAdapter,
-            localization: localize(),
+            //localization: localize(),
+            localization: getLocalization('ru'),
             selectionmode: 'singlecell',
             theme: theme,
             editable: edit_permission,
             editmode: 'selectedcell',
-            //editmode: 'click',
             clipboard: true,
             columnsresize: true,
-            //showfilterrow: false,
-            //showtoolbar: true,
-            //rendertoolbar: rendertoolbar,
+            showfilterrow: false,
             filterable: false,
             columns: columns,
-            columngroups: columngroups
+            columngroups: columngroups,
+            pageable: true,
+            pagermode: "simple",
+            pagesizeoptions: ['10', '20', '100'],
+            pagesize: 22,
+            pagerbuttonscount: 15,
         });
     dgrid.on("bindingcomplete", function (event) {
         dgrid.jqxGrid('focus');
@@ -1055,18 +1040,40 @@ let initdatagrid = function() {
         dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
     });
     dgrid.on('cellselect', cellSelecting);
+
     dgrid.on('cellvaluechanged', function (event) {
-        //console.log("Событие смена значения ячейки");
-        //console.log(event);
+        console.log("Событие смена значения ячейки");
+        if (typeof window.event === 'undefined') {
+            console.log('Была вставка из буфера?');
+            console.log(event);
+            if (event.args.newvalue !==  event.args.oldvalue) {
+                let rowid = dgrid.jqxGrid('getrowid', event.args.rowindex);
+                saveCellValue(rowid, event.args.rowindex, event.args.datafield, event.args.newvalue, event.args.oldvalue);
+            }
+        } else {
+            console.log(window.event.key);
+        }
+
     });
     dgrid.on('cellendedit', function (event)
     {
-        //console.log("Событие завершение редактирования ячейки");
-        //console.log(event.args);
-
+        console.log("Событие завершение редактирования ячейки");
     });
     dgrid.on('cellbeginedit', cellbeginedit);
+/*    dgrid.on('paste', function (event) {
+        console.log('Событие paste');
+    });*/
+/*    dgrid.onpaste( function (event) {
+        console.log('Событие onpaste');
+    });*/
+/*    $(".jqx-input")[0].onpaste = function (event) {
+        console.log('Событие onpaste');
+    };*/
+/*    $("div[role='gridcell']")[0].onpaste = function (event) {
+        console.log('Событие onpaste');
+    };*/
 
+    //console.log($(".jqx-input")[0].onpaste);
 };
 // Действия при выборе ячейки
 function cellSelecting(event) {
@@ -1095,12 +1102,59 @@ function cellSelecting(event) {
         $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
     }
 }
+// сохранение значения ячейки на сервере
+function saveCellValue(row, rowindex, column, newvalue, oldvalue, calculateTotals = false) {
+    let data = "row=" + row + "&column=" + column + "&value=" + newvalue + "&oldvalue=" + oldvalue;
+    $.ajax({
+        dataType: 'json',
+        url: savevalue_url + current_table ,
+        data: data,
+        method: 'POST',
+        success: function (data, status, xhr) {
+            if (data.error === 401) {
+                raiseError("Данные не сохранены. Пользователь не авторизован!");
+                return false;
+            }
+            else if (data.error === 1001) {
+                raiseError(data.comment);
+                // возвращаем старое значение
+                //dgrid.jqxGrid('setcellvalue', rowBoundIndex, colid, oldvalue);
+                return false;
+            }
+            else {
+                if (data.cell_affected) {
+                    editedCells.push({ t: current_table, r: rowindex, c: column});
+                    if (protocol_control_created) {
+                        $(".inactual-protocol").show();
+                    }
+                    //commit(true);
+                    return true;
+                }
+                if (calculateTotals) {
+                    let aggregatingrows = checkIsAggregatedRowCell(parseInt(row));
+                    let aggregatingcolumns = checkIsAggregatedColumnCell(parseInt(column));
+                    if (aggregatingrows.length > 0) {
+                        for (let i = 0; aggregatingrows.length > i; i++) {
+                            calculateAggregatingRowCell(aggregatingrows[i], column);
+                        }
+                    }
+                    if (aggregatingcolumns.length > 0) {
+                        for (let i = 0; aggregatingcolumns.length > i; i++) {
+                            calculateAggregatingColumnCell(row, aggregatingcolumns[i]);
+                        }
+                    }
+                }
+            }
+        },
+        error: xhrErrorNotificationHandler
+    });
+}
+
 // Протокол контроля выделенной ячейки
 function cellProtocolRender(row_id, column_id) {
     let cell_protocol_panel = $("#cellprotocol");
     cell_protocol_panel.html('');
     if (typeof current_protocol_source[current_table_code] === 'object') {
-
         let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
         console.log(cellprotocol);
         let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
@@ -1486,7 +1540,7 @@ let initTableMedstatExportButton = function() {
 //let cellbeginedit = function (row, datafield, columntype, value) {
 let cellbeginedit = function (event) {
     let args = event.args;
-    //console.log(event);
+    console.log('Начало редактирования ячейки');
     let datafield = args.datafield;
     let row = args.rowindex;
     let value = args.value;
@@ -1512,13 +1566,14 @@ let cellbegineditByColumn = function() { };
 let defaultEditor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });
 };
-let initDecimal1Editor = function (row, cellvalue, editor) {
+let decimal1Editor = function (row, cellvalue, editor) {
+    editor.jqxNumberInput({ decimalDigits: 1, digits: 12, decimalSeparator: ',' });
     editor.jqxNumberInput({ decimalDigits: 1, digits: 12, decimalSeparator: ',' });
 };
-let initDecimal2Editor = function (row, cellvalue, editor) {
+let decimal2Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 2, digits: 12, decimalSeparator: ',' });
 };
-let initDecimal3Editor = function (row, cellvalue, editor) {
+let decimal3Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
 };
 let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
@@ -1584,7 +1639,7 @@ let validation = function(cell, value) {
     for (let grkey in validationrules) {
         let cellrule = overideRule(grkey, cellrules);
         let vrule = cellrule ? cellrule  : validationrules[grkey];
-        if (!assetvrule(value, vrule.rule)) {
+        if (!assertvrule(value, vrule.rule)) {
             return { result: false, message: vrule.message };
         }
     }
@@ -1600,7 +1655,7 @@ function validateCell(rowid, colid, value) {
     for (let grkey in validationrules) {
         let cellrule = overideRule(grkey, cellrules);
         let vrule = cellrule ? cellrule  : validationrules[grkey];
-        if (!assetvrule(value, vrule.rule)) {
+        if (!assertvrule(value, vrule.rule)) {
             return { result: false, message: vrule.message };
         }
     }
@@ -1616,7 +1671,7 @@ function overideRule(rule, cellrules) {
     return false;
 }
 
-function assetvrule(value, rule) {
+function assertvrule(value, rule) {
     //console.log(eval(value + ' ' + rule));
     return rule === null ? true : eval(value + ' ' + rule);
 }

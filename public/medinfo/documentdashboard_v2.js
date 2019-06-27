@@ -843,7 +843,7 @@ initdocumentstabs = function() {
             width: '100%',
             height: '100%',
             source: dgridDataAdapter,
-            localization: localize_docgrid(),
+            localization: getLocalization('ru'),
             theme: theme,
             columnsresize: true,
             showtoolbar: false,

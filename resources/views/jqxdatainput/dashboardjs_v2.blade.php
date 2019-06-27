@@ -57,7 +57,7 @@ let current_row_number_datafield = columns[2].dataField;
 let editedcell_row = 0;
 let editedcell_column = 0;
 let editedcell_value = null;
-$.each(columns, function(column, properties) {
+/*$.each(columns, function(column, properties) {
     if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
         properties.cellclassname = cellclass;
     }
@@ -77,7 +77,7 @@ $.each(columns, function(column, properties) {
 $.each(columngroups, function(group, properties) {
     if (typeof properties.rendered !== 'undefined')
         properties.rendered = tooltiprenderer;
-});
+});*/
 let form_tables_data = {!! $tablelist !!};
 let protocol_control_created = false;
 let forcereload = 0; // При наличии загружается кэшированный протокол контроля
@@ -138,6 +138,7 @@ initdatagrid();
 init_fc_extarbuttons();
 initextarbuttons();
 initExcelUpload();
+renderColumnFunctions();
 @yield('initTableAggregateAction')
 @yield('initTableConsolidateAction')
 //firefullscreenevent();

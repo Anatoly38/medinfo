@@ -27,8 +27,9 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="form_code">Код формы:</label>
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" id="form_code">
+                            <span class="help-block">Может содержать символы:  цифры 0-9, точка ".", дефис "-", строчные буквы "а-я".</span>
                         </div>
                     </div>
                     <div class="form-group">

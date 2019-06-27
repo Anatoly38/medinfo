@@ -42,22 +42,22 @@ class TableEditing
         })->get();
         $firstDataColumn = null;
         foreach ($cols as $col) {
-            $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
             $width = $col->size; // Ширина графы в пикселях при отображении в браузере
             switch ( $col->decimal_count) {
                 case 1:
-                    $editor = 'initDecimal1Editor';
+                    $editor = 'decimal1Editor';
                     break;
                 case 2:
-                    $editor = 'initDecimal2Editor';
+                    $editor = 'decimal2Editor';
                     break;
                 case 3:
-                    $editor = 'initDecimal3Editor';
+                    $editor = 'decimal3Editor';
                     break;
                 default:
                     $editor = 'defaultEditor';
             }
             if ($col->content_type === Column::DATA) {
+                $datafields_arr[] = ['name'  => $col->id, 'type'  => 'number', ];
                 if (!$firstDataColumn) {
                     $firstDataColumn = $col->id;
                 }
@@ -67,15 +67,16 @@ class TableEditing
                     'width' => $width,
                     'cellsalign' => 'right',
                     'align' => 'center',
-                    'cellsrenderer' => 'cellsrenderer',
+                    //'cellsrenderer' => 'cellsrenderer',
                     //'cellsformat' => 'n',
-                    //'cellsformat' => 'd' . $decimal_count,
+                    'cellsformat' => $col->decimal_count === 0 ? 'n' : 'd' . $col->decimal_count,
                     'columntype' => $columntype,
                     'columngroup' => $col->id,
                     'filtertype' => 'number',
                     'cellclassname' => 'cellclass',
                     //'cellbeginedit' => 'cellbegineditByColumn',
-                    'initeditor' => $editor,
+                    'createeditor' => $editor,
+                    //'initeditor' => $editor,
                     'validation' => 'validation'
                 );
                 $column_groups_arr[] = array(
@@ -85,6 +86,7 @@ class TableEditing
                     'rendered' => 'tooltiprenderer'
                 );
             } elseif ($col->content_type === Column::CALCULATED) {
+                $datafields_arr[] = ['name'  => $col->id, 'type'  => 'number', ];
                 $calculated_fields[] = $col->id;
                 $columns_arr[] = array(
                     'text' => $col->column_code,
@@ -98,15 +100,16 @@ class TableEditing
                     'pinned' => false,
                     'editable' => false,
                     'filtertype' => 'number',
-                    'cellclassname' => 'calculated'
+                    'cellclassname' => 'calculated',
                 );
                 $column_groups_arr[] = array(
                     'text' => $col->column_name,
                     'align' => 'center',
                     'name' => $col->id,
-                    'rendered' => 'tooltiprenderer'
+                    'rendered' => 'tooltiprenderer',
                 );
             } elseif ($col->content_type === Column::HEADER) {
+                $datafields_arr[] = ['name'  => $col->id, 'type'  => 'string', ];
                 $columns_arr[] = array(
                     'text' => $col->column_name,
                     'dataField' => $col->id,
@@ -246,8 +249,10 @@ class TableEditing
         if ($blockedSections) {
             $ids = [];
             foreach($blockedSections as $blockedSection) {
-                foreach ($blockedSection->formsection->tables as $t) {
-                    $ids[] = $t->table_id;
+                if ($blockedSection->formsection) {
+                    foreach ($blockedSection->formsection->tables as $t) {
+                        $ids[] = $t->table_id;
+                    }
                 }
             }
             if (in_array($table, $ids)) {
