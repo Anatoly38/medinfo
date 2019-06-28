@@ -75,7 +75,7 @@
                         @yield('tableAggregateButton')
                         @yield('tableConsolidateButton')
                         <form class="navbar-form navbar-right">
-                            <div class="input-group" style="margin-right: 5px">
+                            <div class="input-group" style="margin-right: 5px; z-index: 0">
                                 <input type="text" class="form-control" style="width: 130px" id="SearchField" placeholder="Поиск строки">
                                 <div class="input-group-btn">
                                     <button class="btn btn-default" id="ClearFilter" type="button">
@@ -157,3 +157,4 @@
             </div>
     </div>
 </div>
+<div id="TableDataLoader"></div>

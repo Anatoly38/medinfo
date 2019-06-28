@@ -828,6 +828,7 @@ let inittablelist = function() {
     });
 };
 function fetchDataForDataGrid(tableid) {
+    tl.jqxLoader('open');
     $.get(tableprops_url + tableid, function (data) {
         //datafields = $.parseJSON(data.datafields);
         datafields = data.datafields;
@@ -837,11 +838,11 @@ function fetchDataForDataGrid(tableid) {
         columngroups = $.parseJSON(data.columngroups);
         firstdatacolumn = data.firstdatacolumn;
         there_is_calculated = calculatedfields.length > 0;
-        there_is_calculated ? calculate.prop('disabled', false ) : calculate.attr('disabled', true );
+        there_is_calculated ? calculate.prop('disabled', false ) : calculate.prop('disabled', true );
         //aggregatedrows = data.aggregates;
         rowprops = data.rowprops;
         colprops = data.colprops;
-        current_table = tableid;
+        current_table = parseInt(tableid);
         current_table_code = data_for_table.code;
         current_table_index = data_for_table.index;
         set_navigation_buttons_status(current_table_index);
@@ -888,12 +889,12 @@ function renderColumnFunctions() {
         if (typeof properties.validation !== 'undefined') {
             properties.validation = validation;
         }
-/*        if (typeof properties.cellbeginedit !== 'undefined') {
+        if (typeof properties.cellbeginedit !== 'undefined') {
             properties.cellbeginedit = cellbegineditByColumn;
-        }*/
-        if (typeof properties.cellsrenderer !== 'undefined') {
-            properties.cellsrenderer = cellsrenderer;
         }
+/*        if (typeof properties.cellsrenderer !== 'undefined') {
+            properties.cellsrenderer = cellsrenderer;
+        }*/
     });
     $.each(columngroups, function(group, properties) {
         if (typeof properties.rendered !== 'undefined')
@@ -901,6 +902,7 @@ function renderColumnFunctions() {
     });
 }
 function renderDgrid() {
+    console.log('Начало рендеринга таблицы первичных статданных');
     dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
     dgrid.jqxGrid('clearselection');
     dgrid.jqxGrid('clearfilters');
@@ -967,6 +969,17 @@ let initfilters = function() {
     }
 };
 let initdatagrid = function() {
+    let html = "<div class='jqx-loader-icon jqx-loader-icon-bootstrap' style='background-position-y: 0; margin-top: 5px'></div>" +
+        "<div class='jqx-loader-text jqx-loader-text-bootstrap jqx-loader-text-bottom jqx-loader-text-bottom-bootstrap'>" +
+        "<div>Загрузка структуры</div> " +
+        "<div>таблицы и статданных ...</div>" +
+        "</div>";
+    tl.jqxLoader({theme: theme, width: 170, height: 80,
+        isModal:false,
+        imagePosition: 'top',
+        html: html
+    });
+
     tablesource =
         {
             datatype: "json",
@@ -975,12 +988,8 @@ let initdatagrid = function() {
             id: 'id',
             url: fetchvalues_url(),
             updaterow: function (rowid, rowdata) {
-                console.log("Начало выполнения функции update row");
-                console.log(window.event);
+                //console.log("Начало выполнения функции update row");
                 if (typeof window.event === 'undefined') {
-                    return false;
-                }
-                if (checkIsNotEditable(rowid, editedcell_column)) {
                     return false;
                 }
                 let value = rowdata[editedcell_column];
@@ -990,7 +999,6 @@ let initdatagrid = function() {
                     return false;
                 }*/
                 let oldvalue;
-
                 if (typeof editedcell_value !== 'undefined') {
                     oldvalue = editedcell_value;
                 } else {
@@ -1000,64 +1008,70 @@ let initdatagrid = function() {
                 current_edited_cell.r = rowdata.boundindex;
                 current_edited_cell.c = editedcell_column;
                 current_edited_cell.valid = true;
-                current_edited_cell.rowid = rowid;
+                current_edited_cell.rowid = parseInt(rowid);
                 if (oldvalue !== value) {
-                    saveCellValue(rowid, rowdata.boundindex, editedcell_column, value, oldvalue, autocalculateTotals);
+                    saveCellValue(current_edited_cell.rowid, rowdata.boundindex, editedcell_column, value, oldvalue, autocalculateTotals);
                 }
             },
             root: null
         };
-    dataAdapter = new $.jqx.dataAdapter(tablesource, {
+    dgridDataAdapter = new $.jqx.dataAdapter(tablesource, {
         loadError: xhrErrorNotificationHandler
+    });
+    dgrid.on("bindingcomplete", function (event) {
+        //console.log('Завершение обновления данных таблицы первичных статданных');
+        let rowcount = dgridDataAdapter.totalrecords;
+        //console.log('Количество строк в загружаемой таблице ' + rowcount);
+        if (rowcount > 50) {
+            dgrid.jqxGrid({ pageable: true });
+            //dgrid.jqxGrid({ rowsheight: 31});
+        } else {
+            dgrid.jqxGrid({ pageable: false });
+        }
+        dgrid.jqxGrid('focus');
+        dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
+        tl.jqxLoader('close');
     });
     dgrid.jqxGrid(
         {
             width: '100%',
             height: initDgridSize(),
             //height: '100%',
-            source: dataAdapter,
+            source: dgridDataAdapter,
             //localization: localize(),
             localization: getLocalization('ru'),
             selectionmode: 'singlecell',
             theme: theme,
             editable: edit_permission,
             editmode: 'selectedcell',
+            keyboardnavigation: true,
             clipboard: true,
             columnsresize: true,
             showfilterrow: false,
             filterable: false,
             columns: columns,
             columngroups: columngroups,
-            pageable: true,
             pagermode: "simple",
             pagesizeoptions: ['10', '20', '100'],
             pagesize: 22,
             pagerbuttonscount: 15,
+            autoshowloadelement: false
         });
-    dgrid.on("bindingcomplete", function (event) {
-        dgrid.jqxGrid('focus');
-        dgrid.jqxGrid({ 'keyboardnavigation': true  });
-        dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
-    });
     dgrid.on('cellselect', cellSelecting);
-
     dgrid.on('cellvaluechanged', function (event) {
-        console.log("Событие смена значения ячейки");
+        //console.log("Событие смена значения ячейки");
         if (typeof window.event === 'undefined') {
-            console.log('Была вставка из буфера?');
-            console.log(event);
+            //console.log('Была вставка из буфера?');
             if (event.args.newvalue !==  event.args.oldvalue) {
-                let rowid = dgrid.jqxGrid('getrowid', event.args.rowindex);
-                saveCellValue(rowid, event.args.rowindex, event.args.datafield, event.args.newvalue, event.args.oldvalue);
+                let rowid = parseInt(dgrid.jqxGrid('getrowid', event.args.rowindex));
+                let colid = parseInt(event.args.datafield);
+                saveCellValue(rowid, event.args.rowindex, colid, event.args.newvalue, event.args.oldvalue);
             }
-        } else {
-            console.log(window.event.key);
         }
-
     });
     dgrid.on('cellendedit', function (event)
     {
-        console.log("Событие завершение редактирования ячейки");
+        //console.log("Событие завершение редактирования ячейки");
     });
     dgrid.on('cellbeginedit', cellbeginedit);
 /*    dgrid.on('paste', function (event) {
@@ -1102,8 +1116,47 @@ function cellSelecting(event) {
         $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
     }
 }
+
+// в том числе, проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
+let cellbeginedit = function (event) {
+    let args = event.args;
+    //console.log('Начало редактирования ячейки - событие из объекта dgrid');
+    let colid = parseInt(args.datafield);
+    let row = args.rowindex;
+    let rowid = parseInt(dgrid.jqxGrid('getrowid', row));
+    let value = args.value;
+    editedcell_column = colid;
+    editedcell_value = value;
+    editedcell_row = rowid;
+/*    if (autocalculateTotals) {
+        if (checkIsAggregatingdRow(rowid)) {
+            return false;
+        }
+        if (checkIsAggregatingColumn(colid)) {
+            return false;
+        }
+    }*/
+};
+// На всякий случай "заглушка", если нужно определить событие на редактирование отдельной графы
+let cellbegineditByColumn = function(row, datafield, columntype) {
+    console.log('Начало редактирования ячейки - событие из свойств column');
+    //console.log(row);
+    //console.log(datafield);
+    //console.log(columntype);
+    let rowid = parseInt(dgrid.jqxGrid('getrowid', row));
+    let colid = parseInt(datafield);
+    if (checkIsNotEditable(rowid, colid)) {
+        return false;
+    }
+};
+
 // сохранение значения ячейки на сервере
 function saveCellValue(row, rowindex, column, newvalue, oldvalue, calculateTotals = false) {
+    console.log('Запуск функции сохранения значения ячейки');
+    if (checkIsNotEditable(row, column)) {
+        raiseError("Изменения в нередактируемых ячейках не сохранены.");
+        return false;
+    }
     let data = "row=" + row + "&column=" + column + "&value=" + newvalue + "&oldvalue=" + oldvalue;
     $.ajax({
         dataType: 'json',
@@ -1117,8 +1170,6 @@ function saveCellValue(row, rowindex, column, newvalue, oldvalue, calculateTotal
             }
             else if (data.error === 1001) {
                 raiseError(data.comment);
-                // возвращаем старое значение
-                //dgrid.jqxGrid('setcellvalue', rowBoundIndex, colid, oldvalue);
                 return false;
             }
             else {
@@ -1127,22 +1178,24 @@ function saveCellValue(row, rowindex, column, newvalue, oldvalue, calculateTotal
                     if (protocol_control_created) {
                         $(".inactual-protocol").show();
                     }
-                    //commit(true);
+                    if (calculateTotals) {
+                        console.log('Автосуммирование включено ' + calculateTotals);
+                        let aggregatingrows = checkIsAggregatedRowCell(row);
+                        //console.log(aggregatingrows);
+                        let aggregatingcolumns = checkIsAggregatedColumnCell(column);
+                        //console.log(aggregatingcolumns);
+                        if (aggregatingrows.length > 0) {
+                            for (let i = 0; aggregatingrows.length > i; i++) {
+                                calculateAggregatingRowCell(aggregatingrows[i], column);
+                            }
+                        }
+                        if (aggregatingcolumns.length > 0) {
+                            for (let i = 0; aggregatingcolumns.length > i; i++) {
+                                calculateAggregatingColumnCell(row, aggregatingcolumns[i]);
+                            }
+                        }
+                    }
                     return true;
-                }
-                if (calculateTotals) {
-                    let aggregatingrows = checkIsAggregatedRowCell(parseInt(row));
-                    let aggregatingcolumns = checkIsAggregatedColumnCell(parseInt(column));
-                    if (aggregatingrows.length > 0) {
-                        for (let i = 0; aggregatingrows.length > i; i++) {
-                            calculateAggregatingRowCell(aggregatingrows[i], column);
-                        }
-                    }
-                    if (aggregatingcolumns.length > 0) {
-                        for (let i = 0; aggregatingcolumns.length > i; i++) {
-                            calculateAggregatingColumnCell(row, aggregatingcolumns[i]);
-                        }
-                    }
                 }
             }
         },
@@ -1156,7 +1209,6 @@ function cellProtocolRender(row_id, column_id) {
     cell_protocol_panel.html('');
     if (typeof current_protocol_source[current_table_code] === 'object') {
         let cellprotocol = selectedcell_protocol(current_protocol_source, current_table, current_table_code, column_id, row_id);
-        console.log(cellprotocol);
         let count_of_rules  = cellprotocol.length > 0 ? cellprotocol.length : " не определены ";
         if ( cellprotocol.length > 0) {
             header = $("<div class='alert alert-info'><p>Количество заданых правил контроля для данной ячейки - " + count_of_rules + " </p></div>");
@@ -1197,20 +1249,15 @@ function cellProtocolRender(row_id, column_id) {
 }
 // На случай вставки данных из буфера - не версим данные в нередатируемые ячейки
 function checkIsNotEditable(rowid, colid) {
-    let necell_count = not_editable_cells.length;
-    for (let i = 0; i < necell_count; i++) {
-        if (not_editable_cells[i].t === parseInt(current_table) && not_editable_cells[i].r == rowid && not_editable_cells[i].c == colid ) {
+    //console.log(current_table);
+    //console.log(rowid);
+    //console.log(colid);
+    for (let i = 0; i < not_editable_cells.length; i++) {
+        if (not_editable_cells[i].t === current_table && not_editable_cells[i].r === rowid && not_editable_cells[i].c === colid) {
+            console.log('ячейка в списке нередактируемых');
             return true;
         }
     }
-/*    if (autocalculateTotals) {
-        if (checkIsAggregatingdRow(parseInt(rowid))) {
-            return true;
-        }
-        if (checkIsAggregatingColumn(parseInt(colid))) {
-            return true;
-        }
-    }*/
     return false;
 }
 
@@ -1234,6 +1281,7 @@ function checkIsAggregatingdRow(rowid) {
 }
 // Проверяем участвует ли ячейка при расчете итоговой строки
 function checkIsAggregatedRowCell(rowid) {
+    //console.log(rowprops);
     let aggregatingrows = [];
     for (let i = 0; i < rowprops.length; i++ ) {
         if (rowprops[i].aggregate) {
@@ -1310,6 +1358,13 @@ function calculateAggregatingRowCell(rowid, colid) {
         value += cc;
     }
     dgrid.jqxGrid('setcellvaluebyid', rowid, colid, value);
+    let aggregatingcolumns = checkIsAggregatedColumnCell(colid);
+    if (aggregatingcolumns.length > 0) {
+        for (let i = 0; aggregatingcolumns.length > i; i++) {
+            calculateAggregatingColumnCell(rowid, aggregatingcolumns[i]);
+        }
+    }
+
 }
 // Расчет ячейки входящей в итоговую графу
 function calculateAggregatingColumnCell(rowid, colid) {
@@ -1323,6 +1378,12 @@ function calculateAggregatingColumnCell(rowid, colid) {
     }
     editedcell_column = colid;
     dgrid.jqxGrid('setcellvaluebyid', rowid, colid, value);
+    let aggregatingrows = checkIsAggregatedRowCell(rowid);
+    if (aggregatingrows.length > 0) {
+        for (let i = 0; aggregatingrows.length > i; i++) {
+            calculateAggregatingRowCell(aggregatingrows[i], colid);
+        }
+    }
 }
 
 // Панель инструментов для редактируемой таблицы
@@ -1536,33 +1597,6 @@ let initTableMedstatExportButton = function() {
     });
 };
 
-// проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
-//let cellbeginedit = function (row, datafield, columntype, value) {
-let cellbeginedit = function (event) {
-    let args = event.args;
-    console.log('Начало редактирования ячейки');
-    let datafield = args.datafield;
-    let row = args.rowindex;
-    let value = args.value;
-    editedcell_column = datafield;
-    editedcell_value = value;
-    let rowid = dgrid.jqxGrid('getrowid', row);
-    editedcell_row = parseInt(rowid);
-    if (autocalculateTotals) {
-        if (checkIsAggregatingdRow(editedcell_row)) {
-            return false;
-        }
-        if (checkIsAggregatingColumn(datafield)) {
-            return false;
-        }
-    }
-    if (checkIsNotEditable(rowid, datafield)) {
-        return false;
-    }
-};
-// На всякий случай "заглушка", если нужно определить событие на редактирование отдельной графы
-let cellbegineditByColumn = function() { };
-
 let defaultEditor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 0, digits: 12  });
 };
@@ -1575,13 +1609,6 @@ let decimal2Editor = function (row, cellvalue, editor) {
 };
 let decimal3Editor = function (row, cellvalue, editor) {
     editor.jqxNumberInput({ decimalDigits: 3, digits: 12, decimalSeparator: ',' });
-};
-let cellsrenderer = function (row, column, value, defaulthtml, columnproperties) {
-    if (!value) {
-        return;
-    }
-    let formated = $(defaulthtml).html(localizednumber.format(value));
-    return formated[0].outerHTML;
 };
 let cellclass = function (row, columnfield, value, rowdata) {
     let invalid_cell = '';
@@ -1686,7 +1713,7 @@ let fillCalculatedFields = function () {
         if (typeof data.errors !== 'undefined') {
             for (i = 0; data.errors.length > i; i++ ) {
                 //raiseError(data.errors[i]);
-                console.log(data.errors[i]);
+                //console.log(data.errors[i]);
             }
         }
         dgrid.jqxGrid('updatebounddata');

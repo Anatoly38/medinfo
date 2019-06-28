@@ -71,10 +71,11 @@ class TableEditing
                     //'cellsformat' => 'n',
                     'cellsformat' => $col->decimal_count === 0 ? 'n' : 'd' . $col->decimal_count,
                     'columntype' => $columntype,
+                    //'columntype' => 'template',
                     'columngroup' => $col->id,
                     'filtertype' => 'number',
                     'cellclassname' => 'cellclass',
-                    //'cellbeginedit' => 'cellbegineditByColumn',
+                    'cellbeginedit' => 'cellbegineditByColumn',
                     'createeditor' => $editor,
                     //'initeditor' => $editor,
                     'validation' => 'validation'
@@ -94,12 +95,13 @@ class TableEditing
                     'width' => $width,
                     'cellsalign' => 'right',
                     'align' => 'center',
-                    'cellsrenderer' => 'cellsrenderer',
+                    'cellsformat' => $col->decimal_count === 0 ? 'n' : 'd' . $col->decimal_count,
+                    //'cellsrenderer' => 'cellsrenderer',
                     'columntype' => $columntype,
                     'columngroup' => $col->id,
                     'pinned' => false,
                     'editable' => false,
-                    'filtertype' => 'number',
+                    //'filtertype' => 'number',
                     'cellclassname' => 'calculated',
                 );
                 $column_groups_arr[] = array(
@@ -118,7 +120,7 @@ class TableEditing
                     'align' => 'center',
                     'pinned' => true,
                     'editable' => false,
-                    'filtertype' => 'textbox'
+                    //'filtertype' => 'textbox'
                 );
             }
         }

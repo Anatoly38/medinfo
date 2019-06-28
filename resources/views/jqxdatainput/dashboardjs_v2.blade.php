@@ -8,9 +8,9 @@ let doc_statelabel = '{{ $statelabel }}';
 let form_name = '{{ $form->form_name }}';
 let form_code = '{{ $form->form_code }}';
 let default_album = '{{ $album->id }}';
-let current_table = '{{ $laststate['currenttable']->id }}';
+let current_table = parseInt('{{ $laststate['currenttable']->id }}');
 let current_table_code = '{{ $laststate['currenttable']->table_code }}';
-let current_table_index = '{{ $laststate['currenttable']->table_index }}';
+let current_table_index = parseInt('{{ $laststate['currenttable']->table_index }}');
 let autocalculateTotals = {{ $autocalculate_totals ? 'true' : 'false' }}; // автоматический расчет итоговых строк и граф
 let max_table_index = '{!!  $maxtableindex !!}';
 let formsections = {!! $formsections !!};
@@ -35,6 +35,7 @@ let fsdropdown = $('#SectionsManager');
 let excelUploadWindow = $('#uploadExcelFile');
 let flUpload = $('#ExcelFileUpload');
 let onlyOneTable = $('#onlyOneTable');
+let tl = $("#TableDataLoader");
 let localizednumber = new Intl.NumberFormat('ru-RU');
 let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! json_encode($noteditablecells) !!};
@@ -57,27 +58,6 @@ let current_row_number_datafield = columns[2].dataField;
 let editedcell_row = 0;
 let editedcell_column = 0;
 let editedcell_value = null;
-/*$.each(columns, function(column, properties) {
-    if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
-        properties.cellclassname = cellclass;
-    }
-    if (typeof properties.initeditor !== 'undefined') {
-        properties.initeditor = eval(properties.initeditor);
-    }
-    if (typeof properties.validation !== 'undefined') {
-        properties.validation = validation;
-    }
-    if (typeof properties.cellbeginedit !== 'undefined') {
-        properties.cellbeginedit = cellbeginedit;
-    }
-    if (typeof properties.cellsrenderer !== 'undefined') {
-        properties.cellsrenderer = cellsrenderer;
-    }
-});
-$.each(columngroups, function(group, properties) {
-    if (typeof properties.rendered !== 'undefined')
-        properties.rendered = tooltiprenderer;
-});*/
 let form_tables_data = {!! $tablelist !!};
 let protocol_control_created = false;
 let forcereload = 0; // При наличии загружается кэшированный протокол контроля
