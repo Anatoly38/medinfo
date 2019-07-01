@@ -100,13 +100,13 @@ class ReportMaker
         $report_units = [];
         $calculation_errors = [];
         $u = 0;
-        if ($this->group_by === 3) {
+/*        if ($this->group_by === 3) {
             foreach ($this->units as $u) {
                 if ($u->unit_code == 1022) {
                     dd($u);
                 }
             }
-        }
+        }*/
 
         foreach ($this->units as $unit) {
             //if (count($this->list_scope) > 0 && !in_array($unit->id, $this->list_scope) && ($unit->node_type == 3 || $unit->node_type == 4)) {
@@ -160,7 +160,7 @@ class ReportMaker
                     $value = $m->e($formula);
                 }
                 catch (\Exception $e) {
-                    $calculation_errors[] = ['formula' => $formula, 'error' => $e->getMessage(), 'unit' => $unit];
+                    $calculation_errors[] = ['formula' => $rule['value'], 'error' => $e->getMessage(), 'unit' => $unit];
                     //dd("Ошибка при вычислении формулы: " . $formula . " " . $e);
                 }
                 //$value = eval('return ' . $formula . ';' );
