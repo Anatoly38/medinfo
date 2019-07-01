@@ -46,6 +46,7 @@
                             <div class="col-md-9">
                                 <label class="radio-inline"><input type="radio" id="by_territory" name="GroupBy" checked>города, районы</label>
                                 <label class="radio-inline"><input type="radio" id="by_legals" name="GroupBy">медицинские организации</label>
+                                <label class="radio-inline"><input type="radio" id="by_subjects" name="GroupBy">первичные отчеты</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -108,7 +109,7 @@
 @endsection
 
 @push('loadjsscripts')
-<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=029') }}"></script>
+<script src="{{ asset('/medinfo/admin/reportpatternsadmin.js?v=030') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -117,6 +118,7 @@
         let patternDataAdapter;
         let periodDataAdapter;
         let url = '/reports/patterns/perform';
+        let indexes_url = '/reports/patterns/fetchindexes/';
         let sortorder = 2;
         let group_by = 2;
         let plist = $("#periodList");

@@ -31,7 +31,7 @@ class ReportMaker
     private $population_rows;
     private $population_column;
 
-    public function __construct(int $level = 1, int $period_id = 4, int $sort_order = 1, $list_id = null)
+    public function __construct(int $group_by = 2, int $period_id = 4, int $sort_order = 2, $list_id = null)
     {
         $this->period = Period::find($period_id);
         $this->states = [ 2, 4, 8, 16, 32 ]; // Документы со всеми статусами
@@ -60,10 +60,7 @@ class ReportMaker
                 $order = 'unit_code';
                 break;
         }
-        switch ($level) {
-            case 0:
-                $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
-                break;
+        switch ($group_by) {
             case 1:
                 $this->units = Unit::legal()->active()->orderBy('unit_code')->get();
                 break;
@@ -72,6 +69,9 @@ class ReportMaker
                 // Добавляем в коллекцию "Всего"
                 $all = Unit::find(config('medinfo.report_tree'));
                 $this->units->push($all);
+                break;
+            case 3:
+                $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
                 break;
         }
         if (count($this->all_scope) > 0) {

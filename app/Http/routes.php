@@ -360,7 +360,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('reports/br/fetchrows/{table}', 'Shared\FormTablePickerController@fetchActualRows');
 
     Route::get('/reports/patterns', 'Report\ReportPatternController@index');
-    Route::get('/reports/patterns/{pattern}/fetchindexes', 'Report\ReportPatternController@showIndexes');
+    Route::get('/reports/patterns/fetchindexes/{pattern}', 'Report\ReportPatternController@showIndexes');
     Route::get('/reports/patterns/create', 'Admin\ReportPatternAdminController@create');
     Route::post('/reports/patterns', 'Admin\ReportPatternAdminController@store');
     Route::get('/reports/patterns/{id}/edit', 'Admin\ReportPatternAdminController@edit');

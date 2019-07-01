@@ -59,8 +59,7 @@ initpatternlist = function() {
         });
     ilist.on('rowselect', function (event) {
         let row = event.args.row;
-        let indexes_url = url + row.id + "/fetchindexes";
-        $.getJSON( indexes_url, function( data) {
+        $.getJSON( indexes_url + row.id, function( data) {
             let container = $('<div></div>');
             let i = 1;
             let html = '';
@@ -147,6 +146,9 @@ initformactions = function() {
     });
     $("#by_legals").on('click', function() {
         group_by = 1;
+    });
+    $("#by_subjects").on('click', function() {
+        group_by = 3;
     });
 
 };
