@@ -101,7 +101,11 @@ class ReportMaker
         $calculation_errors = [];
         $u = 0;
         if ($this->group_by === 3) {
-            dd($this->units);
+            foreach ($this->units as $u) {
+                if ($u->unit_code == 1022) {
+                    dd($u);
+                }
+            }
         }
 
         foreach ($this->units as $unit) {
