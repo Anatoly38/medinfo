@@ -30,6 +30,7 @@ class ReportMaker
     private $population_form;
     private $population_rows;
     private $population_column;
+    private $group_by;
 
     public function __construct(int $group_by = 2, int $period_id = 4, int $sort_order = 2, $list_id = null)
     {
@@ -63,15 +64,18 @@ class ReportMaker
         switch ($group_by) {
             case 1:
                 $this->units = Unit::legal()->active()->orderBy('unit_code')->get();
+                $this->group_by = 1;
                 break;
             case 2:
                 $this->units = Unit::territory()->active()->orderBy('unit_name')->get();
                 // Добавляем в коллекцию "Всего"
                 $all = Unit::find(config('medinfo.report_tree'));
                 $this->units->push($all);
+                $this->group_by = 2;
                 break;
             case 3:
                 $this->units = Unit::primary()->active()->orderBy('unit_code')->get();
+                $this->group_by = 3;
                 break;
         }
         if (count($this->all_scope) > 0) {
@@ -101,7 +105,6 @@ class ReportMaker
             //if ($unit->node_type == 3 || $unit->node_type == 4) {
                 //continue;
             //}
-
             $report_units[$unit->id]['unit_name'] = $unit->unit_name;
             $report_units[$unit->id]['unit_code'] = $unit->unit_code;
             $report_units[$unit->id]['inn'] = $unit->inn;
@@ -125,7 +128,11 @@ class ReportMaker
                     //if ($unit->id === 115 && $c_addr[0] == 'Ф30Т1001С13Г4') {
                         //dd($col_index);
                     //}
-                    $v = $this->getAggregatedValue($unit, $form, $table_code, $row_code, $col_index);
+                    if ($this->group_by === 3) {
+                        $v = $this->getPlainValue($unit, $form, $table_code, $row_code, $col_index);
+                    } else {
+                        $v = $this->getAggregatedValue($unit, $form, $table_code, $row_code, $col_index);
+                    }
                     $formula = str_replace($c_addr[0], $v, $formula);
                 }
                 $populationlinks = preg_match_all('/население\((\d{1,})\)/u', $formula, $populationmatches, PREG_SET_ORDER);
@@ -164,6 +171,21 @@ class ReportMaker
             Session::save();
         }
         return [ $report_units, $calculation_errors ];
+    }
+
+    public function getPlainValue(Unit $unit, Form $form, $table_code, $row_code, $col_index)
+    {
+        $val_q = "SELECT v.value AS value FROM statdata v
+                          LEFT JOIN documents d on v.doc_id = d.id
+                          JOIN tables t on v.table_id = t.id
+                          LEFT JOIN rows r on v.row_id = r.id
+                          LEFT JOIN columns c on v.col_id = c.id
+                        WHERE d.form_id = {$form->id} 
+                          AND d.ou_id = {$unit->id} 
+                          AND d.period_id = {$this->period->id}
+                          AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_code = '$col_index'";
+        $val_res = \DB::selectOne($val_q);
+        return $val_res ? $val_res->value :  0;
     }
 
     public function getAggregatedValue(Unit $unit, Form $form, $table_code, $row_code, $col_index)
