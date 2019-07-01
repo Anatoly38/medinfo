@@ -100,13 +100,6 @@ class ReportMaker
         $report_units = [];
         $calculation_errors = [];
         $u = 0;
-/*        if ($this->group_by === 3) {
-            foreach ($this->units as $u) {
-                if ($u->unit_code == 1022) {
-                    dd($u);
-                }
-            }
-        }*/
 
         foreach ($this->units as $unit) {
             //if (count($this->list_scope) > 0 && !in_array($unit->id, $this->list_scope) && ($unit->node_type == 3 || $unit->node_type == 4)) {
@@ -193,7 +186,8 @@ class ReportMaker
                           AND d.period_id = {$this->period->id}
                           AND t.table_code = '$table_code' AND r.row_code = '$row_code' AND c.column_code = '$col_index'";
         $val_res = \DB::selectOne($val_q);
-        return $val_res ? $val_res->value :  0;
+        $value = $val_res ? $val_res->value :  0;
+        return $value ? $value : 0;
     }
 
     public function getAggregatedValue(Unit $unit, Form $form, $table_code, $row_code, $col_index)
