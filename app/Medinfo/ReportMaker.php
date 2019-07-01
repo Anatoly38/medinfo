@@ -100,6 +100,10 @@ class ReportMaker
         $report_units = [];
         $calculation_errors = [];
         $u = 0;
+        if ($this->group_by === 3) {
+            dd($this->units);
+        }
+
         foreach ($this->units as $unit) {
             //if (count($this->list_scope) > 0 && !in_array($unit->id, $this->list_scope) && ($unit->node_type == 3 || $unit->node_type == 4)) {
             //if ($unit->node_type == 3 || $unit->node_type == 4) {
@@ -142,7 +146,7 @@ class ReportMaker
                         $population = $this->getPopulation($unit, $populationgroup);
                         $formula = str_replace($populationmatch[0], $population, $formula);
                     } catch (\Exception $e) {
-                        $calculation_errors[] = ['formula' => $formula, 'error' => $e->getMessage(), 'unit' => $unit];
+                        $calculation_errors[] = ['formula' => $rule['value'], 'error' => $e->getMessage(), 'unit' => $unit];
                         $formula = str_replace($populationmatch[0], 0, $formula);
                     }
                 }
@@ -178,7 +182,7 @@ class ReportMaker
         $val_q = "SELECT v.value AS value FROM statdata v
                           LEFT JOIN documents d on v.doc_id = d.id
                           JOIN tables t on v.table_id = t.id
-                          LEFT JOIN rows r on v.row_id = r.id
+                          LEFT JOIN \"rows\" r on v.row_id = r.id
                           LEFT JOIN columns c on v.col_id = c.id
                         WHERE d.form_id = {$form->id} 
                           AND d.ou_id = {$unit->id} 
