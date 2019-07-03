@@ -364,7 +364,7 @@ class DashboardController extends Controller
         return false;
     }*/
 // Предыдущая версия дашборда
-/*    public function index(Document $document)
+    public function index(Document $document)
     {
         $worker = Auth::guard('datainput')->user();
         //$album = Album::Default()->first(['id']);
@@ -400,11 +400,11 @@ class DashboardController extends Controller
             'form', 'period', 'editedtables', 'noteditablecells', 'renderingtabledata',
             'laststate', 'formsections', 'disabled_states'
         ));
-    }*/
+    }
     //Описательная информация для построения гридов динамически
     // возвращается json объект в формате для jqxgrid
     // В версии v2 не используется
-/*    protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
+    protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
     {
         $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
@@ -424,7 +424,7 @@ class DashboardController extends Controller
         $composedata['max_index'] = $max_index;
         //$composedata['tablecompose'] = $datafortables;
         return $composedata;
-    }*/
+    }
 
 
 }
