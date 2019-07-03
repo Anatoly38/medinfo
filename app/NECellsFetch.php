@@ -9,6 +9,18 @@ class NECellsFetch extends Model
     //
     protected $table = 'noteditable_cells_view';
 
+    public function scopeOfForm($query, $form)
+    {
+        return $query
+            ->where('f', $form);
+    }
+
+    public function scopeOfTable($query, $table)
+    {
+        return $query
+            ->where('t', $table);
+    }
+
     public static function byOuId(int $ou_id, int $form_id)
     {
         $q = "SELECT

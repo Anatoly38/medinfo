@@ -27,47 +27,8 @@ use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
 {
-    //public $default_album;
-    //
-    public function index(Document $document)
-    {
-        $worker = Auth::guard('datainput')->user();
-        //$album = Album::Default()->first(['id']);
-        $album = Album::find($document->album_id);
-        if (!$album) {
-            $album = Album::find(config('medinfo.default_album'));
-        }
-        $statelabel = Document::$state_labels[$document->state];
-        $monitoring = Monitoring::find($document->monitoring_id);
-        $form = Form::find($document->form_id);
-        $current_unit = Unit::find($document->ou_id);
-        if (!$current_unit) {
-            $current_unit = UnitList::find($document->ou_id);
-        }
-        if ($worker->role === 0 ) {
-            $editpermission = true;
-        } else {
-            //$editpermission = $this->isEditPermission($worker->permission, $document->state);
-            $editpermission = TableEditing::isEditPermission($worker->permission, $document->state);
-        }
-        $disabled_states = config('medinfo.disabled_states.' . $worker->role);
-        $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
-        $period = Period::find($document->period_id);
-        $editedtables = Table::editedTables($document->id, $album->id);
-        //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
-        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $this->getRealForm($form)->id);
-        $renderingtabledata = $this->composeDataForTablesRendering($this->getRealForm($form), $editedtables, $album);
-        $laststate = $this->getLastState($worker, $document, $form, $album);
-        $formsections = $this->getFormSections($this->getRealForm($form)->id, $album->id, $document->id);
-        \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
-        return view($this->dashboardView(), compact(
-            'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
-            'form', 'period', 'editedtables', 'noteditablecells', 'renderingtabledata',
-            'laststate', 'formsections', 'disabled_states'
-        ));
-    }
 
-    // Версия для доработки дашборда
+    // Текущая версия дашборда
     public function index_v2(Document $document)
     {
         $worker = Auth::guard('datainput')->user();
@@ -94,9 +55,12 @@ class DashboardController extends Controller
         $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
         $period = Period::find($document->period_id);
         $editedtables = Table::editedTables($document->id, $album->id);
-        //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
-        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $realform->id);
         $laststate = $this->getLastState($worker, $document, $form, $album);
+        //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
+        //$noteditablecells = NECellsFetch::byOuId($current_unit->id, $realform->id);
+        $noteditablecells = NECellsFetch::OfTable($laststate['currenttable']->id)->get();
+        //dd($laststate);
+        //dd($noteditablecells);
         $autocalculate_totals = true;
         $renderingtabledata = $this->composeDataForTable($laststate['currenttable'], $album);
         $for_form_tables = $this->composeTableList($realform, $album, $editedtables);
@@ -149,30 +113,6 @@ class DashboardController extends Controller
         return property_exists($this, 'dashboardView') ? $this->dashboardView : 'jqxdatainput.formdashboard_v2';
     }
 
-    //Описательная информация для построения гридов динамически
-    // возвращается json объект в формате для jqxgrid
-    protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
-    {
-        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
-            $query->where('album_id', $album->id);
-        })->orderBy('table_index')->get();
-        $max_index = $tables->last()->table_index;
-        $forformtable = [];
-        $datafortables = [];
-        foreach ($tables as $table) {
-            in_array($table->id, $editedtables) ? $edited = 1 : $edited = 0;
-            // данные для таблицы-фильтра для навигации по отчетным таблицам в форме
-            $forformtable[] = "{ id: " . $table->id . ", code: '" . $table->table_code . "', name: '" . $table->table_name . "', edited: " . $edited . " }";
-            $datafortables[$table->id] = TableEditing::fetchDataForTableRenedering($table, $album);
-        }
-        $datafortables_json = addslashes(json_encode($datafortables));
-        $composedata['tablelist'] = $forformtable;
-        $composedata['tablecompose'] = $datafortables_json;
-        $composedata['max_index'] = $max_index;
-        //$composedata['tablecompose'] = $datafortables;
-        return $composedata;
-    }
-
     protected function composeDataForTable(Table $table, Album $album)
     {
         $table_props = [ "id" => $table->id , "code" => $table->table_code, "name" => $table->table_name, "index" => $table->table_index, ];
@@ -187,6 +127,7 @@ class DashboardController extends Controller
         $composedata['columns'] = json_encode($datafortable['columns']);
         $composedata['columngroups'] = json_encode($datafortable['columngroups']);
         $composedata['firstdatacolumn'] = $datafortable['firstdatacolumn'];
+        $composedata['noteditablecells'] = NECellsFetch::OfTable($table->id)->get();
         $composedata['rowprops'] = $datafortable['rowprops'];
         $composedata['colprops'] = $datafortable['colprops'];
         return $composedata;
@@ -422,5 +363,68 @@ class DashboardController extends Controller
         }
         return false;
     }*/
+// Предыдущая версия дашборда
+/*    public function index(Document $document)
+    {
+        $worker = Auth::guard('datainput')->user();
+        //$album = Album::Default()->first(['id']);
+        $album = Album::find($document->album_id);
+        if (!$album) {
+            $album = Album::find(config('medinfo.default_album'));
+        }
+        $statelabel = Document::$state_labels[$document->state];
+        $monitoring = Monitoring::find($document->monitoring_id);
+        $form = Form::find($document->form_id);
+        $current_unit = Unit::find($document->ou_id);
+        if (!$current_unit) {
+            $current_unit = UnitList::find($document->ou_id);
+        }
+        if ($worker->role === 0 ) {
+            $editpermission = true;
+        } else {
+            //$editpermission = $this->isEditPermission($worker->permission, $document->state);
+            $editpermission = TableEditing::isEditPermission($worker->permission, $document->state);
+        }
+        $disabled_states = config('medinfo.disabled_states.' . $worker->role);
+        $editpermission ? $editmode = 'Редактирование' : $editmode = 'Только чтение';
+        $period = Period::find($document->period_id);
+        $editedtables = Table::editedTables($document->id, $album->id);
+        //$noteditablecells = NECellsFetch::where('f', $form->id)->select('t', 'r', 'c')->get();
+        $noteditablecells = NECellsFetch::byOuId($current_unit->id, $this->getRealForm($form)->id);
+        $renderingtabledata = $this->composeDataForTablesRendering($this->getRealForm($form), $editedtables, $album);
+        $laststate = $this->getLastState($worker, $document, $form, $album);
+        $formsections = $this->getFormSections($this->getRealForm($form)->id, $album->id, $document->id);
+        \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
+        return view($this->dashboardView(), compact(
+            'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
+            'form', 'period', 'editedtables', 'noteditablecells', 'renderingtabledata',
+            'laststate', 'formsections', 'disabled_states'
+        ));
+    }*/
+    //Описательная информация для построения гридов динамически
+    // возвращается json объект в формате для jqxgrid
+    // В версии v2 не используется
+/*    protected function composeDataForTablesRendering(Form $form, array $editedtables, Album $album)
+    {
+        $tables = Table::OfForm($form->id)->whereDoesntHave('excluded', function ($query) use($album) {
+            $query->where('album_id', $album->id);
+        })->orderBy('table_index')->get();
+        $max_index = $tables->last()->table_index;
+        $forformtable = [];
+        $datafortables = [];
+        foreach ($tables as $table) {
+            in_array($table->id, $editedtables) ? $edited = 1 : $edited = 0;
+            // данные для таблицы-фильтра для навигации по отчетным таблицам в форме
+            $forformtable[] = "{ id: " . $table->id . ", code: '" . $table->table_code . "', name: '" . $table->table_name . "', edited: " . $edited . " }";
+            $datafortables[$table->id] = TableEditing::fetchDataForTableRenedering($table, $album);
+        }
+        $datafortables_json = addslashes(json_encode($datafortables));
+        $composedata['tablelist'] = $forformtable;
+        $composedata['tablecompose'] = $datafortables_json;
+        $composedata['max_index'] = $max_index;
+        //$composedata['tablecompose'] = $datafortables;
+        return $composedata;
+    }*/
+
 
 }

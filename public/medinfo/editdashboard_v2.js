@@ -827,96 +827,7 @@ let inittablelist = function() {
         fetchDataForDataGrid(event.args.row.id);
     });
 };
-function fetchDataForDataGrid(tableid) {
-    tl.jqxLoader('open');
-    $.get(tableprops_url + tableid, function (data) {
-        //datafields = $.parseJSON(data.datafields);
-        datafields = data.datafields;
-        calculatedfields = $.parseJSON(data.calcfields);
-        data_for_table = $.parseJSON(data.tableproperties);
-        columns = $.parseJSON(data.columns);
-        columngroups = $.parseJSON(data.columngroups);
-        firstdatacolumn = data.firstdatacolumn;
-        there_is_calculated = calculatedfields.length > 0;
-        there_is_calculated ? calculate.prop('disabled', false ) : calculate.prop('disabled', true );
-        //aggregatedrows = data.aggregates;
-        rowprops = data.rowprops;
-        colprops = data.colprops;
-        current_table = parseInt(tableid);
-        current_table_code = data_for_table.code;
-        current_table_index = data_for_table.index;
-        set_navigation_buttons_status(current_table_index);
-        current_row_name_datafield = columns[1].dataField;
-        current_row_number_datafield = columns[2].dataField;
-        renderColumnFunctions();
-        tablesource.datafields = datafields;
-        tablesource.url = fetchvalues_url();
-        renderDgrid();
-    });
-}
-function renderColumnFunctions() {
-    $.each(columns, function(column, properties) {
-        if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
-            properties.cellclassname = cellclass;
-        }
-        //if (typeof properties.createeditor !== 'undefined') {
-        //  properties.createeditor =  eval(properties.createeditor);
-        //}
-        //if (typeof properties.initeditor !== 'undefined') {
-            //properties.initeditor = eval(properties.initeditor);
-        //}
 
-        //if (typeof properties.initeditor !== 'undefined') {
-        if (typeof properties.createeditor !== 'undefined') {
-            //properties.initeditor = function () { };
-            //properties.createeditor = eval(properties.initeditor);
-            switch (properties.createeditor) {
-                case 'defaultEditor' :
-                    properties.createeditor = defaultEditor;
-                    break;
-                case 'decimal1Editor' :
-                    properties.createeditor = decimal1Editor;
-                    break;
-                case 'decimal2Editor' :
-                    properties.createeditor = decimal2Editor;
-                    break;
-                case 'decimal3Editor' :
-                    properties.createeditor = decimal3Editor;
-                    break;
-            }
-        }
-
-        if (typeof properties.validation !== 'undefined') {
-            properties.validation = validation;
-        }
-        if (typeof properties.cellbeginedit !== 'undefined') {
-            properties.cellbeginedit = cellbegineditByColumn;
-        }
-/*        if (typeof properties.cellsrenderer !== 'undefined') {
-            properties.cellsrenderer = cellsrenderer;
-        }*/
-    });
-    $.each(columngroups, function(group, properties) {
-        if (typeof properties.rendered !== 'undefined')
-            properties.rendered = tooltiprenderer;
-    });
-}
-function renderDgrid() {
-    console.log('Начало рендеринга таблицы первичных статданных');
-    dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
-    dgrid.jqxGrid('clearselection');
-    dgrid.jqxGrid('clearfilters');
-    dgrid.jqxGrid('beginupdate');
-        dgrid.jqxGrid( { columns: columns } );
-        dgrid.jqxGrid( { columngroups: columngroups } );
-        dgrid.jqxGrid('updatebounddata');
-    dgrid.jqxGrid('endupdate');
-    $("#TableTitle").html("Таблица " + data_for_table.code + ', "' + data_for_table.name + '"');
-    $("#tableprotocol").html('');
-    $("#extrabuttons").hide();
-    tdropdown.jqxDropDownButton('close');
-    splitter.jqxSplitter('collapse');
-}
 // Инициализация вкладки протокола контроля формы
 let initcheckformtab = function() {
     //$("#checkform").jqxButton({ theme: theme, disabled: control_disabled });
@@ -977,6 +888,7 @@ let initdatagrid = function() {
     tl.jqxLoader({theme: theme, width: 170, height: 80,
         isModal:false,
         imagePosition: 'top',
+        autoOpen: true,
         html: html
     });
 
@@ -1053,7 +965,7 @@ let initdatagrid = function() {
             columngroups: columngroups,
             pagermode: "simple",
             pagesizeoptions: ['10', '20', '100'],
-            pagesize: 22,
+            pagesize: 20,
             pagerbuttonscount: 15,
             autoshowloadelement: false
         });
@@ -1089,6 +1001,98 @@ let initdatagrid = function() {
 
     //console.log($(".jqx-input")[0].onpaste);
 };
+
+function fetchDataForDataGrid(tableid) {
+    tl.jqxLoader('open');
+    $.get(tableprops_url + tableid, function (data) {
+        //datafields = $.parseJSON(data.datafields);
+        datafields = data.datafields;
+        calculatedfields = $.parseJSON(data.calcfields);
+        data_for_table = $.parseJSON(data.tableproperties);
+        columns = $.parseJSON(data.columns);
+        columngroups = $.parseJSON(data.columngroups);
+        firstdatacolumn = data.firstdatacolumn;
+        not_editable_cells = data.noteditablecells;
+        there_is_calculated = calculatedfields.length > 0;
+        there_is_calculated ? calculate.prop('disabled', false ) : calculate.prop('disabled', true );
+        //aggregatedrows = data.aggregates;
+        rowprops = data.rowprops;
+        colprops = data.colprops;
+        current_table = parseInt(tableid);
+        current_table_code = data_for_table.code;
+        current_table_index = data_for_table.index;
+        set_navigation_buttons_status(current_table_index);
+        current_row_name_datafield = columns[1].dataField;
+        current_row_number_datafield = columns[2].dataField;
+        renderColumnFunctions();
+        tablesource.datafields = datafields;
+        tablesource.url = fetchvalues_url();
+        renderDgrid();
+    }).fail(xhrErrorNotificationHandler);
+}
+function renderColumnFunctions() {
+    $.each(columns, function(column, properties) {
+        if (typeof properties.cellclassname !== 'undefined' && properties.cellclassname === 'cellclass') {
+            properties.cellclassname = cellclass;
+        }
+        //if (typeof properties.createeditor !== 'undefined') {
+        //  properties.createeditor =  eval(properties.createeditor);
+        //}
+        //if (typeof properties.initeditor !== 'undefined') {
+        //properties.initeditor = eval(properties.initeditor);
+        //}
+
+        //if (typeof properties.initeditor !== 'undefined') {
+        if (typeof properties.createeditor !== 'undefined') {
+            //properties.initeditor = function () { };
+            //properties.createeditor = eval(properties.initeditor);
+            switch (properties.createeditor) {
+                case 'defaultEditor' :
+                    properties.createeditor = defaultEditor;
+                    break;
+                case 'decimal1Editor' :
+                    properties.createeditor = decimal1Editor;
+                    break;
+                case 'decimal2Editor' :
+                    properties.createeditor = decimal2Editor;
+                    break;
+                case 'decimal3Editor' :
+                    properties.createeditor = decimal3Editor;
+                    break;
+            }
+        }
+
+        if (typeof properties.validation !== 'undefined') {
+            properties.validation = validation;
+        }
+        if (typeof properties.cellbeginedit !== 'undefined') {
+            properties.cellbeginedit = cellbegineditByColumn;
+        }
+        /*        if (typeof properties.cellsrenderer !== 'undefined') {
+                    properties.cellsrenderer = cellsrenderer;
+                }*/
+    });
+    $.each(columngroups, function(group, properties) {
+        if (typeof properties.rendered !== 'undefined')
+            properties.rendered = tooltiprenderer;
+    });
+}
+function renderDgrid() {
+    console.log('Начало рендеринга таблицы первичных статданных');
+    dgrid.jqxGrid('endcelledit', current_edited_cell.r, current_edited_cell.c, false);
+    dgrid.jqxGrid('clearselection');
+    dgrid.jqxGrid('clearfilters');
+    dgrid.jqxGrid('beginupdate');
+    dgrid.jqxGrid( { columns: columns } );
+    dgrid.jqxGrid( { columngroups: columngroups } );
+    dgrid.jqxGrid('updatebounddata');
+    dgrid.jqxGrid('endupdate');
+    $("#TableTitle").html("Таблица " + data_for_table.code + ', "' + data_for_table.name + '"');
+    $("#tableprotocol").html('');
+    $("#extrabuttons").hide();
+    tdropdown.jqxDropDownButton('close');
+    splitter.jqxSplitter('collapse');
+}
 // Действия при выборе ячейки
 function cellSelecting(event) {
     let panels = $('#formEditLayout').jqxSplitter('panels');

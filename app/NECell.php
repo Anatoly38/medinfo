@@ -10,6 +10,16 @@ class NECell extends Model
     protected $table = 'noteditable_cells';
     protected $fillable = ['row_id' , 'column_id', 'condition_id'];
 
+    public function row()
+    {
+        return $this->belongsTo('App\Row');
+    }
+
+    public function column()
+    {
+        return $this->belongsTo('App\Column');
+    }
+
     public function scopeOfRC($query, $row, $column)
     {
         return $query
