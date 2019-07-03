@@ -84,13 +84,14 @@
                                 </div>
                             </div>
                         </form>
+                        @if ($worker->id === 5)
                         <button class="dropdown btn btn-default navbar-btn " type="button">
                             <span class="dropdown-toggle" data-toggle="dropdown" href="#" title="Настройки редактирования таблицы">
                                 <i class="fal fa-cog fa-lg"></i>  <span class="caret"></span>
                             </span>
                             <div id="tableSettings" class="dropdown-menu" style="width: 400px; height:200px; padding: 10px 10px 10px 10px">
                                 <div class="row">
-                                    <div class="col-md-12"><h4>Настройки редактирования таблицы</h4></div>
+                                    <div class="col-md-12"><h4>Настройки редактирования таблицы (wid: {{ $worker->id }})</h4></div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
@@ -107,6 +108,7 @@
                                 </div>
                             </div>
                         </button>
+                        @endif
                     </div>
                 </div>
                 <div class="row">
