@@ -224,6 +224,7 @@
         </div>
     </div>
     @include('jqxdatainput.windows')
+    @include('jqxdatainput.bitrix_button')
 @endsection
 
 @push('loadcss')
