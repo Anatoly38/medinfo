@@ -7,6 +7,7 @@ use App\AlbumFormsection;
 use App\FormSection;
 use App\FormSectionTable;
 use App\DocumentSectionBlock;
+use App\SectionchangingLog;
 use App\Table;
 use Illuminate\Http\Request;
 
@@ -84,7 +85,6 @@ class FormSectionAdminController extends Controller
             }
             return ['error' => 422, 'message' => $message];
         }
-
     }
 
     public function destroy($fs)
@@ -92,6 +92,7 @@ class FormSectionAdminController extends Controller
         $proccessed_albums = AlbumFormsection::OfFormSection($fs)->delete();
         $proccessed_tables = FormSectionTable::OfFormSection($fs)->delete();
         $proccessed_blocks = DocumentSectionBlock::OfFormSection($fs)->delete();
+        SectionchangingLog::OfSection($fs)->delete();
         $section_deleted = FormSection::destroy($fs);
         return ['message' => "Удален раздел Id: $fs и свзяанные записи в альбоме разделов ($proccessed_albums), перечне таблиц ($proccessed_tables), блокировки ($proccessed_blocks)"];
     }

@@ -24,6 +24,7 @@ let nexttable = $('#Following');
 let filterinput = $("#SearchField");
 let clearfilter = $("#ClearFilter");
 let calculate = $("#Сalculate");
+let recalculateAllAggregates = $("#RecalculateAggregates");
 let fullscreen = $("#ToggleFullscreen");
 let tcheck = $("#TableCheck");
 let idtcheck = $("#IDTableCheck");
@@ -31,12 +32,16 @@ let iptcheck = $("#IPTableCheck");
 let formcheck = $("#FormCheck");
 let excelexport = $("#tableExcelExport");
 let excelimport = $("#tableExcelImport");
+let disableAutosumm = $("#disableAutosumm");
 let fsdropdown = $('#SectionsManager');
 let excelUploadWindow = $('#uploadExcelFile');
 let flUpload = $('#ExcelFileUpload');
 let onlyOneTable = $('#onlyOneTable');
 let tl = $("#TableDataLoader");
 let localizednumber = new Intl.NumberFormat('ru-RU');
+
+let cellValueChangingLog = [];
+
 let edited_tables = [{!! implode(',', $editedtables) !!}];
 //let not_editable_cells = {!! json_encode($noteditablecells) !!};
 let not_editable_cells = {!! $noteditablecells !!};

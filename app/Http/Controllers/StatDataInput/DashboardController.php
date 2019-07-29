@@ -396,9 +396,21 @@ class DashboardController extends Controller
         $formsections = $this->getFormSections($this->getRealForm($form)->id, $album->id, $document->id);
         \App\RecentDocument::create(['worker_id' => $worker->id, 'document_id' => $document->id, 'occured_at' => Carbon::now(), ]);
         return view($this->dashboardView(), compact(
-            'current_unit', 'document', 'worker', 'album', 'statelabel', 'editpermission', 'editmode', 'monitoring',
-            'form', 'period', 'editedtables', 'noteditablecells', 'renderingtabledata',
-            'laststate', 'formsections', 'disabled_states'
+            'current_unit', 'document',
+            'worker',
+            'album',
+            'statelabel',
+            'editpermission',
+            'editmode',
+            'monitoring',
+            'form',
+            'period',
+            'editedtables',
+            'noteditablecells',
+            'renderingtabledata',
+            'laststate',
+            'formsections',
+            'disabled_states'
         ));
     }
     //Описательная информация для построения гридов динамически

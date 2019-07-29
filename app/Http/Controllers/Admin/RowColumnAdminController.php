@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\ValuechangingLog;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -205,9 +206,10 @@ class RowColumnAdminController extends Controller
         $cell_count = Cell::countOfCellsByRow($row->id);
         $table_id = $row->table_id;
         $row_index = $row->row_index;
-        if ($cell_count == 0) {
+        if ($cell_count === 0) {
             AlbumRowSet::OfRow($row->id)->delete();
             NECell::OfRow($row->id)->delete();
+            ValuechangingLog::OfRow()->delete();
             $row->delete();
             $reindexed = Row::OfTable($table_id)->where('row_index','>', $row_index)->orderBy('row_index')->get();
             foreach ($reindexed as $item) {

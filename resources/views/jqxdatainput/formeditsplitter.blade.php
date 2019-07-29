@@ -13,7 +13,17 @@
                             <button class="btn btn-default navbar-btn" id="Previous" title="Предыдущая таблица"> <span class='fa fa-arrow-left'></span></button>
                             <button class="btn btn-default navbar-btn" id="Following" title="Следующая таблица"> <span class='fa fa-arrow-right'></span></button>
                         </div>
-                        <button class="btn btn-default navbar-btn" id="Сalculate" title="Рассчитать"> <span class='fa fa-calculator'></span></button>
+                        <button class="dropdown btn btn-default navbar-btn " type="button">
+                            <span class="dropdown-toggle" data-toggle="dropdown" title="Расчет">
+                                <i class="fal fa-calculator fa-lg"></i>  <span class="caret"></span>
+                            </span>
+                            <ul class="dropdown-menu">
+                                <li id="Сalculate"><a href="#">Рассчитать показатели</a></li>
+                                @if ($worker->id === 5)
+                                <li id="RecalculateAggregates"><a href="#">Пересчитать итоговые строки и графы</a></li>
+                                @endif
+                            </ul>
+                        </button>
                         <button class="btn btn-default navbar-btn" id="ToggleFullscreen" title="Полноэкранный режим"> <span class='glyphicon glyphicon-fullscreen'></span></button>
                         <div class="btn-group">
                             <button class="btn btn-default navbar-btn" id="TableCheck" title="Контроль таблицы внутриформенный"><i>К</i><small>вф</small></button>

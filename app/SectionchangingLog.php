@@ -40,6 +40,6 @@ class SectionchangingLog extends Model
 
     public function scopeOfSection($query, $section)
     {
-        return $query->where('section_id', $section);
+        return $query->where('formsection_id', $section);
     }
 }

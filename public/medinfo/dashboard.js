@@ -163,7 +163,7 @@ function setUserPfofile() {
 }
 
 function initPusher() {
-    Pusher.logToConsole = true;
+    Pusher.logToConsole = false;
     pusher = new Pusher(pkey, {
         cluster: 'eu',
         forceTLS: true
@@ -598,10 +598,10 @@ function setDocInfo() {
             for (let i = 0; i < rec.length; i++ ) {
                 rec_rows += '<tr>';
                 rec_rows += '<td>'+ rec[i].occured_at +'</td>';
-                rec_rows += '<td>'+ rec[i].worker.description +'</td>';
+                rec_rows += rec[i].worker ?'<td>'+ rec[i].worker.description +'</td>' : '<td>пользователь не найден</td>';
                 rec_rows += '<td>'+ rec[i].table.table_code +'</td>';
-                rec_rows += '<td>'+ rec[i].row.row_code +'</td>';
-                rec_rows += '<td>'+ rec[i].column.column_code +'</td>';
+                rec_rows += rec[i].row ? '<td>'+ rec[i].row.row_code +'</td>' : '<td>строка не найдена</td>';
+                rec_rows += rec[i].column ? '<td>'+ rec[i].column.column_code +'</td>' : '<td>графа не найдена</td>';
                 rec_rows += '<td>'+ rec[i].oldvalue +'</td>';
                 rec_rows += '<td>'+ rec[i].newvalue +'</td>' + '</tr>';
                 rec_rows += '</tr>';
@@ -614,7 +614,7 @@ function setDocInfo() {
             for (let i = 0; i < st.length; i++ ) {
                 st_rows += '<tr>';
                 st_rows += '<td>'+ st[i].occured_at +'</td>';
-                st_rows += '<td>'+ st[i].worker.description +'</td>';
+                st_rows += st[i].worker ? '<td>'+ st[i].worker.description +'</td>' : '<td>пользователь не найден</td>';
                 st_rows += '<td>'+ st[i].oldstate.name +'</td>';
                 st_rows += '<td>'+ st[i].newstate.name +'</td>';
                 st_rows += '</tr>';
@@ -627,8 +627,8 @@ function setDocInfo() {
             for (let i = 0; i < sec.length; i++ ) {
                 sec_rows += '<tr>';
                 sec_rows += '<td>'+ sec[i].occured_at +'</td>';
-                sec_rows += '<td>'+ sec[i].worker.description +'</td>';
-                sec_rows += '<td>'+ sec[i].section.section_name +'</td>';
+                sec_rows += sec[i].worker ? '<td>'+ sec[i].worker.description +'</td>' : '<td>пользователь не найден</td>';
+                sec_rows += sec[i].section ? '<td>'+ sec[i].section.section_name +'</td>' : '<td>раздел не найден</td>';
                 sec_rows += '<td>'+ (sec[i].blocked === true ? 'Принят' : 'Отклонен') +'</td>';
                 sec_rows += '</tr>';
             }

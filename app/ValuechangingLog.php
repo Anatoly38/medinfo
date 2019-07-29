@@ -58,5 +58,10 @@ class ValuechangingLog extends Model
         return $query->where('worker_id', $worker);
     }
 
+    public function scopeOfRow($query, $row)
+    {
+        return $query
+            ->where('r', $row);
+    }
 
 }

@@ -899,32 +899,8 @@ let initdatagrid = function() {
             autoBind: true,
             id: 'id',
             url: fetchvalues_url(),
-            updaterow: function (rowid, rowdata) {
-                //console.log("Начало выполнения функции update row");
-                if (typeof window.event === 'undefined') {
-                    return false;
-                }
-                let value = rowdata[editedcell_column];
-/*                let cellvalidation = validateCell(rowid, editedcell_column, value);
-                if (!cellvalidation.result) {
-                    dgrid.jqxGrid('showvalidationpopup', 5, editedcell_column, "Invalid Value");
-                    return false;
-                }*/
-                let oldvalue;
-                if (typeof editedcell_value !== 'undefined') {
-                    oldvalue = editedcell_value;
-                } else {
-                    oldvalue = null;
-                }
-                current_edited_cell.t = current_table;
-                current_edited_cell.r = rowdata.boundindex;
-                current_edited_cell.c = editedcell_column;
-                current_edited_cell.valid = true;
-                current_edited_cell.rowid = parseInt(rowid);
-                if (oldvalue !== value) {
-                    saveCellValue(current_edited_cell.rowid, rowdata.boundindex, editedcell_column, value, oldvalue, autocalculateTotals);
-                }
-            },
+            //updaterow: serverDataupdate,
+            updaterow: function () { },
             root: null
         };
     dgridDataAdapter = new $.jqx.dataAdapter(tablesource, {
@@ -970,17 +946,12 @@ let initdatagrid = function() {
             autoshowloadelement: false
         });
     dgrid.on('cellselect', cellSelecting);
-    dgrid.on('cellvaluechanged', function (event) {
-        //console.log("Событие смена значения ячейки");
-        if (typeof window.event === 'undefined') {
-            //console.log('Была вставка из буфера?');
-            if (event.args.newvalue !==  event.args.oldvalue) {
-                let rowid = parseInt(dgrid.jqxGrid('getrowid', event.args.rowindex));
-                let colid = parseInt(event.args.datafield);
-                saveCellValue(rowid, event.args.rowindex, colid, event.args.newvalue, event.args.oldvalue);
-            }
-        }
-    });
+
+
+    //dgrid.on('cellvaluechanged', cellValueChanged_route1);
+    dgrid.on('cellvaluechanged', cellValueChanged_route2);
+
+
     dgrid.on('cellendedit', function (event)
     {
         //console.log("Событие завершение редактирования ячейки");
@@ -1014,7 +985,8 @@ function fetchDataForDataGrid(tableid) {
         firstdatacolumn = data.firstdatacolumn;
         not_editable_cells = data.noteditablecells;
         there_is_calculated = calculatedfields.length > 0;
-        there_is_calculated ? calculate.prop('disabled', false ) : calculate.prop('disabled', true );
+        //there_is_calculated ? calculate.prop('disabled', false ) : calculate.prop('disabled', true );
+        there_is_calculated ? calculate.removeClass('disabled') : calculate.addClass('disabled');
         //aggregatedrows = data.aggregates;
         rowprops = data.rowprops;
         colprops = data.colprops;
@@ -1120,11 +1092,10 @@ function cellSelecting(event) {
         $("#CellAnalysisTable").html(analitic_header).append(returned.layers);
     }
 }
-
 // в том числе, проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (event) {
     let args = event.args;
-    //console.log('Начало редактирования ячейки - событие из объекта dgrid');
+    console.log('Начало редактирования ячейки - событие из объекта dgrid');
     let colid = parseInt(args.datafield);
     let row = args.rowindex;
     let rowid = parseInt(dgrid.jqxGrid('getrowid', row));
@@ -1154,6 +1125,70 @@ let cellbegineditByColumn = function(row, datafield, columntype) {
     }
 };
 
+let cellValueChanged_route1 = function (event) {
+    console.log("Событие смены значения ячейки - вариант 1");
+    if (typeof window.event === 'undefined') {
+        console.log('Была вставка из буфера?');
+        if (event.args.newvalue !==  event.args.oldvalue) {
+            let rowid = parseInt(dgrid.jqxGrid('getrowid', event.args.rowindex));
+            let colid = parseInt(event.args.datafield);
+            saveCellValue(rowid, event.args.rowindex, colid, event.args.newvalue, event.args.oldvalue);
+        }
+    }
+};
+
+let cellValueChanged_route2 = function (event) {
+    console.log("Событие смены значения ячейки - вариант 2");
+    if (event.args.newvalue !==  event.args.oldvalue) {
+        let table = current_table;
+        let row = parseInt(dgrid.jqxGrid('getrowid', event.args.rowindex));
+        let column = parseInt(event.args.datafield);
+        let totalInLog = logCellValueChange(table, row, column, event.args.newvalue, event.args.oldvalue);
+        console.log("Измениние ячейки сохранено в журнале. Всего записей " + totalInLog);
+    }
+};
+
+function logCellValueChange(table, row, column, newvalue, oldvalue) {
+    console.log("Сохранение изменения значения ячейки в журнале");
+     let record = {
+         table: table,
+         row: row,
+         newvalue: newvalue,
+         oldvalue: oldvalue,
+         beginstore_at: Date.now(),
+         endstore_at: null,
+         stored: false
+     };
+    return cellValueChangingLog.push(record);
+}
+
+// функция для метода updaterow объекта tablesource
+function serverDataupdate(rowid, rowdata) {
+    console.log("Начало выполнения функции update row объекта tablesource");
+    if (typeof window.event === 'undefined') {
+        return false;
+    }
+    let value = rowdata[editedcell_column];
+    /*                let cellvalidation = validateCell(rowid, editedcell_column, value);
+                    if (!cellvalidation.result) {
+                        dgrid.jqxGrid('showvalidationpopup', 5, editedcell_column, "Invalid Value");
+                        return false;
+                    }*/
+    let oldvalue;
+    if (typeof editedcell_value !== 'undefined') {
+        oldvalue = editedcell_value;
+    } else {
+        oldvalue = null;
+    }
+    current_edited_cell.t = current_table;
+    current_edited_cell.r = rowdata.boundindex;
+    current_edited_cell.c = editedcell_column;
+    current_edited_cell.valid = true;
+    current_edited_cell.rowid = parseInt(rowid);
+    if (oldvalue !== value) {
+        saveCellValue(current_edited_cell.rowid, rowdata.boundindex, editedcell_column, value, oldvalue, autocalculateTotals);
+    }
+}
 // сохранение значения ячейки на сервере
 function saveCellValue(row, rowindex, column, newvalue, oldvalue, calculateTotals = false) {
     console.log('Запуск функции сохранения значения ячейки');
@@ -1368,7 +1403,22 @@ function calculateAggregatingRowCell(rowid, colid) {
             calculateAggregatingColumnCell(rowid, aggregatingcolumns[i]);
         }
     }
-
+}
+// Расчет суммы строк по выбранной графе
+function aggregateRowsByColumn(rows, colid) {
+    let value = 0;
+    for (let i = 0; i < rows.length; i++) {
+        value += parseFloat(dgrid.jqxGrid('getcellvaluebyid', rows[i], colid))||0;
+    }
+    return value;
+}
+// Расчет суммы граф по выбранной строке
+function aggregateColumnsByRow(columns, rowid) {
+    let value = 0;
+    for (let i = 0; i < columns.length; i++) {
+        value += parseFloat(dgrid.jqxGrid('getcellvaluebyid', rowid, columns[i]))||0;
+    }
+    return value;
 }
 // Расчет ячейки входящей в итоговую графу
 function calculateAggregatingColumnCell(rowid, colid) {
@@ -1389,7 +1439,43 @@ function calculateAggregatingColumnCell(rowid, colid) {
         }
     }
 }
+// Расчет суммы всех итоговых строк в таблице
+function calculateAllAggregatingRows() {
+    console.log("Начало перерасчета итоговых строк");
+    let rows = rowprops.filter(rowproperty => rowproperty.aggregate === true);
+    let columns = datafields.filter(datafield => datafield.type === 'number');
+    for (let i = 0; i < rows.length; i++ ) {
+        for (let j = 0; j < columns.length; j++) {
+            editedcell_column = columns[j].name;
+            let value = aggregateRowsByColumn(rows[i].aggregated_rows, columns[j].name);
+            if (value === 0) {
+                dgrid.jqxGrid('setcellvaluebyid', rows[i].row, columns[j].name, null);
+            } else {
+                dgrid.jqxGrid('setcellvaluebyid', rows[i].row, columns[j].name, value);
+            }
+        }
+    }
+}
+// Расчет суммы всех итоговых граф в таблице
+function calculateAllAggregatingColumns() {
+    console.log("Начало перерасчета итоговых граф");
+    let columns = colprops.filter(columnproperty => columnproperty.aggregate === true);
+    let rows = dgridDataAdapter.records.map(function (rec) {
+        return rec.id;
+    }) ;
+    for (let i = 0; i < columns.length; i++ ) {
+        for (let j = 0; j < rows.length; j++) {
+            editedcell_column = columns[i].column;
+            let value = aggregateColumnsByRow(columns[i].aggregated_columns, rows[j]);
+            if (value === 0) {
+                dgrid.jqxGrid('setcellvaluebyid', rows[j], columns[i].column, null);
+            } else {
+                dgrid.jqxGrid('setcellvaluebyid', rows[j], columns[i].column, value);
+            }
 
+        }
+    }
+}
 // Панель инструментов для редактируемой таблицы
 let inittoolbarbuttons = function () {
     tdropdown.jqxDropDownButton({width: 120, height: 22, theme: theme});
@@ -1430,9 +1516,16 @@ let inittoolbarbuttons = function () {
         }
     });
     if (!there_is_calculated) {
-        calculate.attr('disabled', true );
+        //calculate.attr('disabled', true );
+        calculate.addClass('disabled');
     }
     calculate.click(fillCalculatedFields);
+    recalculateAllAggregates.click( function () {
+        //tablesource.updaterow = function() {};
+        calculateAllAggregatingRows();
+        calculateAllAggregatingColumns();
+        //tablesource.updaterow = serverDataupdate;
+    });
     fullscreen.click(function() {
         dgrid.fullscreen();
     });
@@ -1512,6 +1605,10 @@ let inittoolbarbuttons = function () {
             prevbutton.removeAttr('disabled');
             raiseInfo("Смена статуса раздела документа выполнена - отклонен");
         });
+    });
+
+    disableAutosumm.click(function () {
+        autocalculateTotals = !disableAutosumm.prop('checked');
     });
 
     let oldVal = "";
@@ -1650,14 +1747,14 @@ let cellclass = function (row, columnfield, value, rowdata) {
             alerted_cell = '';
         }
     }
-    if (autocalculateTotals) {
+    //if (autocalculateTotals) {
         if (checkIsAggregatingdRow(rowdata.id)) {
             rowaggregate = 'rowaggregate'
         }
         if (checkIsAggregatingColumn(columnfield)) {
             columnaggregate = 'columnaggregate'
         }
-    }
+    //}
     return  alerted_cell + ' ' + invalid_cell + ' ' + rowaggregate + ' ' + columnaggregate + ' ' +  class_by_edited_row;
 };
 // Функция не нужна - оставим пока на всякий случай
