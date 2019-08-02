@@ -317,6 +317,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('datainput/fetchtableprops/{album}/{table}', 'StatDataInput\FormDashboardController@fetchDataForDataGrid');
     Route::get('datainput/fetchvalues/{document}/{album}/{table}', 'StatDataInput\FormDashboardController@fetchValues');
     Route::post('datainput/savevalue/{document}/{table}', 'StatDataInput\FormDashboardController@saveValue');
+
+    Route::post('datainput/flushchanges/{document}', 'StatDataInput\FormDashboardController@saveValues');
+
     Route::post('datainput/excelupload/{document}/{table}/{only}', 'ImportExport\ImportDataFromExcelController@importData');
     Route::get('datainput/valuechangelog/{document}', 'StatDataInput\FormDashboardController@fullValueChangeLog');
     Route::get('datainput/calculate/{document}/{table}', 'StatDataInput\CalculateColumnController@calculate');

@@ -10,6 +10,7 @@ namespace App\Medinfo;
 
 use App\Album;
 use App\Column;
+use App\Document;
 use App\RowProperty;
 use App\ColumnProperty;
 use App\Table;
@@ -231,6 +232,25 @@ class TableEditing
         return $fortable;
     }
 
+    public static function isEditable(Document $document, int $table, $worker)
+    {
+        $supervisor = ($worker->role === 3 || $worker->role === 4) ? true : false;
+        if ($worker->role === 0 ) {
+            $editpermission = true;
+        } else {
+            $permissionByState = self::isEditPermission($worker->permission, $document->state);
+            $permissionBySection = !self::isTableBlocked($document->id, $table);
+            // вариант 1: изменения запрещены только при соответствующем статусе документа
+            //$editpermission = $permissionByState && $permissionBySection;
+            // вариант 2: изменения запрещены при соответствующем статусе и во всех таблицах принятых разделов для всех пользователей
+            //$editpermission = $permissionByState && $permissionBySection;
+            // вариант 3: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для исполнителей за исключением сотрудников,
+            // принимающих отчеты
+            $editpermission = $permissionByState && ( $permissionBySection || $supervisor );
+        }
+        return $editpermission;
+    }
+
     public static function isEditPermission(int $permission, int $document_state)
     {
         switch (true) {
@@ -247,7 +267,7 @@ class TableEditing
 
     public static function isTableBlocked(int $document, int $table)
     {
-        $blockedSections = \App\DocumentSectionBlock::OfDocument($document)->Blocked()->with('formsection.tables')->get();
+        $blockedSections = self::getBlockedSections($document);
         if ($blockedSections) {
             $ids = [];
             foreach($blockedSections as $blockedSection) {
@@ -263,4 +283,26 @@ class TableEditing
         }
         return false;
     }
+
+    public static function getBlockedSections(int $document)
+    {
+        return \App\DocumentSectionBlock::OfDocument($document)->Blocked()->with('formsection.tables')->get();
+    }
+
+    public static function getBlockedTables(int $document)
+    {
+        $ids = [];
+        $blockedSections = self::getBlockedSections($document);
+        if ($blockedSections) {
+            foreach($blockedSections as $blockedSection) {
+                if ($blockedSection->formsection) {
+                    foreach ($blockedSection->formsection->tables as $t) {
+                        $ids[] = $t->table_id;
+                    }
+                }
+            }
+        }
+        return $ids;
+    }
+
 }

@@ -78,7 +78,9 @@ let current_protocol_source = [];
 let source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
 let tableprops_url = "/datainput/fetchtableprops/" + default_album + "/";
 let savevalue_url = "/datainput/savevalue/" + doc_id + "/";
-//let validate_table_url = "/datainput/tablecontrol/" + doc_id + "/";
+
+let flushlog_url = "/datainput/flushchanges/" + doc_id;
+
 let validate_form_url = "/datainput/formcontrol/" + doc_id;
 let informTableDataCheck = "/datainput/ifdcheck/table/" + doc_id + "/";
 let interFormTableDataCheck = "/datainput/interformdcheck/table/" + doc_id + "/";
@@ -125,7 +127,8 @@ init_fc_extarbuttons();
 initextarbuttons();
 initExcelUpload();
 renderColumnFunctions();
-@yield('initTableAggregateAction')
+initTableMedstatExportButton();
+initFlushValueChangesLogButton();
 @yield('initTableConsolidateAction')
 //firefullscreenevent();
 </script>

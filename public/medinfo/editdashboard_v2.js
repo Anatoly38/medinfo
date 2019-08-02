@@ -1124,7 +1124,7 @@ let cellbegineditByColumn = function(row, datafield, columntype) {
         return false;
     }
 };
-
+// Обработка события изменения данных ячейки при отправке данных на сервер при каждом измении ячейки
 let cellValueChanged_route1 = function (event) {
     console.log("Событие смены значения ячейки - вариант 1");
     if (typeof window.event === 'undefined') {
@@ -1136,7 +1136,7 @@ let cellValueChanged_route1 = function (event) {
         }
     }
 };
-
+// Обработка события изменения данных ячейки с записью в локальный журнал
 let cellValueChanged_route2 = function (event) {
     console.log("Событие смены значения ячейки - вариант 2");
     if (event.args.newvalue !==  event.args.oldvalue) {
@@ -1144,27 +1144,56 @@ let cellValueChanged_route2 = function (event) {
         let row = parseInt(dgrid.jqxGrid('getrowid', event.args.rowindex));
         let column = parseInt(event.args.datafield);
         let totalInLog = logCellValueChange(table, row, column, event.args.newvalue, event.args.oldvalue);
-        console.log("Измениние ячейки сохранено в журнале. Всего записей " + totalInLog);
+        console.log("Изменение ячейки сохранено в журнале. Всего записей " + totalInLog);
     }
 };
-
+// Запись изменения ячейки в локальный журнал
 function logCellValueChange(table, row, column, newvalue, oldvalue) {
-    console.log("Сохранение изменения значения ячейки в журнале");
+    //console.log("Сохранение изменения значения ячейки в журнале");
+    let edit_ts = new Date;
      let record = {
          table: table,
          row: row,
+         column: column,
          newvalue: newvalue,
-         oldvalue: oldvalue,
-         beginstore_at: Date.now(),
+         oldvalue: oldvalue || null ,
+         //beginstore_at: edit_ts.toISOString(),
+         beginstore_at: Math.floor(Date.now()/1000),
          endstore_at: null,
-         stored: false
+         stored: false,
+         message: ''
      };
     return cellValueChangingLog.push(record);
 }
-
-// функция для метода updaterow объекта tablesource
+// Сохранение данных на сервере из локального журнала изменений
+function flushCellValueChangesCache() {
+    let unsaved = cellValueChangingLog.filter(cell => cell.stored === false);
+    let saved = [];
+    if (unsaved.length > 0) {
+        $.ajax({
+            dataType: 'json',
+            url: flushlog_url,
+            data: { unsaved },
+            method: 'POST',
+            success: function (data, status, xhr) {
+                let server_success_records = data.filter(cell => cell.stored === true);
+                let server_fault_records = data.filter(cell => cell.stored === false);
+                if (!server_fault_records.length) {
+                    unsaved.map(cell => cell.stored = true );
+                } else {
+                    raiseError('Внимание! Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).');
+                }
+                console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
+            },
+            error: xhrErrorNotificationHandler
+        });
+    } else {
+        console.log("В журнале нет несохраненных записей");
+    }
+}
+// Функция для метода updaterow объекта tablesource
 function serverDataupdate(rowid, rowdata) {
-    console.log("Начало выполнения функции update row объекта tablesource");
+    console.log("Начало выполнения функции updaterow объекта tablesource");
     if (typeof window.event === 'undefined') {
         return false;
     }
@@ -1696,6 +1725,14 @@ let initTableMedstatExportButton = function() {
         let url = msexport_url + current_table ;
         location.replace(url);
     });
+};
+
+let initFlushValueChangesLogButton = function () {
+    if ($("#flushValueChangesLog").length) {
+        $("#flushValueChangesLog").click(function () {
+            flushCellValueChangesCache();
+        });
+    }
 };
 
 let defaultEditor = function (row, cellvalue, editor) {

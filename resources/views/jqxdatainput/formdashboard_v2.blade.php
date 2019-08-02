@@ -34,18 +34,6 @@
     </li>
 @endsection
 
-@section('tableAggregateButton')
-    {{-- Экспорт в Медстат ЦНИИОИЗ--}}
-    <button style="display: none" class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
-        <span class='fas fa-download fa-lg' ></span>
-        <span>МС</span>
-    </button>
-@endsection
-
-@section('initTableAggregateAction')
-    initTableMedstatExportButton();
-@endsection
-
 @section('headertitle', 'Просмотр/редактирование первичного отчетного документа')
 
 @section('content')
@@ -63,7 +51,7 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=037') }}"></script>
+    <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=041') }}"></script>
 {{--
     @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=033') }}"></script>

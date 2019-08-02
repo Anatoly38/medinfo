@@ -27,7 +27,9 @@ use App\Medinfo\TableEditing;
 
 class DashboardController extends Controller
 {
-
+    private $document_permission = null;
+    private $tableblocks;
+    private $tableblocks_has_gotten = false;
     // Текущая версия дашборда
     public function index_v2(Document $document)
     {
@@ -208,25 +210,7 @@ class DashboardController extends Controller
     {
         $worker = Auth::guard('datainput')->user();
         $document = Document::find($document);
-        $permissionByState = false;
-        $permissionBySection = false;
-        $supervisor = ($worker->role === 3 || $worker->role === 4) ? true : false;
-        if ($worker->role === 0 ) {
-            $editpermission = true;
-        } else {
-            //$permissionByState = $this->isEditPermission($worker->permission, $document->state);
-            $permissionByState = TableEditing::isEditPermission($worker->permission, $document->state);
-            //$permissionBySection = !$this->isTableBlocked($document, $table);
-            $permissionBySection = !TableEditing::isTableBlocked($document->id, $table);
-            // вариант 1: изменения запрещены только при соответствующем статусе документа
-            //$editpermission = $permissionByState && $permissionBySection;
-            // вариант 2: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для всех пользователей
-            //$editpermission = $permissionByState && $permissionBySection;
-            // вариант 3: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для исполнителей за исключением сотрудников,
-            // принимающих отчеты
-            $editpermission = $permissionByState && ( $permissionBySection || $supervisor);
-        }
-        if ($editpermission) {
+        if (TableEditing::isEditable($document, $table, $worker)) {
             $ou = $document->ou_id;
             $f = $document->form_id;
             $p = $document->period_id;
@@ -290,16 +274,111 @@ class DashboardController extends Controller
         else {
             $data['cell_affected'] = false;
             $data['error'] = 1001;
-            if (!$permissionByState) {
+/*            if (!$permissionByState) {
                 $data['comment'] = "Отсутствуют права для изменения данных в этом документе (по статусу документа)";
             } elseif (!$permissionBySection) {
                 $data['comment'] = "Отсутствуют права для изменения данных в этой таблице (раздел документа принят)";
             } else {
                 $data['comment'] = "Отсутствуют права для изменения данных в этом документе";
-            }
-
+            }*/
+            $data['comment'] = "Отсутствуют права для изменения данных. Проверьте статус документа в целом или его раздела (при наличии)";
         }
         return $data;
+    }
+    // Сохранение значения ячейки БД без проверки прав - для пакетного сохранения
+    public function storeCellValue(Document $document, $newcell, $worker)
+    {
+        $ou = $document->ou_id;
+        $f = $document->form_id;
+        $p = $document->period_id;
+        $table = $newcell['table'];
+        $row = $newcell['row'];
+        $col = $newcell['column'];
+        $new = $newcell['newvalue'];
+        $old = $newcell['oldvalue'];
+        $casted_new_value = (float)$new;
+        $casted_old_value = (float)$old;
+        if ($casted_new_value === $casted_old_value) {
+            return false;
+        }
+        else {
+            $cell = Cell::firstOrCreate(['doc_id' => $document->id, 'table_id' => $table, 'row_id' => $row, 'col_id' => $col]);
+            if (is_numeric($new)) {
+                if ($new == 0) {
+                    $cell->value = null;
+                }
+                else {
+                    $cell->value = $new;
+                }
+            }
+            else {
+                $cell->value = null;
+            }
+            $result = $cell->save();
+            if ($result) {
+                $log = [
+                    'worker_id' => $worker->id,
+                    'oldvalue' => $casted_old_value,
+                    'newvalue' => $casted_new_value,
+                    'd' => $document->id,
+                    'o' => $ou,
+                    'f' => $f,
+                    't' => $table,
+                    'r' => $row,
+                    'c' => $col,
+                    'p' => $p,
+                    'occured_at' => Carbon::now()
+                ];
+                ValuechangingLog::create($log);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    // Пакетное сохранение изменений ячеек из журнала изменений на стороне браузера
+    public function saveValues(Request $request, Document $document)
+    {
+        $ret = [];
+        if (!is_array($request->unsaved)) {
+            return [
+                'error' => 1001,
+                'message' => 'Неправильный формат отправки данных для сохранения в БД. Данные не сохранены',
+            ];
+        }
+        $worker = Auth::guard('datainput')->user();
+        $reccount = count($request->unsaved);
+        foreach ($request->unsaved as $cell) {
+            $cell['endstore_at'] = time();
+            if ($this->checkEditPermission($worker, $document, $cell)) {
+                $this->storeCellValue($document, $cell, $worker);
+                $cell['stored'] = true;
+                $cell['message'] = 'Сохранено успешно.';
+            } else {
+                $cell['stored'] = false;
+                $cell['message'] = 'Недостаточно прав для записи.';
+            }
+            $ret[] = $cell;
+
+        }
+
+        return $ret;
+    }
+
+    public function checkEditPermission($worker, Document $document, $cell)
+    {
+        $supervisor = ($worker->role === 3 || $worker->role === 4) ? true : false;
+        if ($this->document_permission === null) {
+            $this->document_permission = TableEditing::isEditPermission($worker->permission, $document->state);
+        }
+        if (!$this->tableblocks_has_gotten) {
+            $this->tableblocks = TableEditing::getBlockedTables($document->id);
+            $this->tableblocks_has_gotten = true;
+        }
+        $permissionBySection = in_array($cell['table'], $this->tableblocks) ? false : true;
+        return $this->document_permission && ( $permissionBySection || $supervisor );
+
     }
 
     public function fullValueChangeLog($document)
@@ -346,23 +425,8 @@ class DashboardController extends Controller
         ];
     }
 
-/*    public function isTableBlocked(Document $document, int $table)
-    {
-        $blockedSections = \App\DocumentSectionBlock::OfDocument($document->id)->Blocked()->with('formsection.tables')->get();
-        //dd($blockedSections[0]->formsection->tables[0]->table_id);
-        if ($blockedSections) {
-            $ids = [];
-            foreach($blockedSections as $blockedSection) {
-                foreach ($blockedSection->formsection->tables as $t) {
-                    $ids[] = $t->table_id;
-                }
-            }
-            if (in_array($table, $ids)) {
-                return true;
-            }
-        }
-        return false;
-    }*/
+
+
 // Предыдущая версия дашборда
     public function index(Document $document)
     {
