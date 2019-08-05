@@ -129,6 +129,7 @@ initExcelUpload();
 renderColumnFunctions();
 initTableMedstatExportButton();
 initFlushValueChangesLogButton();
+initLogTable();
 @yield('initTableConsolidateAction')
 //firefullscreenevent();
 </script>

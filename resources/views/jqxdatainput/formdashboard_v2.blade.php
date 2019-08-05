@@ -34,6 +34,33 @@
     </li>
 @endsection
 
+@section('logTabLi')
+    <li>Журнал изменений</li>
+@endsection
+
+@section('logTabDiv')
+    <div style="width: 100%; height: 100%">
+        <div style="display: flex; flex-flow: column; height: 100%">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 style="margin-left: 10px">Журнал изменений данных в текущей сессии</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button id="refreshLogTable" class="btn btn-default">Обновить</button>
+                </div>
+            </div>
+            <div class="row" style="flex-grow: 1; flex-shrink: 1; flex-basis: auto">
+                <div class="col-md-12" style="height: 100%; padding-left: 20px; padding-right: 20px" >
+                    <div id="LogCellValueChangingTable"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+@endsection
+
 @section('headertitle', 'Просмотр/редактирование первичного отчетного документа')
 
 @section('content')

@@ -63,7 +63,9 @@
                     <li style="margin-left: 30px;">Контроль таблицы</li>
                     <li>Контроль формы</li>
                     <li>Контроль ячейки</li>
+                    @yield('logTabLi')
                     @yield('additionalTabLi')
+
                 </ul>
                 <div>
                     <div id="TableControlPanel">
@@ -94,6 +96,7 @@
                 <div>
                     <div style="width: 98%; overflow-y: auto; margin: 5px" id="cellprotocol"></div>
                 </div>
+                @yield('logTabDiv')
                 @yield('additionalTabDiv')
             </div>
         </div>

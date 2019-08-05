@@ -1168,7 +1168,6 @@ function logCellValueChange(table, row, column, newvalue, oldvalue) {
 // Сохранение данных на сервере из локального журнала изменений
 function flushCellValueChangesCache() {
     let unsaved = cellValueChangingLog.filter(cell => cell.stored === false);
-    let saved = [];
     if (unsaved.length > 0) {
         $.ajax({
             dataType: 'json',
@@ -1179,9 +1178,24 @@ function flushCellValueChangesCache() {
                 let server_success_records = data.filter(cell => cell.stored === true);
                 let server_fault_records = data.filter(cell => cell.stored === false);
                 if (!server_fault_records.length) {
-                    unsaved.map(cell => cell.stored = true );
+                    unsaved.map(function(cell) {
+                        cell.stored = true;
+                        cell.message = 'Запись успешно сохранена (из JS)';
+
+                    });
                 } else {
                     raiseError('Внимание! Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).');
+                    //console.log(unsaved);
+                    data.forEach(function (handled) {
+                        let rec = unsaved.filter( cell => cell.table === parseInt(handled.table)
+                            && cell.row === parseInt(handled.row)
+                            && cell.column === parseInt(handled.column)
+                            && cell.beginstore_at === parseInt(handled.beginstore_at)
+                        );
+                        rec[0].message = handled.message;
+                        rec[0].endstore_at = handled.endstore_at;
+                        console.log(rec);
+                    })
                 }
                 console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
             },
@@ -1921,4 +1935,44 @@ let initExcelUpload = function () {
             uploadFileTooltip: 'загрузить',
             cancelFileTooltip: 'отменить'
         } });
+};
+
+let initLogTable = function() {
+
+    var source =
+        {
+            localdata: cellValueChangingLog,
+            datafields:
+                [
+                    { name: 'table', type: 'number' },
+                    { name: 'row', type: 'number' },
+                    { name: 'column', type: 'number' },
+                    { name: 'message', type: 'string' },
+                    { name: 'beginstore_at', type: 'number' },
+                    { name: 'newvalue', type: 'number' },
+                    { name: 'oldvalue', type: 'number' }
+                ],
+            datatype: "array"
+        };
+    var dataAdapter = new $.jqx.dataAdapter(source);
+    var columns = [
+        { text: 'Таблица', dataField: 'table', width: 70 },
+        { text: 'Строка', dataField: 'row', width: 60 },
+        { text: 'Графа', dataField: 'column', width: 60 },
+        { text: 'СтЗ', dataField: 'oldvalue', width: 60, cellsalign: 'right' },
+        { text: 'НовЗ', dataField: 'newvalue', width: 60, cellsalign: 'right' },
+        { text: 'Сообщение', dataField: 'message', width: '50%'},
+    ];
+    // create data grid.
+    $("#LogCellValueChangingTable").jqxGrid(
+        {
+            width: '100%',
+            height: '100%',
+            theme: theme,
+            source: dataAdapter,
+            columns: columns
+        });
+    $("#refreshLogTable").click(function () {
+        $("#LogCellValueChangingTable").jqxGrid('updatebounddata', 'cells');
+    });
 };
