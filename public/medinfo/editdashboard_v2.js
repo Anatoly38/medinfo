@@ -963,9 +963,15 @@ function initdatagrid() {
         //console.log("Событие завершение редактирования ячейки");
     });
     dgrid.on('cellbeginedit', cellbeginedit);
-/*    dgrid.on('paste', function (event) {
-        console.log('Событие paste');
-    });*/
+
+    dgrid.on("cellclick", function (event)
+    {
+        console.log("Событие: click");
+    });
+
+    /*    dgrid.on('paste', function (event) {
+            console.log('Событие paste');
+        });*/
 /*    dgrid.onpaste( function (event) {
         console.log('Событие onpaste');
     });*/
@@ -1147,14 +1153,15 @@ let cellValueChanged_route2 = function (event) {
     console.log("Событие смены значения ячейки - вариант 2");
     if (event.args.newvalue !==  event.args.oldvalue) {
         let table = current_table;
-        let row = parseInt(dgrid.jqxGrid('getrowid', event.args.rowindex));
+        let rowindex = event.args.rowindex
+        let row = parseInt(dgrid.jqxGrid('getrowid', rowindex));
         let column = parseInt(event.args.datafield);
-        let totalInLog = logCellValueChange(table, row, column, event.args.newvalue, event.args.oldvalue);
+        let totalInLog = logCellValueChange(table, row, column, event.args.newvalue, event.args.oldvalue, rowindex);
         console.log("Изменение ячейки сохранено в журнале. Всего записей " + totalInLog);
     }
 };
 // Запись изменения ячейки в локальный журнал
-function logCellValueChange(table, row, column, newvalue, oldvalue) {
+function logCellValueChange(table, row, column, newvalue, oldvalue, rowindex) {
     //console.log("Сохранение изменения значения ячейки в журнале");
     //let edit_ts = new Date;
     let rc_codes = getReadableCellAdress(row, column);
@@ -1163,6 +1170,7 @@ function logCellValueChange(table, row, column, newvalue, oldvalue) {
         tablecode: current_table_code,
         row: row,
         rowcode: rc_codes.row,
+        rowindex: rowindex,
         column: column,
         columncode: rc_codes.column,
         newvalue: newvalue,
@@ -1218,6 +1226,7 @@ function flushCellValueChangesCache(message = undefined) {
                     storeAttempts = 0;
                 };
                 logTable.jqxGrid('updatebounddata', 'cells');
+                dgrid.jqxGrid('render');
                 console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
             },
             error: function(xhr, status, errorThrown) {
@@ -1804,6 +1813,7 @@ let cellclass = function (row, columnfield, value, rowdata) {
     let invalid_cell = '';
     let alerted_cell = '';
     let class_by_edited_row = '';
+    let class_by_not_saved_row = '';
     let not_editable = '';
     let rowaggregate = '';
     let columnaggregate = '';
@@ -1829,13 +1839,37 @@ let cellclass = function (row, columnfield, value, rowdata) {
             }
         }
     }
-    for (let i = 0; i < editedCells.length; i++) {
+/*    for (let i = 0; i < editedCells.length; i++) {
         if (editedCells[i].t === current_table && editedCells[i].r === row && editedCells[i].c === columnfield ) {
             class_by_edited_row = "editedRow";
             invalid_cell = '';
             alerted_cell = '';
         }
+    }*/
+
+/*    for (let i = 0; i < cellValueChangingLog.length; i++) {
+        if (cellValueChangingLog[i].table === current_table && cellValueChangingLog[i].rowindex === row && cellValueChangingLog[i].column === columnfield ) {
+            class_by_edited_row = "editedRow";
+            invalid_cell = '';
+            alerted_cell = '';
+        }
+    }*/
+
+    cellIsEdited = function (element, index, array) {
+        return element.table === current_table && element.rowindex === row && element.column === columnfield && element.stored
+    };
+    cellIsNotSaved = function (element, index, array) {
+        return element.table === current_table && element.rowindex === row && element.column === columnfield && !element.stored
+    };
+
+    if (cellValueChangingLog.find(cellIsEdited)) {
+        class_by_edited_row = "editedRow";
     }
+    if (cellValueChangingLog.find(cellIsNotSaved)) {
+        class_by_not_saved_row = "notSaved";
+    }
+
+
     //if (autocalculateTotals) {
         if (checkIsAggregatingdRow(rowdata.id)) {
             rowaggregate = 'rowaggregate'
@@ -1844,7 +1878,7 @@ let cellclass = function (row, columnfield, value, rowdata) {
             columnaggregate = 'columnaggregate'
         }
     //}
-    return  alerted_cell + ' ' + invalid_cell + ' ' + rowaggregate + ' ' + columnaggregate + ' ' +  class_by_edited_row;
+    return  alerted_cell + ' ' + invalid_cell + ' ' + rowaggregate + ' ' + columnaggregate + ' ' +  class_by_edited_row + ' ' + class_by_not_saved_row;
 };
 // Функция не нужна - оставим пока на всякий случай
 let validation = function(cell, value) {
@@ -1976,6 +2010,12 @@ let initExcelUpload = function () {
 };
 
 let initLogTable = function() {
+    let cellclassname = function (row, columnfield, value, rowdata) {
+        if (!rowdata.stored) {
+            return 'notSaved'
+        }
+        return '';
+    };
     var source =
         {
             localdata: cellValueChangingLog,
@@ -1990,7 +2030,8 @@ let initLogTable = function() {
                     { name: 'message', type: 'string' },
                     { name: 'beginstore_at', type: 'number' },
                     { name: 'newvalue', type: 'number' },
-                    { name: 'oldvalue', type: 'number' }
+                    { name: 'oldvalue', type: 'number' },
+                    { name: 'stored', type: 'bool' }
                 ],
             datatype: "array"
         };
@@ -2006,7 +2047,7 @@ let initLogTable = function() {
         { text: 'Графа', dataField: 'columncode', width: '10%' },
         { text: 'СтЗ', dataField: 'oldvalue', width: 60, cellsalign: 'right' },
         { text: 'НовЗ', dataField: 'newvalue', width: 60, cellsalign: 'right' },
-        { text: 'Сообщение', dataField: 'message', width: '43%'},
+        { text: 'Сообщение', dataField: 'message', width: '43%', cellclassname : cellclassname},
     ];
     // create data grid.
     logTable.jqxGrid(
@@ -2021,6 +2062,7 @@ let initLogTable = function() {
     $("#refreshLogTable").click(function () {
         logTable.jqxGrid('updatebounddata', 'cells');
     });
+    
 };
 
 let initCatchOnUnloadEvent = function () {

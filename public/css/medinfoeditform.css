@@ -40,6 +40,13 @@
     font-style: italic;
     font-weight: bold ;
 }
+
+.notSaved {
+    color: red;
+    font-style: italic;
+    font-weight: bold ;
+}
+
 .invalidTable {
     background: url(/jqwidgets/styles/images/wavyline.gif) repeat-x 80% 80%;
 }
