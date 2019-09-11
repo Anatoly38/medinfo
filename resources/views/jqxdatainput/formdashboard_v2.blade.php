@@ -1,5 +1,7 @@
 @extends('jqxdatainput.dashboardlayout')
 
+@include('jqxdatainput.data_store_error_notification')
+
 @section('title')
     <p class="text-info small">
         Форма №<span class="text-info">{{ $form->form_code  }} </span>
@@ -40,7 +42,7 @@
 
 @section('logTabDiv')
     <div style="width: 100%; height: 100%">
-        <div style="display: flex; flex-flow: column; height: 100%">
+        <div style="display: flex; flex-flow: column; height: 100%; margin-left: 10px; margin-right: 10px">
             <div class="row">
                 <div class="col-md-12">
                     <h4 style="margin-left: 10px">Журнал изменений данных в текущей сессии</h4>
@@ -48,11 +50,16 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <button id="refreshLogTable" class="btn btn-default">Обновить</button>
+                    <button id="refreshLogTable" class="btn btn-sm btn-default navbar-btn" title="Обновить журнал">
+                        <i class="far fa-sync-alt"></i>
+                    </button>
+                    <button id="flushValueChangesLog" class="btn btn-sm btn-default navbar-btn" title="Сбросить очередь на сохранение данных" >
+                        <span class='fal fa-save fa-lg' ></span>
+                    </button>
                 </div>
             </div>
             <div class="row" style="flex-grow: 1; flex-shrink: 1; flex-basis: auto">
-                <div class="col-md-12" style="height: 100%; padding-left: 20px; padding-right: 20px" >
+                <div class="col-md-12" style="height: 100%" >
                     <div id="LogCellValueChangingTable"></div>
                 </div>
             </div>
@@ -78,7 +85,7 @@
 @endpush('loadcss')
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=041') }}"></script>
+    <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=044') }}"></script>
 {{--
     @if(config('medinfo.ssl_connection'))
         <script src="{{ secure_asset('/medinfo/editdashboard_v2.js?v=033') }}"></script>

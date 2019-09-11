@@ -55,6 +55,7 @@ initnotifications = function() {
         opacity: 1,
         autoClose: true,
         autoCloseDelay: 12000,
+        autoOpen: false,
         template: null });
 };
 formatDate = function (dateObject) {
@@ -174,7 +175,6 @@ function initPusher() {
 function initStateChangeChannel() {
     channel.bind('state-change-event', function(data) {
         if (String(data.worker_id) !== current_user_id) {
-            console.log();
             show_websocket_notification ? raiseEventMessage(data.message + data.worker + data.form + data.unit + data.period) : console.log("Отображение поплавков для ивентов отключено в конфиге");
         } else {
             console.log("Сообщение скрыто от текущего пользователя - он автор события");

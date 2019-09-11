@@ -1,3 +1,4 @@
+@yield('dataStoreErrorNotification')
 <div class="row">
     <div class="col-md-12" style="margin-left: 5px"><h4 id="TableTitle"></h4></div>
 </div>
@@ -43,19 +44,16 @@
                     @include('widgets.medstatexportbutton')
                     @yield('tableConsolidateButton')
                     @include('widgets.rowsearchbutton')
-                    @if ($worker->id === 5)
-                        @include('widgets.tablesettingsbutton')
-                    @endif
-                    @if ($worker->id === 5) @endif
-                        @include('widgets.savebutton')
 
+                    @if ($worker->id === 5) @endif
+                        @include('widgets.tablesettingsbutton')
                 </div>
             </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="DataGrid"></div>
-                    </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="DataGrid"></div>
                 </div>
+            </div>
         </div>
         <div>
             <div id="ControlTabs" >

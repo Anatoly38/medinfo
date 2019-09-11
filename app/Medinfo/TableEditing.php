@@ -234,6 +234,7 @@ class TableEditing
 
     public static function isEditable(Document $document, int $table, $worker)
     {
+        $checkresult = [];
         $supervisor = ($worker->role === 3 || $worker->role === 4) ? true : false;
         if ($worker->role === 0 ) {
             $editpermission = true;
@@ -246,9 +247,12 @@ class TableEditing
             //$editpermission = $permissionByState && $permissionBySection;
             // вариант 3: изменения запрещены при соответствующем статусе и во все таблицах принятых разделов для исполнителей за исключением сотрудников,
             // принимающих отчеты
-            $editpermission = $permissionByState && ( $permissionBySection || $supervisor );
+            //$editpermission = $permissionByState && ( $permissionBySection || $supervisor );
+            $checkresult['bystate'] = $permissionByState;
+            $checkresult['bysection'] = $permissionBySection;
+            $checkresult['editable'] = $permissionByState && ( $permissionBySection || $supervisor );
         }
-        return $editpermission;
+        return $checkresult;
     }
 
     public static function isEditPermission(int $permission, int $document_state)

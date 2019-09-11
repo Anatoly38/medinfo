@@ -210,7 +210,8 @@ class DashboardController extends Controller
     {
         $worker = Auth::guard('datainput')->user();
         $document = Document::find($document);
-        if (TableEditing::isEditable($document, $table, $worker)) {
+        $editpermissions = TableEditing::isEditable($document, $table, $worker);
+        if ($editpermissions['editable']) {
             $ou = $document->ou_id;
             $f = $document->form_id;
             $p = $document->period_id;
@@ -270,18 +271,16 @@ class DashboardController extends Controller
                     $data['comment'] = "Ошибка сохранения данных на стороне сервера";
                 }
             }
-        }
-        else {
+        } else {
             $data['cell_affected'] = false;
             $data['error'] = 1001;
-/*            if (!$permissionByState) {
+            if (!$editpermissions['bystate']) {
                 $data['comment'] = "Отсутствуют права для изменения данных в этом документе (по статусу документа)";
-            } elseif (!$permissionBySection) {
+            } elseif (!$editpermissions['bysection']) {
                 $data['comment'] = "Отсутствуют права для изменения данных в этой таблице (раздел документа принят)";
             } else {
                 $data['comment'] = "Отсутствуют права для изменения данных в этом документе";
-            }*/
-            $data['comment'] = "Отсутствуют права для изменения данных. Проверьте статус документа в целом или его раздела (при наличии)";
+            }
         }
         return $data;
     }
@@ -351,16 +350,22 @@ class DashboardController extends Controller
         $reccount = count($request->unsaved);
         foreach ($request->unsaved as $cell) {
             $cell['endstore_at'] = time();
-            if ($this->checkEditPermission($worker, $document, $cell)) {
+            $permission_check = $this->checkEditPermission($worker, $document, $cell);
+            if ($permission_check['editable']) {
                 $this->storeCellValue($document, $cell, $worker);
                 $cell['stored'] = true;
                 $cell['message'] = 'Сохранено успешно.';
             } else {
                 $cell['stored'] = false;
-                $cell['message'] = 'Недостаточно прав для записи.';
+                if (!$permission_check['bystate']) {
+                    $cell['message'] = "Отсутствуют права для изменения данных в этом документе (по статусу документа)";
+                } elseif (!$permission_check['bysection']) {
+                    $cell['message'] = "Отсутствуют права для изменения данных в этой таблице (раздел документа принят)";
+                } else {
+                    $cell['message'] = "Отсутствуют права для изменения данных в этом документе";
+                }
             }
             $ret[] = $cell;
-
         }
 
         return $ret;
@@ -368,6 +373,7 @@ class DashboardController extends Controller
 
     public function checkEditPermission($worker, Document $document, $cell)
     {
+        $checkresult = [];
         $supervisor = ($worker->role === 3 || $worker->role === 4) ? true : false;
         if ($this->document_permission === null) {
             $this->document_permission = TableEditing::isEditPermission($worker->permission, $document->state);
@@ -377,7 +383,11 @@ class DashboardController extends Controller
             $this->tableblocks_has_gotten = true;
         }
         $permissionBySection = in_array($cell['table'], $this->tableblocks) ? false : true;
-        return $this->document_permission && ( $permissionBySection || $supervisor );
+        $checkresult['bystate'] = $this->document_permission;
+        $checkresult['bysection'] = $permissionBySection;
+        $checkresult['editable'] = $this->document_permission && ( $permissionBySection || $supervisor );
+        //return $this->document_permission && ( $permissionBySection || $supervisor );
+        return $checkresult;
 
     }
 
@@ -502,5 +512,8 @@ class DashboardController extends Controller
         return $composedata;
     }
 
-
+    protected function getDocumentOrSectionState(Document $document)
+    {
+        return [ $document->state, Document::$state_aliases[$document->state], Document::$state_labels[$document->state] ];
+    }
 }

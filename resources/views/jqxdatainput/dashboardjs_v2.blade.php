@@ -38,12 +38,14 @@ let excelUploadWindow = $('#uploadExcelFile');
 let flUpload = $('#ExcelFileUpload');
 let onlyOneTable = $('#onlyOneTable');
 let tl = $("#TableDataLoader");
+let logTable = $("#LogCellValueChangingTable");
+let dataStoreErrorNotification = $("#dataStoreErrorNotification");
+let storeAttempts = 0;
 let localizednumber = new Intl.NumberFormat('ru-RU');
 
 let cellValueChangingLog = [];
 
 let edited_tables = [{!! implode(',', $editedtables) !!}];
-//let not_editable_cells = {!! json_encode($noteditablecells) !!};
 let not_editable_cells = {!! $noteditablecells !!};
 let edit_permission = {{ $editpermission ? 'true' : 'false' }};
 let control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
@@ -52,8 +54,6 @@ let calculatedfields = {!!  $calcfields !!};
 let rowprops = {!!  $rowprops !!};
 let colprops = {!!  $colprops !!};
 let validationrules = {!!  $validationrules !!};
-//let data_for_table = $.parseJSON('{!!  $tableproperties !!}');
-//let data_for_table = JSON.parse('{!!  $tableproperties !!}');
 let data_for_table = {!!  $tableproperties !!};
 let columns = {!!  $columns !!};
 let columngroups = {!!  $columngroups !!};
@@ -130,6 +130,8 @@ renderColumnFunctions();
 initTableMedstatExportButton();
 initFlushValueChangesLogButton();
 initLogTable();
+initCatchOnUnloadEvent();
 @yield('initTableConsolidateAction')
 //firefullscreenevent();
+let flushTimer = setTimeout(flushCellValueChangesCache, 3000);
 </script>

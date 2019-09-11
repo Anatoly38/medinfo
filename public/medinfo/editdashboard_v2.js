@@ -743,11 +743,11 @@ let initdatasources = function() {
     tableListDataAdapter = new $.jqx.dataAdapter(form_table_source);
 };
 // Получение читабельных координат ячейки - код строки, индекс графы
-let getreadablecelladress = function(row, column) {
+function getReadableCellAdress(row, column) {
     let row_code = dgrid.jqxGrid('getcellvaluebyid', row, current_row_number_datafield);
     let column_code = dgrid.jqxGrid('getcolumnproperty', column, 'text');
     return { row: row_code, column: column_code};
-};
+}
 // Возвращает данные для состава свода по медицинским организациям и движения по периодам
 let fetchcelllayer = function(row, column) {
     let layer_container = $("<table class='table table-condensed table-striped table-bordered'></table>");
@@ -879,7 +879,7 @@ let initfilters = function() {
         dgrid.jqxGrid('applyfilters');
     }
 };
-let initdatagrid = function() {
+function initdatagrid() {
     let html = "<div class='jqx-loader-icon jqx-loader-icon-bootstrap' style='background-position-y: 0; margin-top: 5px'></div>" +
         "<div class='jqx-loader-text jqx-loader-text-bootstrap jqx-loader-text-bottom jqx-loader-text-bottom-bootstrap'>" +
         "<div>Загрузка структуры</div> " +
@@ -891,6 +891,11 @@ let initdatagrid = function() {
         autoOpen: true,
         html: html
     });
+
+/*    $("#messageNotification").jqxNotification({
+        width: 250, position: "top-right", opacity: 0.9,
+        autoOpen: false, animationOpenDelay: 800, autoClose: true, autoCloseDelay: 3000, template: "info"
+    });*/
 
     tablesource =
         {
@@ -924,6 +929,7 @@ let initdatagrid = function() {
         {
             width: '100%',
             height: initDgridSize(),
+            enabletooltips: false,
             //height: '100%',
             source: dgridDataAdapter,
             //localization: localize(),
@@ -1150,24 +1156,28 @@ let cellValueChanged_route2 = function (event) {
 // Запись изменения ячейки в локальный журнал
 function logCellValueChange(table, row, column, newvalue, oldvalue) {
     //console.log("Сохранение изменения значения ячейки в журнале");
-    let edit_ts = new Date;
-     let record = {
-         table: table,
-         row: row,
-         column: column,
-         newvalue: newvalue,
-         oldvalue: oldvalue || null ,
-         //beginstore_at: edit_ts.toISOString(),
-         beginstore_at: Math.floor(Date.now()/1000),
-         endstore_at: null,
-         stored: false,
-         message: ''
+    //let edit_ts = new Date;
+    let rc_codes = getReadableCellAdress(row, column);
+    let record = {
+        table: table,
+        tablecode: current_table_code,
+        row: row,
+        rowcode: rc_codes.row,
+        column: column,
+        columncode: rc_codes.column,
+        newvalue: newvalue,
+        oldvalue: oldvalue || null ,
+        //beginstore_at: edit_ts.toISOString(),
+        beginstore_at: Math.floor(Date.now()/1000),
+        endstore_at: null,
+        stored: null,
+        message: ''
      };
     return cellValueChangingLog.push(record);
 }
 // Сохранение данных на сервере из локального журнала изменений
-function flushCellValueChangesCache() {
-    let unsaved = cellValueChangingLog.filter(cell => cell.stored === false);
+function flushCellValueChangesCache(message = undefined) {
+    let unsaved = cellValueChangingLog.filter(cell => cell.stored === null);
     if (unsaved.length > 0) {
         $.ajax({
             dataType: 'json',
@@ -1180,9 +1190,12 @@ function flushCellValueChangesCache() {
                 if (!server_fault_records.length) {
                     unsaved.map(function(cell) {
                         cell.stored = true;
-                        cell.message = 'Запись успешно сохранена (из JS)';
+                        cell.message = 'Запись успешно сохранена';
 
                     });
+                    if (typeof (message) !== 'undefined') {
+                        raiseInfo(message);
+                    }
                 } else {
                     raiseError('Внимание! Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).');
                     //console.log(unsaved);
@@ -1192,18 +1205,43 @@ function flushCellValueChangesCache() {
                             && cell.column === parseInt(handled.column)
                             && cell.beginstore_at === parseInt(handled.beginstore_at)
                         );
+                        rec[0].stored = handled.stored;
                         rec[0].message = handled.message;
                         rec[0].endstore_at = handled.endstore_at;
-                        console.log(rec);
+                        //console.log(rec);
                     })
                 }
+                flushTimer = setTimeout(flushCellValueChangesCache, 3000);
+                if (dataStoreErrorNotification.is(":visible")) {
+                    raiseInfo('Изменения сохранены');
+                    dataStoreErrorNotification.hide();
+                    storeAttempts = 0;
+                };
+                logTable.jqxGrid('updatebounddata', 'cells');
                 console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
             },
-            error: xhrErrorNotificationHandler
+            error: function(xhr, status, errorThrown) {
+                storeAttempts++;
+                dataStoreErrorInformer(xhr);
+                logTable.jqxGrid('updatebounddata', 'cells');
+                flushTimer = setTimeout(flushCellValueChangesCache, 12000);
+            }
         });
     } else {
+        flushTimer = setTimeout(flushCellValueChangesCache, 3000);
         console.log("В журнале нет несохраненных записей");
     }
+}
+// Управление выводом сообщений об ошибке сохранения данных
+function dataStoreErrorInformer(xhr) {
+    let message = '<strong>Ошибка! </strong><span>Соединение с сервером прервано. Не все внесенные изменения сохранены!</span>. ' +
+        'Статус: ' + xhr.status + ' (' + xhr.responseText + '). ' +
+        'Попытка сохранения: ' + storeAttempts;
+    dataStoreErrorNotification.html(message);
+    if (dataStoreErrorNotification.is(":hidden")) {
+        dataStoreErrorNotification.show();
+    };
+    console.log(xhr);
 }
 // Функция для метода updaterow объекта tablesource
 function serverDataupdate(rowid, rowdata) {
@@ -1938,15 +1976,17 @@ let initExcelUpload = function () {
 };
 
 let initLogTable = function() {
-
     var source =
         {
             localdata: cellValueChangingLog,
             datafields:
                 [
                     { name: 'table', type: 'number' },
+                    { name: 'tablecode', type: 'string' },
                     { name: 'row', type: 'number' },
+                    { name: 'rowcode', type: 'string' },
                     { name: 'column', type: 'number' },
+                    { name: 'columncode', type: 'string' },
                     { name: 'message', type: 'string' },
                     { name: 'beginstore_at', type: 'number' },
                     { name: 'newvalue', type: 'number' },
@@ -1956,23 +1996,46 @@ let initLogTable = function() {
         };
     var dataAdapter = new $.jqx.dataAdapter(source);
     var columns = [
-        { text: 'Таблица', dataField: 'table', width: 70 },
-        { text: 'Строка', dataField: 'row', width: 60 },
-        { text: 'Графа', dataField: 'column', width: 60 },
+        { text: 'Таблица', dataField: 'tablecode', width: '15%',
+ /*           cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                let table = searchTableById(value);
+                return  '<div class="jqx-grid-cell-left-align" style="margin-top: 8.5px;">' + table.code + '</div>';
+            }*/
+        },
+        { text: 'Строка', dataField: 'rowcode', width: '10%' },
+        { text: 'Графа', dataField: 'columncode', width: '10%' },
         { text: 'СтЗ', dataField: 'oldvalue', width: 60, cellsalign: 'right' },
         { text: 'НовЗ', dataField: 'newvalue', width: 60, cellsalign: 'right' },
-        { text: 'Сообщение', dataField: 'message', width: '50%'},
+        { text: 'Сообщение', dataField: 'message', width: '43%'},
     ];
     // create data grid.
-    $("#LogCellValueChangingTable").jqxGrid(
+    logTable.jqxGrid(
         {
             width: '100%',
             height: '100%',
             theme: theme,
+            localization: getLocalization('ru'),
             source: dataAdapter,
             columns: columns
         });
     $("#refreshLogTable").click(function () {
-        $("#LogCellValueChangingTable").jqxGrid('updatebounddata', 'cells');
+        logTable.jqxGrid('updatebounddata', 'cells');
     });
 };
+
+let initCatchOnUnloadEvent = function () {
+    $(window).bind('beforeunload', function(eventObject) {
+        let unsaved = cellValueChangingLog.filter(cell => cell.stored === false);
+        var returnValue = undefined;
+        if (unsaved.length) {
+            flushCellValueChangesCache('Изменения сохранены, можно покинуть страницу');
+            returnValue = "Do you really want to close?";
+        }
+        eventObject.returnValue = returnValue;
+        return returnValue;
+    });
+};
+
+function checkDocumentOrSectionState() {
+
+}
