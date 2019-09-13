@@ -1151,7 +1151,8 @@ let cellValueChanged_route1 = function (event) {
 // Обработка события изменения данных ячейки с записью в локальный журнал
 let cellValueChanged_route2 = function (event) {
     console.log("Событие смены значения ячейки - вариант 2");
-    if (event.args.newvalue !==  event.args.oldvalue) {
+    // loose comparision - в данном случае для корректного сравнения 0 и null
+    if (event.args.newvalue !=  event.args.oldvalue) {
         let table = current_table;
         let rowindex = event.args.rowindex
         let row = parseInt(dgrid.jqxGrid('getrowid', rowindex));
@@ -1185,7 +1186,7 @@ function logCellValueChange(table, row, column, newvalue, oldvalue, rowindex) {
 }
 // Сохранение данных на сервере из локального журнала изменений
 function flushCellValueChangesCache(message = undefined) {
-    let unsaved = cellValueChangingLog.filter(cell => cell.stored === null);
+    let unsaved = cellValueChangingLog.filter(cell => (cell.stored === null || cell.stored === false));
     if (unsaved.length > 0) {
         $.ajax({
             dataType: 'json',
@@ -1204,8 +1205,14 @@ function flushCellValueChangesCache(message = undefined) {
                     if (typeof (message) !== 'undefined') {
                         raiseInfo(message);
                     }
+                    if (dataStoreErrorNotification.is(":visible")) {
+                        dataStoreErrorNotification.hide();
+                        raiseInfo("Изменения сохранены");
+                        storeAttempts = 0;
+                    };
+                    flushTimer = setTimeout(flushCellValueChangesCache, 3000);
                 } else {
-                    raiseError('Внимание! Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).');
+                    //raiseError('Внимание! Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).');
                     //console.log(unsaved);
                     data.forEach(function (handled) {
                         let rec = unsaved.filter( cell => cell.table === parseInt(handled.table)
@@ -1217,14 +1224,12 @@ function flushCellValueChangesCache(message = undefined) {
                         rec[0].message = handled.message;
                         rec[0].endstore_at = handled.endstore_at;
                         //console.log(rec);
-                    })
+                    });
+                    let error = { status: '1001', responseText: 'Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).'};
+                    storeAttempts++;
+                    dataStoreErrorInformer(error);
+                    flushTimer = setTimeout(flushCellValueChangesCache, 12000);
                 }
-                flushTimer = setTimeout(flushCellValueChangesCache, 3000);
-                if (dataStoreErrorNotification.is(":visible")) {
-                    raiseInfo('Изменения сохранены');
-                    dataStoreErrorNotification.hide();
-                    storeAttempts = 0;
-                };
                 logTable.jqxGrid('updatebounddata', 'cells');
                 dgrid.jqxGrid('render');
                 console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
@@ -1242,15 +1247,15 @@ function flushCellValueChangesCache(message = undefined) {
     }
 }
 // Управление выводом сообщений об ошибке сохранения данных
-function dataStoreErrorInformer(xhr) {
-    let message = '<strong>Ошибка! </strong><span>Соединение с сервером прервано. Не все внесенные изменения сохранены!</span>. ' +
-        'Статус: ' + xhr.status + ' (' + xhr.responseText + '). ' +
+function dataStoreErrorInformer(error) {
+    let message = '<strong>Ошибка! </strong><span>Не все внесенные изменения сохранены!</span>. ' +
+        'Статус: ' + error.status + ' (' + error.responseText + '). ' +
         'Попытка сохранения: ' + storeAttempts;
     dataStoreErrorNotification.html(message);
     if (dataStoreErrorNotification.is(":hidden")) {
         dataStoreErrorNotification.show();
     };
-    console.log(xhr);
+    console.log(error);
 }
 // Функция для метода updaterow объекта tablesource
 function serverDataupdate(rowid, rowdata) {
@@ -2037,17 +2042,12 @@ let initLogTable = function() {
         };
     var dataAdapter = new $.jqx.dataAdapter(source);
     var columns = [
-        { text: 'Таблица', dataField: 'tablecode', width: '15%',
- /*           cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
-                let table = searchTableById(value);
-                return  '<div class="jqx-grid-cell-left-align" style="margin-top: 8.5px;">' + table.code + '</div>';
-            }*/
-        },
-        { text: 'Строка', dataField: 'rowcode', width: '10%' },
-        { text: 'Графа', dataField: 'columncode', width: '10%' },
-        { text: 'СтЗ', dataField: 'oldvalue', width: 60, cellsalign: 'right' },
-        { text: 'НовЗ', dataField: 'newvalue', width: 60, cellsalign: 'right' },
-        { text: 'Сообщение', dataField: 'message', width: '43%', cellclassname : cellclassname},
+        { text: 'Таблица', dataField: 'tablecode', width: '15%' },
+        { text: 'Строка', dataField: 'rowcode', width: '10%', cellclassname : cellclassname },
+        { text: 'Графа', dataField: 'columncode', width: '10%', cellclassname : cellclassname },
+        { text: 'СтЗ', dataField: 'oldvalue', width: 60, cellsalign: 'right', cellclassname : cellclassname },
+        { text: 'НовЗ', dataField: 'newvalue', width: 60, cellsalign: 'right', cellclassname : cellclassname },
+        { text: 'Сообщение', dataField: 'message', width: '43%', cellclassname : cellclassname },
     ];
     // create data grid.
     logTable.jqxGrid(
