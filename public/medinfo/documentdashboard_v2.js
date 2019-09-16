@@ -22,6 +22,7 @@ let motree = $("#moTree");
 let ouarray = [];
 let oucount = 0;
 let grouptree = $("#groupTree");
+let tl = $("#TableDataLoader");
 
 let stateList = $("#statesListbox");
 let dgrid = $("#Documents"); // сетка для первичных документов
@@ -221,6 +222,7 @@ updatedocumenttable = function() {
     let new_cons_url = consolsource_url + new_filter;
     if (new_doc_url !== old_doc_url) {
         docsource.url = new_doc_url;
+        tl.jqxLoader('open');
         dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
@@ -449,6 +451,7 @@ primaryDocToolbar = function() {
     });
     $("#refreshPrimaryDocumentList").click(function () {
         docsource.url = docsource_url + filtersource();
+        tl.jqxLoader('open');
         dgrid.jqxGrid('updatebounddata');
         $("#DocumentMessages").html('');
         $("#DocumentAuditions").html('');
@@ -828,6 +831,19 @@ initDataPresens = function() {
 // инициализация вкладок с документами
 initdocumentstabs = function() {
     $("#documenttabs").jqxTabs({  height: '100%', width: '100%', theme: theme });
+    // Кастомный лоадер
+    let html = "<div class='jqx-loader-icon jqx-loader-icon-bootstrap' style='background-position-y: 0; margin-top: 5px'></div>" +
+        "<div class='jqx-loader-text jqx-loader-text-bootstrap jqx-loader-text-bottom jqx-loader-text-bottom-bootstrap'>" +
+        "<div>Загрузка перечня</div> " +
+        "<div>отчетных документов ...</div>" +
+        "</div>";
+    tl.jqxLoader({theme: theme, width: 170, height: 80,
+        isModal:false,
+        imagePosition: 'top',
+        autoOpen: true,
+        html: html
+    });
+
     // Инициализация таблицы первичных документов
     dgrid.on("bindingcomplete", function (event) {
         dgrid.jqxGrid({ pageable: true});
@@ -837,6 +853,7 @@ initdocumentstabs = function() {
             primary_mo_bc.html('');
         }
         dgrid.jqxGrid('selectrow', 0);
+        tl.jqxLoader('close');
     });
     dgrid.jqxGrid(
         {
@@ -851,6 +868,7 @@ initdocumentstabs = function() {
             pagesizeoptions: ['10', '50', '100'],
             pagesize: 50,
             pagerbuttonscount: 12,
+            autoshowloadelement: false,
             columns: [
                 { text: '№', datafield: 'id', width: '5%', cellclassname: filledFormclass },
                 { text: 'Код МО', datafield: 'unit_code', width: '70px' },
@@ -904,7 +922,8 @@ initdocumentstabs = function() {
             source: aggregate_report_table,
             columnsresize: true,
             showtoolbar: false,
-            localization: localize(),
+            localization: getLocalization('ru'),
+            autoshowloadelement: false,
             columns: [
                 { text: '№', datafield: 'id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
@@ -1036,7 +1055,8 @@ initConsolidates = function () {
             theme: theme,
             source: consolTableDA,
             columnsresize: true,
-            localization: localize(),
+            localization: getLocalization('ru'),
+            autoshowloadelement: false,
             columns: [
                 { text: '№', datafield: 'id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },
@@ -1081,7 +1101,8 @@ initRecentDocuments = function () {
             theme: theme,
             source: recentTableDA,
             columnsresize: true,
-            localization: localize(),
+            localization: getLocalization('ru'),
+            autoshowloadelement: false,
             columns: [
                 { text: '№', datafield: 'document_id', width: '5%' },
                 { text: 'Код Территории/МО', datafield: 'unit_code', width: 100 },

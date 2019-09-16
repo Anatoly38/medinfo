@@ -1211,6 +1211,9 @@ function flushCellValueChangesCache(message = undefined) {
                         storeAttempts = 0;
                     };
                     flushTimer = setTimeout(flushCellValueChangesCache, 3000);
+                    if (autocalculateTotals) {
+                        calculateAggregatinCells();
+                    }
                 } else {
                     //raiseError('Внимание! Изменения не сохранены! Необходимо проверить текущий статус документа и/или раздела документа (при наличии).');
                     //console.log(unsaved);
@@ -1386,9 +1389,29 @@ function checkIsNotEditable(rowid, colid) {
     //console.log(current_table);
     //console.log(rowid);
     //console.log(colid);
-    for (let i = 0; i < not_editable_cells.length; i++) {
+/*    for (let i = 0; i < not_editable_cells.length; i++) {
         if (not_editable_cells[i].t === current_table && not_editable_cells[i].r === rowid && not_editable_cells[i].c === colid) {
             console.log('ячейка в списке нередактируемых');
+            return true;
+        }
+    }*/
+    if (not_editable_cells.length > 0) {
+        let found = not_editable_cells.findIndex(x => x.t === current_table && x.r === rowid && x.c === colid);
+        if (found !== -1) {
+            console.log('ячейка в списке нередактируемых');
+            return true;
+        }
+    }
+
+    if (rowprops.length > 0) {
+        if (checkIsAggregatingdRow(rowid)) {
+            console.log('ячейка входит в итоговую строку - не редактируется');
+            return true;
+        }
+    }
+    if (colprops.length > 0) {
+        if (checkIsAggregatingColumn(colid)) {
+            console.log('ячейка входит в итоговую графу - не редактируется');
             return true;
         }
     }
@@ -1534,6 +1557,11 @@ function calculateAggregatingColumnCell(rowid, colid) {
         }
     }
 }
+function calculateAggregatinCells() {
+    calculateAllAggregatingRows();
+    calculateAllAggregatingColumns();
+}
+
 // Расчет суммы всех итоговых строк в таблице
 function calculateAllAggregatingRows() {
     console.log("Начало перерасчета итоговых строк");
@@ -1700,6 +1728,20 @@ let inittoolbarbuttons = function () {
             prevbutton.removeAttr('disabled');
             raiseInfo("Смена статуса раздела документа выполнена - отклонен");
         });
+    });
+
+    disableAutosumm.click(function () {
+        autocalculateTotals = !disableAutosumm.prop('checked');
+    });
+    $("#pageMode").click(function () {
+        $("#pageMode").prop('checked') ? dgrid.jqxGrid({ pageable: true }) : dgrid.jqxGrid({ pageable: false });
+    });
+
+    $("#disableColumnPopovers").click(function () {
+        dgrid.jqxGrid('columngroups').forEach(function (column_group) {
+            $("#disableColumnPopovers").prop('checked') ? column_group.rendered = null : column_group.rendered = tooltiprenderer;
+        });
+        dgrid.jqxGrid('render');
     });
 
     disableAutosumm.click(function () {
@@ -2053,7 +2095,7 @@ let initLogTable = function() {
     logTable.jqxGrid(
         {
             width: '100%',
-            height: '100%',
+            height: '95%',
             theme: theme,
             localization: getLocalization('ru'),
             source: dataAdapter,
@@ -2068,7 +2110,7 @@ let initLogTable = function() {
 let initCatchOnUnloadEvent = function () {
     $(window).bind('beforeunload', function(eventObject) {
         let unsaved = cellValueChangingLog.filter(cell => cell.stored === false);
-        var returnValue = undefined;
+        let returnValue = undefined;
         if (unsaved.length) {
             flushCellValueChangesCache('Изменения сохранены, можно покинуть страницу');
             returnValue = "Do you really want to close?";
