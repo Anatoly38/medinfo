@@ -132,6 +132,5 @@ initFlushValueChangesLogButton();
 initLogTable();
 initCatchOnUnloadEvent();
 @yield('initTableConsolidateAction')
-//firefullscreenevent();
 let flushTimer = setTimeout(flushCellValueChangesCache, 3000);
 </script>

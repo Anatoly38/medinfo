@@ -328,6 +328,54 @@ class ControlFunctionEvaluator
                 $periodicity = 4;
                 $previous_period_pattern = PeriodPattern::IVplus()->first();
                 break;
+            case '1' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M1()->first();
+                break;
+            case '2' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M2()->first();
+                break;
+            case '3' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M3()->first();
+                break;
+            case '4' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M4()->first();
+                break;
+            case '5' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M5()->first();
+                break;
+            case '6' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M6()->first();
+                break;
+            case '7' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M7()->first();
+                break;
+            case '8' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M8()->first();
+                break;
+            case '9' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M9()->first();
+                break;
+            case '10' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M10()->first();
+                break;
+            case '11' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M11()->first();
+                break;
+            case '12' :
+                $periodicity = 5;
+                $previous_period_pattern = PeriodPattern::M12()->first();
+                break;
         }
         $previous_period = $this->getPreviousPeriod($previous_period_pattern, $periodicity);
         //dd($previous_period);
@@ -346,6 +394,11 @@ class ControlFunctionEvaluator
             case 3 : // квартальные периоды
             case 4 :
                 $previous_period = Period::PreviousQuarter($this->period)->first();
+            case 5 :
+                $previous_period = Period::PreviousMonth($this->period)->first();
+                break;
+            default :
+                throw new \Exception("Неизвестный паттерн периода");
         }
         return $previous_period;
     }
