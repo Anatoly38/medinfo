@@ -953,20 +953,18 @@ function initdatagrid() {
         });
     dgrid.on('cellselect', cellSelecting);
 
-
-    //dgrid.on('cellvaluechanged', cellValueChanged_route1);
-    dgrid.on('cellvaluechanged', cellValueChanged_route2);
-
-
-    dgrid.on('cellendedit', function (event)
-    {
-        //console.log("Событие завершение редактирования ячейки");
-    });
     dgrid.on('cellbeginedit', cellbeginedit);
 
     dgrid.on("cellclick", function (event)
     {
         console.log("Событие: click");
+    });
+    //dgrid.on('cellvaluechanged', cellValueChanged_route1);
+    dgrid.on('cellvaluechanged', cellValueChanged_route2);
+    dgrid.on('cellendedit', function (event)
+    {
+        console.log("Событие завершение редактирования ячейки");
+        cell_is_editing = false;
     });
 
     /*    dgrid.on('paste', function (event) {
@@ -1106,8 +1104,9 @@ function cellSelecting(event) {
 }
 // в том числе, проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (event) {
-    let args = event.args;
     console.log('Начало редактирования ячейки - событие из объекта dgrid');
+    cell_is_editing = true;
+    let args = event.args;
     let colid = parseInt(args.datafield);
     let row = args.rowindex;
     let rowid = parseInt(dgrid.jqxGrid('getrowid', row));
@@ -1115,6 +1114,7 @@ let cellbeginedit = function (event) {
     editedcell_column = colid;
     editedcell_value = value;
     editedcell_row = rowid;
+
 /*    if (autocalculateTotals) {
         if (checkIsAggregatingdRow(rowid)) {
             return false;
@@ -1234,7 +1234,9 @@ function flushCellValueChangesCache(message = undefined) {
                     flushTimer = setTimeout(flushCellValueChangesCache, 12000);
                 }
                 logTable.jqxGrid('updatebounddata', 'cells');
-                dgrid.jqxGrid('render');
+                if (!cell_is_editing) {
+                    dgrid.jqxGrid('render');
+                }
                 console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
             },
             error: function(xhr, status, errorThrown) {

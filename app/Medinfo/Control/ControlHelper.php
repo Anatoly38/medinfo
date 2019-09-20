@@ -25,40 +25,6 @@ class ControlHelper
         return $cahed_at->gt($updated_at);
     }
 
-/*    public static function chekoutCompareRule(array $condition)
-    {
-        $lp = $condition['left_part_value'];
-        $rp = $condition['right_part_value'];
-        $delta = 0.0001;
-        // Если обе части выражения равны нулю - пропускаем проверку.
-        if ($lp == 0 && $rp == 0) {
-            return true;
-        }
-        switch ($condition['boolean_sign']) {
-            case '==' :
-                $result = abs($lp - $rp) < $delta ? true : false;
-                break;
-            case '>' :
-                $result = $lp > $rp;
-                break;
-            case '>=' :
-                $result = $lp >= $rp;
-                break;
-            case '<' :
-                $result = $lp < $rp;
-                break;
-            case '<=' :
-                $result = $lp <= $rp;
-                break;
-            case '^' :
-                $result = ($lp && $rp) || (!$lp && !$rp);
-                break;
-            default:
-                $result = false;
-        }
-        return $result;
-    }*/
-
     public static function cashProtocol($protocol, int $document, int $table)
     {
         $protocol['cashed'] = true;
