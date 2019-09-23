@@ -212,11 +212,16 @@ class ControlFunctionTestController extends Controller
     // Тестирование МФК для сравнения форм с разной периодикой - годовой -> месячный и наоборот
     public function compare_btw_year2month_forms()
     {
+        // проверка годовой -> месячный
+        //$table = Table::find(1205);     // Ф125рп Т0001
+        //$document = Document::find(63050); // 125рп ф 2019 год Бронницкая городская больница
+        //$function = "сравнение(С1Г3, Ф2-нпТ2000С1Г3П8, >=)";
 
         // проверка месячный -> годовой
         $table = Table::find(1264);     // Ф2-нп Т2001
         $document = Document::find(73329); // 2-нп ф 8-й месяц Бронницкая городская больница
-        $function = "сравнение(С1Г3, Ф125рпТ0001С1Г3П0, >=)";
+        //$function = "сравнение(С1Г3, Ф13Т1000С1Г4П0, >=)";
+        $function = "сравнение(С1Г3, Ф125рпТ0001С1Г3ПV, >=)";
         $lexer = new ControlFunctionLexer($function);
         $tockenstack = $lexer->getTokenStack();
         //dd($tockenstack);

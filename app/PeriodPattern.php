@@ -17,7 +17,7 @@ class PeriodPattern extends Model
     public function scopeYear($query)
     {
         return $query
-            ->where('periodicity', 1)
+            //->where('periodicity', 1)
             ->where('begin', '01-01')
             ->where('end', '12-31');
     }

@@ -290,8 +290,10 @@ class ControlFunctionEvaluator
         $previous_period = null;
         switch ($code) {
             case '-1' :
-                $previous_period = $this->getPreviousRelativePeriod();
-                return $previous_period;
+                return $this->getPreviousRelativePeriod();
+            case 'V' :
+                //dd(Period::NextAnnual($this->period)->first());
+                return Period::NextAnnual($this->period)->first();
             case '0' :
                 $periodicity = 1;
                 $previous_period_pattern = PeriodPattern::Year()->first();
@@ -394,6 +396,7 @@ class ControlFunctionEvaluator
             case 3 : // квартальные периоды
             case 4 :
                 $previous_period = Period::PreviousQuarter($this->period)->first();
+                break;
             case 5 :
                 $previous_period = Period::PreviousMonth($this->period)->first();
                 break;
@@ -402,7 +405,7 @@ class ControlFunctionEvaluator
         }
         return $previous_period;
     }
-
+    // TODO: Поменять наввание метода - разыскиваются не только предыдущие периоды, а фактически любые
     public function getPreviousPeriod(PeriodPattern $previous_period_pattern, int $periodicity)
     {
         if ($this->pattern->periodicity !== $periodicity) {

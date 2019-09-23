@@ -14,6 +14,13 @@ class Period extends Model
         10 => 11, 11 => 10, // полугодовые
         13 => 23, 14 => 13, 15 => 14, 16 => 15, 17 => 16, 18 => 17, 12 => 18, 19 => 12, 20 => 19, 21 => 20, 22 => 21, 23 => 22, // месячные
     ];
+    public static $period_cycles_forward = [
+        1 => 1, // годовые
+        2 => 3, 3 => 4, 4 => 5, 5 => 2, // квартальные
+        6 => 7, 7 => 8, 8 => 9, 9 => 6, // квартальные накопительные
+        10 => 11, 11 => 10, // полугодовые
+        13 => 14, 14 => 15, 15 => 16, 16 => 17, 17 => 18, 18 => 12, 12 => 19, 19 => 20, 20 => 21, 21 => 22, 22 => 23, 23 => 13, // месячные
+    ];
     protected $fillable = ['name', 'year', 'begin_date', 'end_date', 'pattern_id', ];
     protected $dates = ['begin_date', 'end_date',];
 
@@ -45,6 +52,15 @@ class Period extends Model
         return $query
             ->where('end_date', $previous_annual_enddate)
             ->where('pattern_id', $previous_annual_pattern);
+    }
+
+    public function scopeNextAnnual($query, Period $current_period)
+    {
+        $annual_pattern = PeriodPattern::Year()->first()->periodicity;
+        $annual_enddate = $current_period->end_date->year . '-12-31';
+        return $query
+            ->where('end_date', $annual_enddate)
+            ->where('pattern_id', $annual_pattern);
     }
 
     public function scopePreviousSemiannual($query, $current_period)
