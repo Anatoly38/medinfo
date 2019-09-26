@@ -4,10 +4,11 @@ initsplitter = function() {
             width: '100%',
             height: '100%',
             theme: theme,
+            splitBarSize: 2,
             panels:
                 [
-                    { size: '57%', min: '10%'},
-                    { size: '43%', min: '10%'}
+                    { size: '57%', min: '10%', collapsible: false},
+                    { size: '43%', min: '10%', collapsible: false}
                 ]
         }
     );
@@ -34,7 +35,7 @@ initdropdowns = function() {
         localdata: aggregatables
     };
     unittypesDataAdapter = new $.jqx.dataAdapter(unittypessource);
-    aggregatableDataAdapter = new $.jqx.dataAdapter(aggregatablesource);
+    //aggregatableDataAdapter = new $.jqx.dataAdapter(aggregatablesource);
     $("#node_type").jqxDropDownList({
         theme: theme,
         source: unittypesDataAdapter,
@@ -44,7 +45,7 @@ initdropdowns = function() {
         width: 300,
         height: 34
     });
-    $("#parent_id").jqxDropDownList({
+/*    $("#parent_id").jqxDropDownList({
         theme: theme,
         source: aggregatableDataAdapter,
         filterable: true,
@@ -54,8 +55,52 @@ initdropdowns = function() {
         placeHolder: "Выберите ОЕ:",
         width: 500,
         height: 34
+    });*/
+};
+
+initAggregateDDList = function() {
+    let aggregatablesource =
+        {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int' },
+                { name: 'unit_code', type: 'string' },
+                { name: 'unit_name', type: 'string' }
+            ],
+            id: 'id',
+            url: aggregateunitfetch_url
+        };
+    aggregaUnitsDataAdapter = new $.jqx.dataAdapter(aggregatablesource);
+    aggrUnitCont.jqxDropDownButton({ width: 500, height: 32, theme: theme });
+    aggrUnitList.jqxGrid(
+        {
+            width: '500px',
+            height: '500px',
+            theme: theme,
+            localization: localize(),
+            source: aggregaUnitsDataAdapter,
+            columnsresize: true,
+            showfilterrow: true,
+            filterable: true,
+            sortable: true,
+            selectionmode: 'singlerow',
+            columns: [
+                { text: 'Код', datafield: 'unit_code', width: '50px' },
+                { text: 'Имя', datafield: 'unit_name' , width: '450px'}
+            ]
+        });
+    aggrUnitList.on('rowselect', function (event) {
+        aggrUnitCont.jqxDropDownButton('close');
+        let args = event.args;
+        if (args.rowindex === -1) {
+            return false;
+        }
+        let r = args.row;
+        parent_unit = r.id;
+        aggrUnitCont.jqxDropDownButton('setContent', '<div style="margin-top: 9px">' + r.unit_name + '</div>');
     });
 };
+
 initdatasources = function() {
     let unitsource =
     {
@@ -82,6 +127,10 @@ initdatasources = function() {
     unitDataAdapter = new $.jqx.dataAdapter(unitsource);
 };
 inittablelist = function() {
+    unitlist.on("bindingcomplete", function (event) {
+        let newindex = unitlist.jqxGrid('getrowboundindexbyid', selected_unit);
+        unitlist.jqxGrid('selectrow', newindex);
+    });
     unitlist.jqxGrid(
         {
             width: '100%',
@@ -108,11 +157,13 @@ inittablelist = function() {
             ]
         });
     unitlist.on('rowselect', function (event) {
-        $("#parent_id").jqxDropDownList('clearFilter');
-        $("#parent_id").jqxDropDownList('clearSelection');
+        //$("#parent_id").jqxDropDownList('clearFilter');
+        //$("#parent_id").jqxDropDownList('clearSelection');
         let row = event.args.row;
         $("#unit_name").val(row.unit_name);
-        $("#parent_id").val(row.parent_id);
+        //$("#parent_id").val(row.parent_id);
+        parent_unit = row.parent_id;
+        aggrUnitCont.jqxDropDownButton('setContent', row.parent ? '<div style="margin-top: 9px">' + row.parent + '</div>' : '');
         $("#unit_code").val(row.unit_code);
         //$("#territory_type").val(row.territory_type);
         $("#inn").val(row.inn);
@@ -126,7 +177,8 @@ inittablelist = function() {
 };
 setquerystring = function() {
     return "&unit_name=" + $("#unit_name").val() +
-        "&parent_id=" + $("#parent_id").val() +
+        //"&parent_id=" + $("#parent_id").val() +
+        "&parent_id=" + parent_unit +
         "&unit_code=" + $("#unit_code").val() +
         //"&territory_type=" + $("#territory_type").val() +
         "&inn=" + $("#inn").val() +
@@ -170,18 +222,17 @@ initunitactions = function() {
             method: "POST",
             data: data,
             success: function (data, status, xhr) {
+                selected_unit = data.id;
                 if (typeof data.error !== 'undefined') {
                     raiseError(data.message);
                 } else {
                     raiseInfo(data.message);
                 }
-                $("#unitList").jqxGrid('updatebounddata', 'data');
+                unitlist.jqxGrid('updatebounddata', 'data');
+                aggrUnitList.jqxGrid('updatebounddata');
+
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#save").click(function () {
@@ -190,11 +241,11 @@ initunitactions = function() {
             raiseError("Выберите запись для изменения/сохранения данных");
             return false;
         }
-        let rowid = unitlist.jqxGrid('getrowid', row);
+        selected_unit = unitlist.jqxGrid('getrowid', row);
         let data = setquerystring();
         $.ajax({
             dataType: 'json',
-            url: unitupdate_url + rowid,
+            url: unitupdate_url + selected_unit,
             method: "PATCH",
             data: data,
             success: function (data, status, xhr) {
@@ -204,17 +255,9 @@ initunitactions = function() {
                     raiseInfo(data.message);
                 }
                 unitlist.jqxGrid('updatebounddata', 'data');
-                unitlist.on("bindingcomplete", function (event) {
-                    let newindex = $('#unitList').jqxGrid('getrowboundindexbyid', rowid);
-                    unitlist.jqxGrid('selectrow', newindex);
-
-                });
+                aggrUnitList.jqxGrid('updatebounddata');
             },
-            error: function (xhr, status, errorThrown) {
-                $.each(xhr.responseJSON, function(field, errorText) {
-                    raiseError(errorText);
-                });
-            }
+            error: xhrErrorNotificationHandler
         });
     });
     $("#delete").click(function () {
@@ -236,11 +279,10 @@ initunitactions = function() {
                     $("#form")[0].reset();
                     unitlist.jqxGrid('updatebounddata', 'data');
                     unitlist.jqxGrid('clearselection');
+                    aggrUnitList.jqxGrid('updatebounddata');
                 }
             },
-            error: function (xhr, status, errorThrown) {
-                raiseError('Ошибка удаления отчетного периода', xhr);
-            }
+            error: xhrErrorNotificationHandler
         });
     });
 };

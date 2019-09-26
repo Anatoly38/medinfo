@@ -81,32 +81,6 @@ let initFormTableFilter = function() {
     });
 
     tc.jqxDropDownButton({ width: 250, height: 32, theme: theme });
-/*    tlist.jqxDataTable({
-        theme: theme,
-        source: tablesDataAdapter,
-        width: 420,
-        height: 400,
-        columns: [{
-                text: 'Код',
-                dataField: 'table_code',
-                width: 100
-            },
-            {
-                text: 'Наименование',
-                dataField: 'table_name',
-                width: 300
-            }
-        ]
-    });
-    tlist.on('rowSelect', function (event) {
-        $("#tableListContainer").jqxDropDownButton('close');
-        let args = event.args;
-        let r = args.row;
-        current_table = args.key;
-        $("#tableProperties").html('<div class="text-bold text-info" style="margin-left: -30px">Таблица: (' + r.table_code + ') ' + r.table_name + '</div>');
-        updateRelated();
-    });*/
-
     tlist.jqxGrid(
         {
             width: '450px',

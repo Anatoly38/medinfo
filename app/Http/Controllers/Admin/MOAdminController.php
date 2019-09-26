@@ -32,6 +32,11 @@ class MOAdminController extends Controller
         return Unit::orderBy('unit_code')->with('parent')->get();
     }
 
+    public function fetchAggregateUnits()
+    {
+        return Unit::MayBeAggregate()->orderBy('unit_name')->get(['id', 'unit_code', 'unit_name']);
+    }
+
     public function unitStore(Request $request)
     {
         $this->validate($request, [
@@ -63,7 +68,7 @@ class MOAdminController extends Controller
         $newunit->save();
         try {
             $newunit->save();
-            return ['message' => 'Новая запись создана. Id:' . $newunit->id];
+            return ['message' => 'Новая запись создана. Id:' . $newunit->id, 'id' => $newunit->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
             switch ($errorCode) {

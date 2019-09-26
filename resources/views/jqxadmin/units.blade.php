@@ -26,9 +26,9 @@
         </div>
     </div>
     <div id="formContainer">
-        <div id="propertiesForm" class="panel panel-default">
+        <div id="propertiesForm" class="panel panel-default" style="height: 100%">
             <div class="panel-heading"><h3>Редактирование/ввод организационной единицы</h3></div>
-            <div class="panel-body">
+            <div class="panel-body" >
                 <form id="form" class="form-horizontal" >
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="unit_name">Наименование:</label>
@@ -40,6 +40,10 @@
                         <label class="control-label col-sm-3" for="parent_id">Входит в состав:</label>
                         <div class="col-sm-2">
                             <div id="parent_id" style="padding-left: 12px"></div>
+                            <div id="aggregateUnitListContainer">
+                                <div id="aggregateUnitList"></div>
+
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -105,7 +109,7 @@
 @endsection
 
 @push('loadjsscripts')
-    <script src="{{ secure_asset('/medinfo/admin/unitadmin.js?v=010') }}"></script>
+    <script src="{{ secure_asset('/medinfo/admin/unitadmin.js?v=011') }}"></script>
 @endpush
 
 @section('inlinejs')
@@ -114,15 +118,22 @@
         let rowsDataAdapter;
         let tableDataAdapter;
         let unittypesDataAdapter;
-        let aggregatableDataAdapter;
+        //let aggregatableDataAdapter;
+        let aggregaUnitsDataAdapter;
         let unitTypes = {!! $unit_types !!};
         let aggregatables = {!! $aggregate_units !!};
         let unitlist = $("#unitList");
+        let aggrUnitCont = $("#aggregateUnitListContainer");
+        let aggrUnitList = $("#aggregateUnitList");
         let unitfetch_url ='/admin/units/fetchunits';
+        let aggregateunitfetch_url ='/admin/units/fetchaggregateunits';
         let unitcreate_url ='/admin/units/create';
         let unitupdate_url ='/admin/units/update/';
         let unitdelete_url ='/admin/units/delete/';
         let excelexport_url ='/admin/units/excelexport/';
+        let selected_unit = 0;
+        let parent_unit = null;
+        initAggregateDDList();
         initdropdowns();
         initsplitter();
         initdatasources();
