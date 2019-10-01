@@ -1185,7 +1185,7 @@ function logCellValueChange(table, row, column, newvalue, oldvalue, rowindex) {
     return cellValueChangingLog.push(record);
 }
 // Сохранение данных на сервере из локального журнала изменений
-function flushCellValueChangesCache(message = undefined) {
+function flushCellValueChangesCache(message) {
     let unsaved = cellValueChangingLog.filter(cell => (cell.stored === null || cell.stored === false));
     if (unsaved.length > 0) {
         $.ajax({
@@ -1840,7 +1840,7 @@ let initTableMedstatExportButton = function() {
 let initFlushValueChangesLogButton = function () {
     if ($("#flushValueChangesLog").length) {
         $("#flushValueChangesLog").click(function () {
-            flushCellValueChangesCache();
+            flushCellValueChangesCache(undefined);
         });
     }
 };

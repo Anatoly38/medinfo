@@ -117,7 +117,7 @@ let topOffset2 = 105;
 //initSplitterSize();
 //initProtSize();
 //initCellProtSize();
-onResizeEventLitener();
+//onResizeEventLitener();
 initdatasources();
 inittoolbarbuttons();
 inittablelist();
