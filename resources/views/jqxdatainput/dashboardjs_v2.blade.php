@@ -42,9 +42,7 @@ let logTable = $("#LogCellValueChangingTable");
 let dataStoreErrorNotification = $("#dataStoreErrorNotification");
 let storeAttempts = 0;
 let localizednumber = new Intl.NumberFormat('ru-RU');
-
 let cellValueChangingLog = [];
-
 let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! $noteditablecells !!};
 let edit_permission = {{ $editpermission ? 'true' : 'false' }};
@@ -53,6 +51,10 @@ let datafields = {!!  $datafields !!};
 let calculatedfields = {!!  $calcfields !!};
 let rowprops = {!!  $rowprops !!};
 let colprops = {!!  $colprops !!};
+let aggregatingRows = [];
+let aggregatingColumns = [];
+let rowAggregatingRules = [];
+let columnAggregatingRules = [];
 let validationrules = {!!  $validationrules !!};
 let data_for_table = {!!  $tableproperties !!};
 let columns = {!!  $columns !!};
@@ -62,6 +64,8 @@ let there_is_calculated = calculatedfields.length > 0;
 let current_row_name_datafield = columns[1].dataField;
 let current_row_number_datafield = columns[2].dataField;
 let cell_is_editing = false;
+let cells_are_recalculating = false;
+let cellsRecalculatingCache = [];
 let editedcell_row = 0;
 let editedcell_column = 0;
 let editedcell_value = null;
@@ -79,9 +83,7 @@ let current_protocol_source = [];
 let source_url = "/datainput/fetchvalues/" + doc_id + "/" + default_album + "/";
 let tableprops_url = "/datainput/fetchtableprops/" + default_album + "/";
 let savevalue_url = "/datainput/savevalue/" + doc_id + "/";
-
 let flushlog_url = "/datainput/flushchanges/" + doc_id;
-
 let validate_form_url = "/datainput/formcontrol/" + doc_id;
 let informTableDataCheck = "/datainput/ifdcheck/table/" + doc_id + "/";
 let interFormTableDataCheck = "/datainput/interformdcheck/table/" + doc_id + "/";
@@ -117,7 +119,7 @@ let topOffset2 = 105;
 //initSplitterSize();
 //initProtSize();
 //initCellProtSize();
-//onResizeEventLitener();
+onResizeEventLitener();
 initdatasources();
 inittoolbarbuttons();
 inittablelist();

@@ -339,6 +339,7 @@ class DashboardController extends Controller
     // Пакетное сохранение изменений ячеек из журнала изменений на стороне браузера
     public function saveValues(Request $request, Document $document)
     {
+        //dd($request->unsaved);
         $ret = [];
         if (!is_array($request->unsaved)) {
             return [
@@ -346,15 +347,30 @@ class DashboardController extends Controller
                 'message' => 'Неправильный формат отправки данных для сохранения в БД. Данные не сохранены',
             ];
         }
+        /*
+        Поиск ошибки отсутствия индекса в принятом массиве
+        foreach ($request->unsaved as $r) {
+            if (!isset($r['newvalue'])) {
+                dump($r);
+            }
+        }*/
+
         $worker = Auth::guard('datainput')->user();
         $reccount = count($request->unsaved);
         foreach ($request->unsaved as $cell) {
             $cell['endstore_at'] = time();
             $permission_check = $this->checkEditPermission($worker, $document, $cell);
             if ($permission_check['editable']) {
-                $this->storeCellValue($document, $cell, $worker);
-                $cell['stored'] = true;
-                $cell['message'] = 'Сохранено успешно.';
+                try {
+                    $this->storeCellValue($document, $cell, $worker);
+                    $cell['stored'] = true;
+                    $cell['message'] = 'Сохранено успешно.';
+                } catch (\Exception $exception) {
+                    $cell['stored'] = false;
+                    $cell['message'] = 'Ошибка сохранения значения на сервере. ' . $exception->getMessage();
+                }
+
+
             } else {
                 $cell['stored'] = false;
                 if (!$permission_check['bystate']) {
