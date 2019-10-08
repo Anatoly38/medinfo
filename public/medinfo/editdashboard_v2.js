@@ -915,6 +915,8 @@ function initdatagrid() {
         //console.log('Завершение обновления данных таблицы первичных статданных');
         let rowcount = dgridDataAdapter.totalrecords;
         //console.log('Количество строк в загружаемой таблице ' + rowcount);
+        getAggregatingRowsList(rowprops);
+        getAggregatingColumnsList(colprops);
         if (rowcount > 50) {
             dgrid.jqxGrid({ pageable: true });
             //dgrid.jqxGrid({ rowsheight: 31});
@@ -996,8 +998,6 @@ function fetchDataForDataGrid(tableid) {
         there_is_calculated ? calculate.removeClass('disabled') : calculate.addClass('disabled');
         rowprops = data.rowprops;
         colprops = data.colprops;
-        getAggregatingRowsList(rowprops);
-        getAggregatingColumnsList(colprops);
         current_table = parseInt(tableid);
         current_table_code = data_for_table.code;
         current_table_index = data_for_table.index;
