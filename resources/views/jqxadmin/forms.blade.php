@@ -12,7 +12,7 @@
         <div id="propertiesForm" class="panel panel-default" style="padding: 3px; width: 100%">
             <div class="panel-heading"><h3>Редактирование/ввод отчетной формы</h3></div>
             <div class="panel-body">
-                <form id="form" class="form-horizontal" >
+                <form id="form" class="form-horizontal">
                     <div class="form-group">
                         <label class="control-label col-sm-3" for="form_name">Наименование формы:</label>
                         <div class="col-sm-8">

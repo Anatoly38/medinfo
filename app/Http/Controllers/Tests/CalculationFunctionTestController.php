@@ -45,15 +45,14 @@ class CalculationFunctionTestController extends Controller
 
     public function calculation()
     {
-        $rule = "показатель(Ф30Т2350С2.2Г3/Ф30Т2350С2Г3*100)"; //
+        $rule = "показатель(Ф30Т3100С1Г15П0/Ф30Т3100С1Г5П0)"; //
         $list = "*";
         //$table = 2; // форма 47 таблица 0100
-        $table = 1031; // форма 110-пр1 таблица 1000
+        $table = 1031; // форма 110-фп таблица 1000
         //$document = \App\Document::find(19251); // ф.47 2017 год
-        $document = \App\Document::find(23753);  // ф. 110-пр1 2018 год Госуд.
-        //$document = \App\Document::find(23756);  // ф. 110-пр1 2018 год Иркутск
+        $document = \App\Document::find(23753);  // ф. 32 2018 год Уч. б-ца с. Голуметь
+        //$document = \App\Document::find(23756);  // ф. 110-фп 2018 год Иркутск
         $level_descent_units = \App\Unit::getDescendants($document->ou_id);
-
         $trimed = preg_replace('/,+\s+/u', ' ', $list);
         $lists = array_unique(array_filter(explode(' ', $trimed)));
         $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists, $level_descent_units);
@@ -78,7 +77,7 @@ class CalculationFunctionTestController extends Controller
         $evaluator = \App\Medinfo\DSL\Evaluator::invoke($translator->parser->root, $props, $document);
         $evaluator->makeConsolidation();
         //dd($evaluator->calculationLog);
-        dd($evaluator->evaluate());
+        //dd($evaluator->evaluate());
         //echo $evaluator->evaluate();
         foreach ($evaluator->calculationLog as &$el) {
             $unit = \App\Unit::find($el['unit_id']);

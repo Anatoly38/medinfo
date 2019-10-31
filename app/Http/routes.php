@@ -214,6 +214,9 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('admin/cons/recompilerule', 'Admin\ConsRulesAndListsAdminController@recompileRules');
     Route::get('admin/exportconsrules/{table}', 'ImportExport\ExportConsolidationRulesAndListsController@jsonRulesExport');
     Route::get('admin/importconsrules/{table}', 'ImportExport\ImportConsolidationRulesAndListsController@jsonRulesImport');
+    // Отладка правил рассчета консолидированных таблиц
+    Route::get('admin/cons/debugrule', 'Admin\ConsRulesAndListsAdminController@debugRule');
+    Route::post('admin/cons/debugrule', 'Admin\ConsRulesAndListsAdminController@debugRun');
 
     // Расчет консолидированных документов
     Route::get('admin/consolidate/{document}', 'Admin\DocumentConsolidationController@consolidateDocument' );

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Medinfo\DSL as L;
 use App\ConsolidationCalcrule;
+use App\Table;
 use Illuminate\Http\Request;
 
 use App\ConsolidationList;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Collection;
 use League\Flysystem\Exception;
 
 class ConsRulesAndListsAdminController extends Controller
@@ -42,7 +45,7 @@ class ConsRulesAndListsAdminController extends Controller
         $hashed  =  sprintf("%u", crc32(preg_replace('/\s+/u', '', $request->rule)));
         $table = \App\Table::find($request->table);
         try {
-            $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($request->rule, $table);
+            $compiled = L\FunctionCompiler::compileRule($request->rule, $table);
             $rule = \App\ConsolidationCalcrule::firstOrNew(['hash' => $hashed]);
             $rule->script = $request->rule;
             $rule->ptree = $compiled['ptree'];
@@ -71,7 +74,7 @@ class ConsRulesAndListsAdminController extends Controller
         array_multisort($lists, SORT_NATURAL);
         $glued = implode(', ', $lists);
         try {
-            $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
+            $units = L\FunctionCompiler::compileUnitList($lists);
             if (array_key_exists('error', $units)) {
                 throw new \Exception($units['error']);
             }
@@ -117,7 +120,7 @@ class ConsRulesAndListsAdminController extends Controller
             $table = \App\Table::find(2); // Нужна какая либо таблица для запуска транслятора
 
             try {
-                $compiled = \App\Medinfo\DSL\FunctionCompiler::compileRule($rule->script, $table);
+                $compiled = L\FunctionCompiler::compileRule($rule->script, $table);
                 $rule->ptree = $compiled['ptree'];
                 $rule->properties = json_encode($compiled['properties']);
                 $result['new_hash'] = $hashed;
@@ -250,6 +253,72 @@ class ConsRulesAndListsAdminController extends Controller
             'comment' => 'max:128',
             'cells' => 'required',
         ];
+    }
+
+    /**
+     * Отладка функций расчета
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function debugRule()
+    {
+        return view('jqxadmin.consrules.debugconsrule');
+    }
+
+    public function debugRun(Request $request)
+    {
+        $rule = $request->script;
+        $list = $request->units;
+        $table = $request->table;
+        $document = \App\Document::find($request->document); ;
+        $debuginfo = [];
+
+        $level_descent_units = \App\Unit::getDescendants($document->ou_id);
+        $trimed = preg_replace('/,+\s+/u', ' ', $list);
+        $lists = array_unique(array_filter(explode(' ', $trimed)));
+        $u_ids = array_flatten(L\FunctionCompiler::compileUnitList($lists, $level_descent_units));
+        $units = new Collection();
+        foreach ($u_ids as $id) {
+            $u = \App\Unit::find($id);
+            $units->push(['id' => $id, 'unit_name' => $u->unit_name, 'unit_code' => $u->unit_code, 'unit' => "(" . $u->unit_code . ") " . $u->unit_name ]);
+        }
+        //dd($units->sortBy('unit_code')->all());
+        $debuginfo['units'] = $units->sortBy('unit_code')->keyBy('id')->all();
+        // Лексер
+        $lexer = new \App\Medinfo\DSL\ControlFunctionLexer($rule);
+        $tockenstack = $lexer->getTokenStack();
+        // Парсер
+        $parser = new L\ControlFunctionParser($tockenstack);
+        $parser->func();
+        // Транслятор
+        $translator = L\Translator::invoke($parser, Table::find($table));
+        $translator->prepareIteration();
+        $props = $translator->getProperties();
+        $props['units'] = $u_ids;
+        $debuginfo['props'] = $props;
+
+        $evaluator = L\Evaluator::invoke($translator->parser->root, $props, $document);
+        $evaluator->makeConsolidation();
+        $debuginfo['value'] = $evaluator->evaluate();
+        // Лог расчета
+        foreach ($evaluator->calculationLog as &$el) {
+            $unit = \App\Unit::find($el['unit_id']);
+            $el['unit_name'] = $unit->unit_name;
+            $el['unit_code'] = $unit->unit_code;
+            $el['unit'] = "(" . $unit->unit_code . ") " . $unit->unit_name;
+        }
+
+        $log_initial = collect($evaluator->calculationLog);
+        $log_c_sorted = $log_initial->sortBy('unit_code');
+        //return $log_c_sorted->groupBy('unit_id');
+        $log_sorted = [];
+        foreach ($log_c_sorted as $el ) {
+            $log_sorted[] = $el;
+        }
+
+
+        $debuginfo['log'] = $log_sorted;
+
+        return $debuginfo;
     }
 
 }
