@@ -315,9 +315,7 @@ class ConsRulesAndListsAdminController extends Controller
             $log_sorted[] = $el;
         }
 
-
         $debuginfo['log'] = $log_sorted;
-
         return $debuginfo;
     }
 

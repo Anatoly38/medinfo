@@ -37,7 +37,6 @@ class TableEditing
         $calculated_fields = array();
         $column_groups_arr = array();
         //$cols = $table->columns->where('deleted', 0)->sortBy('column_index');
-
         $cols = Column::OfTable($table->id)->orderBy('column_index')->whereDoesntHave('excluded', function ($query) use($album) {
             $query->where('album_id', $album->id);
         })->get();

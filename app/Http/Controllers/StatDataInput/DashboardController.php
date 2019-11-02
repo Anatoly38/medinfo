@@ -65,6 +65,7 @@ class DashboardController extends Controller
         //dd($noteditablecells);
         $autocalculate_totals = true;
         $renderingtabledata = $this->composeDataForTable($laststate['currenttable'], $album);
+
         $for_form_tables = $this->composeTableList($realform, $album, $editedtables);
         $tablelist = json_encode($for_form_tables['forformtable']);
         $maxtableindex = $for_form_tables['max_index'];
