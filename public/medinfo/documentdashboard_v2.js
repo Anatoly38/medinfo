@@ -491,7 +491,7 @@ aggregateDocToolbar = function() {
         let rowindex = agrid.jqxGrid('getselectedrowindex');
         let document_id = agrid.jqxGrid('getrowid', rowindex);
         if (rowindex !== -1) {
-            let editWindow = window.open(edit_aggregate_url+'/'+document_id);
+            let editWindow = window.open(edit_aggregate_url+'/' + document_id);
         }
     });
     $("#aggregateDocument").click( function() {

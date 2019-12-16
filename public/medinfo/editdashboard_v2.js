@@ -1145,7 +1145,7 @@ let cellValueChanged = function (event) {
     // loose comparision - в данном случае для корректного сравнения 0 и null
     if (event.args.newvalue !=  event.args.oldvalue) {
         let table = current_table;
-        let rowindex = event.args.rowindex
+        let rowindex = event.args.rowindex;
         let row = parseInt(dgrid.jqxGrid('getrowid', rowindex));
         let column = parseInt(event.args.datafield);
         let record = logCellValueChange(table, row, column, event.args.newvalue, event.args.oldvalue, rowindex);

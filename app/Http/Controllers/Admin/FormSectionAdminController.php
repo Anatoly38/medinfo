@@ -72,6 +72,10 @@ class FormSectionAdminController extends Controller
         $section->section_name = $request->section;
         try {
             $section->save();
+            if ($request->include === '1' ) {
+                $proccessed = AlbumFormsection::firstOrCreate([ 'album_id' => $request->album, 'formsection_id' => $section->id ]);
+            }
+
             return ['message' => 'Изменения сохранены. Id:' . $section->id, 'id' => $section->id];
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[0];
