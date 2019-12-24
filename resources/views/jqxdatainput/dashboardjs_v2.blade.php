@@ -47,6 +47,7 @@ let edited_tables = [{!! implode(',', $editedtables) !!}];
 let not_editable_cells = {!! $noteditablecells !!};
 let edit_permission = {{ $editpermission ? 'true' : 'false' }};
 let control_disabled = {{ config('app.control_disabled') ? 'true' : 'false' }};
+let biggrid_pageble = {{ config('medinfo.big_grid_pageble') ? 'true' : 'false' }};
 let datafields = {!!  $datafields !!};
 let calculatedfields = {!!  $calcfields !!};
 let rowprops = {!!  $rowprops !!};

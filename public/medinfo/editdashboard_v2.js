@@ -917,11 +917,13 @@ function initdatagrid() {
         //console.log('Количество строк в загружаемой таблице ' + rowcount);
         getAggregatingRowsList(rowprops);
         getAggregatingColumnsList(colprops);
-        if (rowcount > 50) {
-            dgrid.jqxGrid({ pageable: true });
-            //dgrid.jqxGrid({ rowsheight: 31});
-        } else {
-            dgrid.jqxGrid({ pageable: false });
+        if (biggrid_pageble) {
+            if (rowcount > 50) {
+                dgrid.jqxGrid({ pageable: true });
+                //dgrid.jqxGrid({ rowsheight: 31});
+            } else {
+                dgrid.jqxGrid({ pageable: false });
+            }
         }
         dgrid.jqxGrid('focus');
         dgrid.jqxGrid('selectcell', 0, firstdatacolumn);
