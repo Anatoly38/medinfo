@@ -41,9 +41,13 @@ class ControlFunctionEvaluator
             //$this->pattern = $this->period->periodpattern;
         }
         $this->setIterations();
+        //dd('Установка итераций прошла');
         $this->setArguments();
+        //dd('Установка аргументов прошла');
         $this->prepareCAstack();
+        //dd('Подготовка стека ячеек прошла');
         $this->prepareCellProperties();
+        //dd('Подготовка свойств ячеек прошло');
     }
 
     public function setDocument(Document $document)
@@ -241,8 +245,9 @@ class ControlFunctionEvaluator
         //dd($this->iterations);
         //for ($i = 0; $i < count($this->iterations); $i++) {
         //dd($this->iterations);
-        //dd($this->caStack['С1Г3|0']);
+        //dd($this->caStack['С131Г4|0']);
         foreach ($this->iterations as $code => $iteration) {
+            //dd($code);
             $this->cellProperties[$code] = $this->setCellsProp($iteration);
         }
     }
@@ -251,6 +256,7 @@ class ControlFunctionEvaluator
     {
         $cells = [];
         property_exists($this, 'markOnlyFirstArg') ? $markOnlyFirstArg = true : $markOnlyFirstArg = false;
+        //dd($iteration);
         foreach ($iteration as $cell_label => $props) {
             if (!array_key_exists($cell_label, $this->caStack)) {
                 throw new \Exception("Ключ " . $cell_label . " не найден в стэке узлов адресов ячеек");

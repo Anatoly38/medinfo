@@ -66,14 +66,13 @@ class ControlFunctionTestController extends Controller
         return $evaluator->makeControl();
     }
 
-
     // тест контроля кратности
     public function fold()
     {
         $table = Table::find(10);     // Ф30 Т1100
+        $document = Document::find(28181); // 30 ф Сводная Качугский район
 
-        $document = Document::find(4519); // 30 ф Салтыковский детский дом 3 кв. МСК
-        $function = "кратность(диапазон(С1Г3:С224Г8, С1Г33:С224Г34, С1Г43:С224Г44, С1Г53:С224Г54), 0.25 )";
+        $function = "кратность(диапазон(С1Г3:С224Г8, С1Г3.1:С224Г3.1, С1Г3.2:С224Г3.2), 0.25 )";
 
         $lexer = new ControlFunctionLexer($function);
         $tockenstack = $lexer->getTokenStack();
@@ -259,6 +258,26 @@ class ControlFunctionTestController extends Controller
         //dd($evaluator);
         //return ($evaluator->iterations);
         //return ($evaluator->properties);
+        return $evaluator->makeControl();
+    }
+
+    public function compare_periods()
+    {
+        // межгодовой контроль по диапазонам ячеек
+        $function = "мгдиапазон(диапазон(С131Г4:С132Г4),  0)";
+        $table = Table::find(4);     // Ф30 Т1001
+        $document = Document::find(28181); // 30 ф Сводная Качугский район
+        $lexer = new ControlFunctionLexer($function);
+        $tockenstack = $lexer->getTokenStack();
+        $parser = new ControlFunctionParser($tockenstack);
+        $parser->func();
+        //dd($parser);
+        $translator = Translator::invoke($parser, $table);
+        //dd($translator);
+        $translator->prepareIteration();
+        //dd($translator->getProperties());
+        $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        //dd($evaluator);
         return $evaluator->makeControl();
     }
 

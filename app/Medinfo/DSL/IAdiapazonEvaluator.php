@@ -9,11 +9,24 @@
 namespace App\Medinfo\DSL;
 
 
+use App\Document;
+
 class IAdiapazonEvaluator extends ControlFunctionEvaluator
 {
 
     public $previous_document;
     public $threshold = 0;
+
+    public function __construct(ParseTree $ptree, $properties, Document $document = null)
+    {
+        $this->pTree = $ptree;
+        $this->properties = $properties;
+        if ($document) {
+            $this->setDocument($document);
+        }
+        $this->setIterations();
+        $this->setArguments();
+    }
 
     public function setIterations()
     {
@@ -26,6 +39,7 @@ class IAdiapazonEvaluator extends ControlFunctionEvaluator
         $this->getArgument(1);
         $this->getArgument(2);
         $this->threshold = $this->arguments[2]->content;
+        //dd($this->threshold);
     }
 
     public function prepareCellValues()

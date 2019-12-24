@@ -397,12 +397,11 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::get('tests/limitsection', 'Tests\SectionCheckTestController@setLimitByFormSection');
     Route::get('tests/foldcheck', 'Tests\ControlFunctionTestController@fold');
     Route::get('tests/comparecheck', 'Tests\ControlFunctionTestController@compare');
-
     Route::get('tests/compare_btw_forms_periods', 'Tests\ControlFunctionTestController@compare_btw_forms_periods');
-
     Route::get('tests/compare_btw_month_forms', 'Tests\ControlFunctionTestController@compare_btw_month_forms');
-
     Route::get('tests/compare_btw_year2month_forms', 'Tests\ControlFunctionTestController@compare_btw_year2month_forms');
+    Route::get('tests/compare_periods', 'Tests\ControlFunctionTestController@compare_periods');
+
 
 
     // mail test
