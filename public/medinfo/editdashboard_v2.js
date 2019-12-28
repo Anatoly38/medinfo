@@ -1238,9 +1238,10 @@ function flushCellValueChangesCache(message) {
                     flushTimer = setTimeout(flushCellValueChangesCache, 12000);
                 }
                 logTable.jqxGrid('updatebounddata', 'cells');
-                if (!cell_is_editing) {
-                    dgrid.jqxGrid('render');
-                }
+                // перерисовка грида отключена - "скачет" курсор из текущей ячейки в первую строку, первую графу
+                //if (!cell_is_editing) {
+                //    dgrid.jqxGrid('render');
+                //}
                 console.log("Отправка данных на сервер из журнала изменений. Сохранено ячеек" , server_success_records, server_fault_records);
             },
             error: function(xhr, status, errorThrown) {
@@ -1255,6 +1256,8 @@ function flushCellValueChangesCache(message) {
         console.log("В журнале нет несохраненных записей");
     }
 }
+
+
 // Управление выводом сообщений об ошибке сохранения данных
 function dataStoreErrorInformer(error) {
     let message = '<strong>Ошибка! </strong><span>Не все внесенные изменения сохранены!</span>. ' +

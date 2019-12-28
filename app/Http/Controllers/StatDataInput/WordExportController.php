@@ -33,6 +33,7 @@ class WordExportController extends Controller
 
     public function formExport(Document $document)
     {
+        set_time_limit(600);
         $this->document = $document;
         $this->unit = UnitsView::find($document->ou_id);
         $this->form = Form::getRealForm($document->form_id);

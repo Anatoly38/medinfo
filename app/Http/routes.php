@@ -165,7 +165,7 @@ Route::group(['middleware' => ['medinfo']], function () {
     Route::post('admin/rc/columnformula/store/{column}', 'Admin\CalculatedColumnAdminController@store');
     Route::patch('admin/rc/columnformula/update/{columnCalculation}', 'Admin\CalculatedColumnAdminController@update');
 
-    Route::get('admin/rc/msmimatching/{formcode}', 'Admin\RowColumnAdminController@rowsMatching'); // Сопоставление строк Медстат и Мединфо
+    Route::get('admin/rc/rowmatching/{formcode}', 'Admin\RowColumnAdminController@rowsMatching'); // Сопоставление строк Медстат и Мединфо
     Route::get('admin/rc/grfmatching/{formcode}', 'Admin\RowColumnAdminController@columnsMatching'); // Сопоставление граф Медстат и Мединфо
 
     // Менеджер нередактируемых ячеек
