@@ -30,6 +30,7 @@ class AdminAuthController extends Controller
         $user_id = $this->attemptWorkerAuth($credentials);
         $administrators = explode(',',config('medinfo.administrators'));
         if ($user_id && in_array($user_id, $administrators)) {
+            //dump($administrators);
             //dd($user_id);
             Auth::guard('admins')->loginUsingId($user_id);
             return $this->handleUserWasAuthenticated($request);
