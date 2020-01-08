@@ -495,14 +495,18 @@ class RowColumnAdminController extends Controller
                     }
                 }
 
-                foreach ($matching_array[$table->id] as $matched_rows) {
-                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
-                        if (isset($matched_rows[1])) {
-                            $errors[$table->id][] = 'Не совпадает код по строке Мединфо' . $matched_rows[1]  . '!';
-                        } else {
-                            $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7]  . '!';
+                if ($count_mi == 0) {
+                    $errors[$table->id][] = 'В словаре Мединфо отстутствуют строки по данной таблице';
+                } else {
+                    foreach ($matching_array[$table->id] as $matched_rows) {
+                        if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
+                            if (isset($matched_rows[1])) {
+                                $errors[$table->id][] = 'Не совпадает код по строке Мединфо' . $matched_rows[1] . '!';
+                            } else {
+                                $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7] . '!';
+                            }
+                            //$errors[$table->id][] = 'Не совпадает код по строке' ;
                         }
-                        //$errors[$table->id][] = 'Не совпадает код по строке' ;
                     }
                 }
                 //if ($table->id == 10) {
@@ -527,16 +531,20 @@ class RowColumnAdminController extends Controller
                     }
 
                 }
-                foreach ($matching_array[$table->id] as $matched_rows) {
-                    //dd($matched_rows[1]);
-                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || '0' . $matched_rows[7] !== $matched_rows[3]) {
+                if ($count_mi == 0) {
+                    $errors[$table->id][] = 'В словаре Мединфо отстутствуют строки по данной таблице';
+                } else {
+                    foreach ($matching_array[$table->id] as $matched_rows) {
+                        //dd($matched_rows[1]);
+                        if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || '0' . $matched_rows[7] !== $matched_rows[3]) {
 
-                        if (isset($matched_rows[1])) {
-                            $errors[$table->id][] = 'Не совпадает код по строке Мединфо' . $matched_rows[1]  . '!';
-                        } else {
-                            $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7]  . '!';
+                            if (isset($matched_rows[1])) {
+                                $errors[$table->id][] = 'Не совпадает код по строке Мединфо' . $matched_rows[1]  . '!';
+                            } else {
+                                $errors[$table->id][] = 'Не совпадает код по строке Медстат' . $matched_rows[7]  . '!';
+                            }
+
                         }
-
                     }
                 }
             }
@@ -576,7 +584,6 @@ class RowColumnAdminController extends Controller
                 $matching_array[$table->id][$i][3] = $column->medstat_code;
                 $i++;
             }
-
             $q_medstat = "SELECT * FROM ms_grf WHERE a1 LIKE '{$form->medstat_code}{$table->medstat_code}%' ORDER BY a1";
             $ms_columns = \DB::select($q_medstat);
             $count_ms = count($ms_columns);
@@ -592,21 +599,21 @@ class RowColumnAdminController extends Controller
                     $j++;
                 }
             }
+            if ($count_mi == 0) {
+                $errors[$table->id][] = 'В словаре Мединфо отстутствуют строки по данной таблице';
+            } else {
+                foreach ($matching_array[$table->id] as $matched_rows) {
+                    if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
+                        if (isset($matched_rows[1])) {
+                            $errors[$table->id][] = 'Не совпадает код по графе Мединфо' . $matched_rows[1] . '!';
+                        } else {
+                            $errors[$table->id][] = 'Не совпадает код по графе Медстат' . $matched_rows[7] . '!';
+                        }
 
-            foreach ($matching_array[$table->id] as $matched_rows) {
-                if (!isset($matched_rows[7]) || !isset($matched_rows[3]) || $matched_rows[7] !== $matched_rows[3]) {
-                    if (isset($matched_rows[1])) {
-                        $errors[$table->id][] = 'Не совпадает код по графе Мединфо' . $matched_rows[1]  . '!';
-                    } else {
-                        $errors[$table->id][] = 'Не совпадает код по графе Медстат' . $matched_rows[7]  . '!';
+                        //$errors[$table->id][] = 'Не совпадает код по строке' ;
                     }
-
-                    //$errors[$table->id][] = 'Не совпадает код по строке' ;
                 }
             }
-
-                //dd($matching_array);
-
             if ($count_ms <> $count_mi) {
                 $errors[$table->id][] = 'Не совпадает количество граф!';
             }

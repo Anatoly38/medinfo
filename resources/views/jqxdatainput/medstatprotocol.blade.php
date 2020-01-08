@@ -28,6 +28,7 @@
                 <th>Год</th>
                 <th>Код Медстат</th>
             </tr>
+            @if (isset($matching_array[$t->id]))
             @foreach( $matching_array[$t->id] as $r )
                 <tr @if (isset($r[3]) && isset($r[7]) && $r[3] <> $r[7]) class="danger" @endif >
                     <td>{{ $r[0] or 'Отсутствует значение' }}</td>
@@ -40,6 +41,7 @@
                     <td>{{ $r[7] or 'Отсутствует значение' }}</td>
                 </tr>
             @endforeach
+            @endif
         </table>
     </div>
     @endforeach
