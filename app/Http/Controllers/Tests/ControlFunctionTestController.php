@@ -264,9 +264,12 @@ class ControlFunctionTestController extends Controller
     public function compare_periods()
     {
         // межгодовой контроль по диапазонам ячеек
-        $function = "мгдиапазон(диапазон(С131Г4:С132Г4),  0)";
-        $table = Table::find(4);     // Ф30 Т1001
-        $document = Document::find(28181); // 30 ф Сводная Качугский район
+        //$function = "мгдиапазон(диапазон(С131Г4:С132Г4),  0)";
+        $function = "сравнение(С02Г8П0 + С02Г4 - С02Г6, С02Г8 , =, группы(п0, пi))";
+        //$table = Table::find(4);     // Ф30 Т1001
+        $table = Table::find(179);     // Ф37 Т2100
+        //$document = Document::find(28181); // 30 ф Сводная Качугский район
+        $document = Document::find(27829); // 37 ф Казач-Ленский
         $lexer = new ControlFunctionLexer($function);
         $tockenstack = $lexer->getTokenStack();
         $parser = new ControlFunctionParser($tockenstack);

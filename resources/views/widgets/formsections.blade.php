@@ -1,6 +1,6 @@
 <div class="btn-group" @if (count($formsections) === 0) style="display: none" @endif>
     <div id="SectionsManager" class="btn btn-default">
-        <div id="FormSections" style="display: none">
+        <div id="FormSections" style="display: none; height: 600px; overflow: auto">
             <table class="table table-hover">
                 @foreach($formsections as $formsection)
                     <tr @if(isset($formsection->section_blocks[0]))
