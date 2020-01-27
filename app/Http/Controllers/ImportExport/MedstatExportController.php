@@ -49,6 +49,7 @@ class MedstatExportController extends Controller
                         }
                         //dbase_add_record($db, $insert_data);
                         try {
+                            //dump($insert_data);
                             dbase_add_record($d['db'], $insert_data);
                         }
                         catch ( \ErrorException $e) {
@@ -68,6 +69,7 @@ class MedstatExportController extends Controller
                         }
                     }
                     try {
+                        //dump($insert_data);
                         dbase_add_record($d['db'], $insert_data);
                     }
                     catch ( \ErrorException $e) {
@@ -108,6 +110,7 @@ class MedstatExportController extends Controller
                     }
                     //dbase_add_record($db, $insert_data);
                     try {
+                        //dump($insert_data);
                         dbase_add_record($d['db'], $insert_data);
                     }
                     catch ( \ErrorException $e) {
@@ -127,6 +130,7 @@ class MedstatExportController extends Controller
                     }
                 }
                 try {
+                    //dump($insert_data);
                     dbase_add_record($d['db'], $insert_data);
                 }
                 catch ( \ErrorException $e) {
