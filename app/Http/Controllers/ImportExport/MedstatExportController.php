@@ -84,7 +84,7 @@ class MedstatExportController extends Controller
 
     public function tableMedstatExport(int $document, int $table)
     {
-        dd(localeconv());
+        //dd(localeconv());
         $document = \App\Document::find($document);
         $form = $document->form;
         $unit = $document->unit;
