@@ -85,7 +85,8 @@ class MedstatExportController extends Controller
     public function tableMedstatExport(int $document, int $table)
     {
         //dd(localeconv());
-        setlocale(LC_NUMERIC, 'us_US');
+        setlocale(LC_ALL, 'us_US.UTF8');
+        setlocale(LC_NUMERIC, 'C');
         $document = \App\Document::find($document);
         $form = $document->form;
         $unit = $document->unit;
