@@ -51,7 +51,7 @@ class ConsolidationRuleHelper
         $log_initial = collect($calculationLog);
         $log_c_sorted = $log_initial->sortBy('unit_code');
         $log_sorted = [];
-        // конверитирование в массив с сохранением сортировки
+        // конвертирование в массив с сохранением сортировки
         foreach ($log_c_sorted as $el ) {
             $log_sorted[] = $el;
         }

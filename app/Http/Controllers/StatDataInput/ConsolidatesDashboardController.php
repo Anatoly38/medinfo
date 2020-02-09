@@ -20,7 +20,7 @@ class ConsolidatesDashboardController extends DashboardController
 
     public function fetchConsolidationProtocol(\App\Document $document, \App\Row $row, \App\Column $column)
     {
-        $consolidate = Consolidate::OfRowColumn($row->id, $column->id)->first();
+        $consolidate = Consolidate::OfDocument($document->id)->OfRowColumn($row->id, $column->id)->first();
         if ( isset($consolidate->protocol) ) {
             return $consolidate->protocol;
         }

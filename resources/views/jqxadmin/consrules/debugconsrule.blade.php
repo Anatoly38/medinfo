@@ -21,29 +21,37 @@
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="script">Функция:</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="script" value="показатель(Ф30Т3100С1Г15П0/Ф30Т3100С1Г5П0)">
-                        <span class="help-block">Для примера расчет работы круглосуточной койки</span>
+                        {{--<input type="text" class="form-control" id="script" value="показатель(Ф30Т3100С1Г15П0/Ф30Т3100С1Г5П0)">--}}
+                        <input type="text" class="form-control" id="script" value="расчет(Ф30Т3100С1Г3)">
+                        {{--<span class="help-block">Для примера расчет работы круглосуточной койки</span>--}}
+                        <span class="help-block">Для примера, расчет числа круглосуточных коек на конец года</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="units">Списки юнитов:</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="units" value="*">
-                        <span class="help-block">По умолчанию - *, т.е. юнит текущего документа + все входящие в состав</span>
+                        {{--<input type="text" class="form-control" id="units" value="*">--}}
+                        <input type="text" class="form-control" id="units" value="l0100_06_специал_больницы, ~u00010, ~юрлица">
+                        {{--<span class="help-block">По умолчанию - *, т.е. юнит текущего документа + все входящие в состав</span>--}}
+                        <span class="help-block">Для примера, по списку специализированных больницы с ограничением по юрлицам и федеральным учреждениям</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="table">Id таблицы:</label>
                     <div class="col-sm-3">
-                        <input type="text" class="form-control" id="table" value="1031">
-                        <span class="help-block">форма 110-фп таблица 1000</span>
+                        {{--<input type="text" class="form-control" id="table" value="1031">--}}
+                        <input type="text" class="form-control" id="table" value="2">
+                        {{--<span class="help-block">форма 110-фп таблица 1000</span>--}}
+                        <span class="help-block">Для примера, форма 47 таблица 0100</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="document">Id документа:</label>
                     <div class="col-sm-3">
-                        <input type="text" class="form-control" id="document" value="23753">
-                        <span class="help-block">ф. 32 за 2018 год Уч. б-ца с. Голуметь</span>
+                        {{--<input type="text" class="form-control" id="document" value="23753">--}}
+                        <input type="text" class="form-control" id="document" value="29917">
+                        {{--<span class="help-block">ф. 32 за 2018 год Уч. б-ца с. Голуметь</span>--}}
+                        <span class="help-block">ф. 47 за 2019 год Государственные учреждения</span>
                     </div>
                 </div>
                 <div class="form-group">

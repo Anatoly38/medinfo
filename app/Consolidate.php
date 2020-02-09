@@ -18,4 +18,10 @@ class Consolidate extends Model
             ->where('column_id', $column);
     }
 
+    public function scopeOfDocument($query, $document)
+    {
+        return $query->where('doc_id', $document);
+
+    }
+
 }

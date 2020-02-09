@@ -128,6 +128,7 @@ class ConsRulesAndListsAdminController extends Controller
                 $result['error'] = false;
                 $result['comment'] = 'Успешно' ;
             } catch (\Exception $e) {
+                $result['new_hash'] = 'не вычислен';
                 $result['error'] = true;
                 $result['comment'] = 'Ошибка рекомпиляции правила расчета ' . $rule->script . ': ' . $e->getMessage();
             }
@@ -157,7 +158,8 @@ class ConsRulesAndListsAdminController extends Controller
             $glued = implode(', ', $lists);
             $units = \App\Medinfo\DSL\FunctionCompiler::compileUnitList($lists);
             //dump($units);
-            if (count($units) > 0 && !isset($units['erroe'])) {
+            //if (count($units) > 0 && !isset($units['error'])) {
+            if (!isset($units['error'])) {
                 asort($units);
                 $prop = '[' . implode(',', $units) . ']';
                 $prophashed  =  crc32($prop);
@@ -170,39 +172,43 @@ class ConsRulesAndListsAdminController extends Controller
                 $list_rule->prophash = $prophashed;
                 $result['new_list_count'] = count($units);
                 $list_rule->save();
-                if (trim($old_hash) !== (string)$prophashed) {
-                    $result['updated'] = true;
-                    $list_exists = ConsolidationList::PropHash($prophashed)->Where('id', '<>', $list_rule->id)->first();
-                    if ($list_exists ) {
-                        $result['comment'] = 'Состав списка обновлен. После рекомпилляции список оказался идентентичным по составу списку: ' . $list_exists->script . ' (Id: ' . $list_exists->id . ').' ;
-                    } else {
-                        $result['comment'] = 'Состав списка обновлен' ;
-                    }
-                } else {
-                    $result['updated'] = false;
-                    $result['comment'] = 'Состав списка остался прежним' ;
+
+                switch (true) {
+                    case trim($old_hash) !== (string)$prophashed :
+                        $result['updated'] = true;
+                        $list_exists = ConsolidationList::PropHash($prophashed)->Where('id', '<>', $list_rule->id)->first();
+                        if ($list_exists ) {
+                            $result['comment'] = 'Состав списка обновлен. После рекомпилляции список оказался идентентичным по составу списку: ' . $list_exists->script . ' (Id: ' . $list_exists->id . ').' ;
+                        } else {
+                            $result['comment'] = 'Состав списка обновлен' ;
+                        }
+                        break;
+                    case trim($old_hash) === (string)$prophashed :
+                        $result['updated'] = false;
+                        $result['comment'] = 'Состав списка остался прежним' ;
+                        break;
+                    case count($units) === 0 :
+                        $result['comment'] = 'список пуст' ;
                 }
             } else {
                 $result['updated'] = false;
                 $result['error'] = true;
-                if (is_array($units) && count($units) === 0) {
-                    $result['comment'] = 'список пуст' ;
-                } else {
-                    if (isset($units['error'])) {
-                        $result['comment'] = 'Ошибка перекомпилирования списка' . $units['error'];
-                    } else {
-                        $result['comment'] = 'Ошибка перекомпилирования списка';
-                    }
-
-                }
+                //if (isset($units['error'])) {
+                    $result['comment'] = 'Ошибка перекомпилирования списка' . $units['error'];
+                //} else {
+                  //  $result['comment'] = 'Ошибка перекомпилирования списка';
+                //}
                 $result['new_prophash'] = '';
                 $result['new_list_count'] = 0;
+                $list_rule->scripthash = '';
+                $list_rule->prophash = '';
+                $list_rule->properties = '[]';
+                $list_rule->save();
             }
             $protocol[] = $result;
         }
         //dd($protocol);
         return view('reports.recompilelistsprotocol', compact('protocol'));
-
     }
 
     public function clearRule(Request $request)
