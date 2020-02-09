@@ -4,15 +4,6 @@
             <a class="navbar-brand" href="/admin">Адмнистрирование Мединфо</a>
         </div>
         <ul class="nav navbar-nav">
-{{--            <li><a href="/admin">К началу</a></li>
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Данные
-                    <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/datainput">Ввод и корректировка</a></li>
-                        <li><a href="/medstatexport">Экспорт в Медстат</a></li>
-                    </ul>
-            </li>--}}
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Пользователи
                     <span class="caret"></span></a>
@@ -46,15 +37,12 @@
                 <ul class="dropdown-menu">
                     <li><a href="/admin/cfunctions">Функции контроля</a></li>
                     <li><a href="/admin/cfunctions/all">Функции контроля (полный перечень)</a></li>
-                    {{--<li><a href="/admin/consolidation">Функции рассчета</a></li>--}}
-                    <li><a href="/admin/cons">Функции рассчета</a></li>
+                    <li><a href="/admin/cons">Функции расчёта</a></li>
+                    <li><a href="/admin/cons/debugrule">Отладка функций расчёта</a></li>
                     <li><a href="/reports/patterns">Отчеты</a></li>
                     <li><a href="/reports/br/querycomposer">Справка</a></li>
                     <li type="separator"></li>
                     <li><a href="/admin/cfunctions/medstatnskimport">Импорт контролей из формата Медстат (Новосибирск)</a></li>
-{{--                    <li><a href="/admin/micontrols/vtk">Методики контроля Мединфо (внутритабличные)</a></li>
-                    <li><a href="/admin/micontrols/vfk">Методики контроля Мединфо (внутриформенные)</a></li>
-                    <li><a href="/admin/micontrols/mfk">Методики контроля Мединфо (межформенные)</a></li>--}}
                 </ul>
             </li>
             <li class="dropdown">
@@ -62,7 +50,6 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/admin/units">Территории/Медицинские организации</a></li>
-                    {{--<li><a href="/admin/units/groups">Группы медицинских организаций</a></li>--}}
                     <li><a href="/admin/units/lists">Списки медицинских организаций</a></li>
                     <li><a href="/admin/units/medstatimport">Импорт территорий/медицинских организаций из формата Медстат (Новосибирск)</a></li>
                 </ul>
@@ -79,9 +66,6 @@
             </li>
             <li><a href="#">@yield('local_actions')</a></li>
         </ul>
-{{--        <div class="navbar-header">
-            <a class="navbar-brand" href="#"><span class="text-primary">@yield('title')</span></a>
-        </div>--}}
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/admin/logout"><span class="glyphicon glyphicon-log-in"></span> Завершить работу</a></li>
         </ul>
