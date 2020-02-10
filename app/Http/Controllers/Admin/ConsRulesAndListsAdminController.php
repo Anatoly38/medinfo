@@ -104,6 +104,7 @@ class ConsRulesAndListsAdminController extends Controller
 
     public function recompileRules()
     {
+        set_time_limit(240);
         $rules = ConsolidationCalcrule::all();
         $protocol = [];
         $i = 1;
@@ -139,6 +140,7 @@ class ConsRulesAndListsAdminController extends Controller
 
     public function recompileLists()
     {
+        set_time_limit(240);
         $list_rules = ConsolidationList::all();
         $protocol = [];
         $i = 1;
@@ -198,10 +200,13 @@ class ConsRulesAndListsAdminController extends Controller
                 //} else {
                   //  $result['comment'] = 'Ошибка перекомпилирования списка';
                 //}
+
                 $result['new_prophash'] = '';
                 $result['new_list_count'] = 0;
-                $list_rule->scripthash = '';
-                $list_rule->prophash = '';
+                $list_rule->script .= ' ' . $units['error'];
+                // В "ошибочный" лист запишем случайный хэш, что бы избежать ошибки дублирования записей
+                $list_rule->scripthash = crc32($units['error'] . rand());
+                $list_rule->prophash = crc32($units['error'] . rand());
                 $list_rule->properties = '[]';
                 $list_rule->save();
             }

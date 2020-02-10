@@ -31,9 +31,10 @@
                     <label class="control-label col-sm-3" for="units">Списки юнитов:</label>
                     <div class="col-sm-9">
                         {{--<input type="text" class="form-control" id="units" value="*">--}}
-                        <input type="text" class="form-control" id="units" value="l0100_06_специал_больницы, ~u00010, ~юрлица">
+                        <input type="text" class="form-control" id="units" value="l100_47_Облбол, !u5480">
                         {{--<span class="help-block">По умолчанию - *, т.е. юнит текущего документа + все входящие в состав</span>--}}
-                        <span class="help-block">Для примера, по списку специализированных больницы с ограничением по юрлицам и федеральным учреждениям</span>
+                        {{--<span class="help-block">Для примера, по списку специализированных больницы с ограничением по юрлицам и федеральным учреждениям</span>--}}
+                        <span class="help-block">Для примера, по списку областных больниц за исключением Одинцовской</span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -49,7 +50,8 @@
                     <label class="control-label col-sm-3" for="document">Id документа:</label>
                     <div class="col-sm-3">
                         {{--<input type="text" class="form-control" id="document" value="23753">--}}
-                        <input type="text" class="form-control" id="document" value="29917">
+                        {{--<input type="text" class="form-control" id="document" value="29917">--}}
+                        <input type="text" class="form-control" id="document" value="77322">
                         {{--<span class="help-block">ф. 32 за 2018 год Уч. б-ца с. Голуметь</span>--}}
                         <span class="help-block">ф. 47 за 2019 год Государственные учреждения</span>
                     </div>
