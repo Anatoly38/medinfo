@@ -31,8 +31,8 @@
 
 @section('tableConsolidateButton')
     {{-- Экспорт в Медстат ЦНИИОИЗ--}}
-    <button class="btn btn-default navbar-btn" id="tableMedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
-        <span class='fa fa-download fa-lg' ></span>
+    <button class="btn btn-default navbar-btn" id="MedstatExport" title="Экспорт данных таблицы в формат Медстат ЦНИИОИЗ (dbf)">
+        <span class="fal fa-download fa-lg"></span>
         <span>МС</span>
     </button>
     {{-- Кнопка для запуска консолидации текущей таблицы --}}
@@ -74,9 +74,9 @@ initTableMedstatExportButton();
 @push('loadjsscripts')
 @include('jqxdatainput.jsstack')
     @if(config('medinfo.ssl_connection'))
-        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=208') }}"></script>
+        <script src="{{ secure_asset('/medinfo/editdashboard.js?v=210') }}"></script>
     @else
-        <script src="{{ asset('/medinfo/editdashboard.js?v=208') }}"></script>
+        <script src="{{ asset('/medinfo/editdashboard.js?v=210') }}"></script>
     @endif
 @endpush('loadjsscripts')
 

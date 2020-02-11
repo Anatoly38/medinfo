@@ -1472,28 +1472,14 @@ let initConsolidateButton = function () {
 };
 
 let initTableMedstatExportButton = function() {
-    let me = $("#tableMedstatExport");
+    console.log('init Medstat export button_');
+    let me = $("#MedstatExport");
     me.click(function () {
+        console.log('click Medstat export button_');
         let url = msexport_url + current_table ;
         location.replace(url);
     });
 };
-
-/*let firefullscreenevent = function() {
-    $(document).bind('fscreenchange', function(e, state, elem) {
-        let fsel1 =  $('#togglefullscreen');
-        let fsel3 =  $('#toggle_formcontrolscreen');
-        if ($.fullscreen.isFullScreen()) {
-            fsel1.jqxToggleButton('check');
-            fsel2.jqxToggleButton('check');
-            fsel3.jqxToggleButton('check');
-        } else {
-            fsel1.jqxToggleButton('unCheck');
-            fsel2.jqxToggleButton('unCheck');
-            fsel3.jqxToggleButton('unCheck');
-        }
-    });
-};*/
 
 // проверяем ли находится ли данная ячейка в списке запрещенных к редактированию ячеек
 let cellbeginedit = function (row, datafield, columntype, value) {
