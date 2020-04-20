@@ -45,6 +45,7 @@ class CFunctionAdminController extends Controller
 
     public function fetchCcfunctionsAll()
     {
+        set_time_limit(180);
         return CFunction::orderBy('created_at', 'desc')->orderBy('updated_at', 'desc')->with('table.form')->with('level')->with('type')->get();
     }
 

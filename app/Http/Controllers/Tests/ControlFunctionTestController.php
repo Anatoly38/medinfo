@@ -265,11 +265,16 @@ class ControlFunctionTestController extends Controller
     {
         // межгодовой контроль по диапазонам ячеек
         //$function = "мгдиапазон(диапазон(С131Г4:С132Г4),  0)";
-        $function = "сравнение(С02Г8П0 + С02Г4 - С02Г6, С02Г8 , =, группы(п0, пi))";
+        //$function = "сравнение(С02Г8П0 + С02Г4 - С02Г6, С02Г8 , =, группы(п0, пi))";
+        //$function = "сравнение(С1Г3, Ф2-нпТ2001С1Г3П-1, >=)";
+        $function = "сравнение(С1Г3, Ф2-нпТ2001С1Г3П-1 +(С1Г4 - Ф2-нпТ2001С1Г4П-1) -(С1Г7-Ф2-нпТ2001С1Г7П-1), =)";
         //$table = Table::find(4);     // Ф30 Т1001
-        $table = Table::find(179);     // Ф37 Т2100
+        //$table = Table::find(179);     // Ф37 Т2100
+        $table = Table::find(1264);     // Ф2-нп Т2001
         //$document = Document::find(28181); // 30 ф Сводная Качугский район
-        $document = Document::find(27829); // 37 ф Казач-Ленский
+        //$document = Document::find(27829); // 2-рп ф Казач-Ленский
+        //$document = Document::find(99246); // 2-нп ф Бронницкая ГБ - 2-й месяц
+        $document = Document::find(101996); // 2-нп ф Бронницкая ГБ - 3-й месяц
         $lexer = new ControlFunctionLexer($function);
         $tockenstack = $lexer->getTokenStack();
         $parser = new ControlFunctionParser($tockenstack);

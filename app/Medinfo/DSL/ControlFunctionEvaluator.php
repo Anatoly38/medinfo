@@ -187,6 +187,7 @@ class ControlFunctionEvaluator
                 } else {
                     //dd($form_id);
                     if (isset($cell_adress['codes']['p'])) {
+                        //dd($cell_adress['codes']['p']);
                         $period = $this->getDocumentPeriod($cell_adress['codes']['p']);
                         //dd($period);
                         if ($period) {
@@ -296,6 +297,7 @@ class ControlFunctionEvaluator
         $previous_period = null;
         switch ($code) {
             case '-1' :
+                //dd('Вызов расчета предыдущего периода');
                 return $this->getPreviousRelativePeriod();
             case 'V' :
                 //dd(Period::NextAnnual($this->period)->first());
@@ -392,6 +394,7 @@ class ControlFunctionEvaluator
 
     public function getPreviousRelativePeriod()
     {
+        //dd($this->pattern);
         switch ($this->pattern->periodicity) {
             case 1 : // годовые периоды
                 $previous_period = Period::PreviousAnnual($this->period)->first();
@@ -404,6 +407,8 @@ class ControlFunctionEvaluator
                 $previous_period = Period::PreviousQuarter($this->period)->first();
                 break;
             case 5 :
+                //dd('Вызов расчета предыдущего месячного периода');
+                //dd($this->period);
                 $previous_period = Period::PreviousMonth($this->period)->first();
                 break;
             default :

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Period extends Model
@@ -84,7 +85,13 @@ class Period extends Model
     public function scopePreviousMonth($query, $current_period)
     {
         $previous_month_pattern = self::$period_cycles_backward[$current_period->pattern_id];
-        $previous_month_enddate = $current_period->end_date->subMonth()->subDay()->endOfMonth(); // Функция Carbon, вычитающая месяц из текущей даты
+        // Функция Carbon, вычитающая месяц из текущей даты - неправильный расчет в феврале:
+        //$previous_month_enddate = $current_period->end_date->subMonth()->subDay()->endOfMonth();
+        // здесь правильно
+        $previous_month_enddate = $current_period->begin_date->subDay()->endOfMonth(); // Функция Carbon, вычитающая месяц из текущей даты
+        //dd($current_period);
+        //dd($previous_month_enddate);
+        //dd($current_period->end_date->subMonth()->subDay(3)->endOfMonth());
         return $query
             ->where('end_date', $previous_month_enddate)
             ->where('pattern_id', $previous_month_pattern);
