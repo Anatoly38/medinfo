@@ -72,10 +72,10 @@
     <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 @endif
 
-    <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=006') }}"></script>
+    <script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=007') }}"></script>
     <script src="{{ secure_asset('/jqwidgets/globalization/globalize.js') }}"></script>
-    <script src="{{ secure_asset('/jqwidgets/localization.js?v=004') }}"></script>
-    <script src="{{ secure_asset('/medinfo/dashboard.js?v=102') }}"></script>
+    <script src="{{ secure_asset('/jqwidgets/localization.js?v=005') }}"></script>
+    <script src="{{ secure_asset('/medinfo/dashboard.js?v=103') }}"></script>
     <script src="{{ secure_asset('/plugins/fullscreen/jquery.fullscreen.js?v=004') }}"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
