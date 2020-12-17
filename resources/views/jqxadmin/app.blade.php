@@ -39,7 +39,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 {{--<script src="{{ asset('/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript" ></script>--}}
-<script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=003') }}"></script>
+<script src="{{ secure_asset('/jqwidgets/jqx-all.js?v=004') }}"></script>
 <script src="{{ secure_asset('/jqwidgets/localization.js') }}"></script>
 <script src="{{ secure_asset('/medinfo/admin/admin.js?v=004') }}"></script>
 <script src="{{ secure_asset('/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
