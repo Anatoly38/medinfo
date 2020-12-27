@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Tests;
 
+use App\Medinfo\DSL\CompareEvaluator;
+use App\Medinfo\DSL\ControlFunctionEvaluator;
 use App\Medinfo\DSL\ControlFunctionLexer;
 use App\Medinfo\DSL\ControlFunctionParser;
 use App\Medinfo\DSL\ControlPtreeTranslator;
@@ -21,13 +23,16 @@ class ControlFunctionTestController extends Controller
     // тест контроля на сравнение
     public function compare()
     {
-        $table = Table::find(10);     // Ф30 Т1100
-        $document = Document::find(4519); // 30 ф Салтыковский детский дом 3 кв. МСК
-        $function = "сравнение(Фрп-123Т100С1Г11, Ф102-оксТ100С1Г1, =)";
+        //$table = Table::find(10);     // Ф30 Т1100
+        $table = Table::find(255);     // Ф7-т Т1000
+        //$document = Document::find(4519); // 30 ф Салтыковский детский дом 3 кв. МСК
+        $document = Document::find(34260); // 7-т ЦМП 2020
+        //$function = "сравнение(Фрп-123Т100С1Г11, Ф102-оксТ100С1Г1, =)";
+        $function = "сравнение(С17Г4, С18Г4+С19Г4+С20Г4+С21Г4+С22Г4, >=)";
 
         $lexer = new ControlFunctionLexer($function);
         $tockenstack = $lexer->getTokenStack();
-        dd($tockenstack);
+        //dd($tockenstack);
         //dd($lexer->normalizeInput());
         //dd($lexer);
 
@@ -47,8 +52,9 @@ class ControlFunctionTestController extends Controller
         //dd($translator->parser->root);
         //$prop = $translator->getProperties();
         //dd($prop['iterations'][0]['С1Г3|0']);
-        $evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
+        //$evaluator = Evaluator::invoke($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($translator->parser->root, $translator->getProperties(), $document);
+        $evaluator = new CompareEvaluator($translator->parser->root, $translator->getProperties(), $document);
         //$evaluator = new ControlFunctionEvaluator($pTree, $props, $document);
         //$evaluator->prepareCellValues();
         //$evaluator->prepareCAstack();
