@@ -483,8 +483,8 @@ class ControlFunctionEvaluator
         }
         // На этом этапе перехватываем ошибки сравнения чисел с плавающей точкой
         // если числа равны, возваращаем true и прерываем дальнейшие проверки
-        //if (in_array($boolean, self::EQUAL_COMPARE) && abs($lp - $rp) < self::DELTA) {
-        if (in_array($boolean, self::EQUAL_COMPARE) && bccomp($lp, $rp, 3) === 0 ) {
+        if (in_array($boolean, self::EQUAL_COMPARE) && abs($lp - $rp) < self::DELTA) {
+        //if (in_array($boolean, self::EQUAL_COMPARE) && bccomp($lp, $rp, 3) === 0 ) {
             return true;
         }
         switch ($boolean) {
