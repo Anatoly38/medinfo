@@ -29,6 +29,8 @@ class ControlFunctionEvaluator
     public $valid;
     public $comment = [];
     public $related = false; // Является ли форма разрезом?
+    const EQUAL_COMPARE = ['==', '>=', '<=', '='];
+    const DELTA = 0.0001;
 
     public function __construct(ParseTree $ptree, $properties, Document $document = null)
     {
@@ -475,15 +477,20 @@ class ControlFunctionEvaluator
 
     public function compare($lp, $rp, $boolean)
     {
-        $delta = 0.0001;
         // Если обе части выражения равны нулю - пропускаем проверку.
         if ($lp == 0 && $rp == 0) {
+            return true;
+        }
+        // На этом этапе перехватываем ошибки сравнения чисел с плавающей точкой
+        // если числа равны, возваращаем true и прерываем дальнейшие проверки
+        if (in_array($boolean, self::EQUAL_COMPARE) && abs($lp - $rp) < self::DELTA) {
             return true;
         }
         switch ($boolean) {
             case '=' :
             case '==' :
-                $result = abs($lp - $rp) < $delta ? true : false;
+                //dd(bccomp($lp, $rp, 3));
+                $result = abs($lp - $rp) < self::DELTA ? true : false;
                 break;
             case '>' :
                 $result = $lp > $rp;
