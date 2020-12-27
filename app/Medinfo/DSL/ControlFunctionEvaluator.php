@@ -483,34 +483,42 @@ class ControlFunctionEvaluator
         }
         // На этом этапе перехватываем ошибки сравнения чисел с плавающей точкой
         // если числа равны, возваращаем true и прерываем дальнейшие проверки
-        if (in_array($boolean, self::EQUAL_COMPARE) && abs($lp - $rp) < self::DELTA) {
+        //if (in_array($boolean, self::EQUAL_COMPARE) && abs($lp - $rp) < self::DELTA) {
+        if (in_array($boolean, self::EQUAL_COMPARE) && bccomp($lp, $rp, 3) === 0 ) {
             return true;
         }
         switch ($boolean) {
             case '=' :
             case '==' :
-                //dd(bccomp($lp, $rp, 3));
-                $result = abs($lp - $rp) < self::DELTA ? true : false;
-                break;
+                //$result = bccomp($lp, $rp, 3) == 0 ? true : false;
+                //$result = abs($lp - $rp) < self::DELTA ? true : false;
+                //break;
+                return false;
             case '>' :
-                $result = $lp > $rp;
-                break;
             case '>=' :
-                $result = $lp >= $rp;
-                break;
+                //$result = $lp > $rp;
+                //break;
+                return $lp > $rp;
+            //case '>=' :
+              //  $result = $lp >= $rp;
+                //break;
             case '<' :
-                $result = $lp < $rp;
-                break;
             case '<=' :
-                $result = $lp <= $rp;
-                break;
+                //$result = $lp < $rp;
+                //break;
+                return $lp < $rp;
+            //case '<=' :
+              //  $result = $lp <= $rp;
+                //break;
             case '^' :
-                $result = ($lp && $rp) || (!$lp && !$rp);
-                break;
+                //$result = ($lp && $rp) || (!$lp && !$rp);
+                //break;
+                return ($lp && $rp) || (!$lp && !$rp);
             default:
-                $result = false;
+                //$result = false;
+                return false;
         }
-        return $result;
+        //return $result;
     }
 
     public function multiplicity($number, $divider)
