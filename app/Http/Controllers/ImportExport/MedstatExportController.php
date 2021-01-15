@@ -316,14 +316,17 @@ class MedstatExportController extends Controller
         ];
 
         // создаем
-        //$db = dbase_create('/home/vagrant/Code/m.dbf', $medstatsructure);
-        //dd(storage_path('app/exports/medstat') . '/m.dbf');
-        $dbf_file = storage_path('app/exports/medstat') . '/' . $ucode . '_' . $fcode . '.dbf';
+        $dbf_name = $ucode . '_' . $fcode . '.dbf';
+        $dbf_file = storage_path('app/exports/medstat') . '/' . $dbf_name;
+        if (file_exists($dbf_file)) {
+            unlink($dbf_file);
+        }
+
         $db = dbase_create($dbf_file, $medstatsructure);
         if (!$db) {
-            new \Exception("Ошибка, не получается создать базу данных m.dbf");
+            new \Exception("Ошибка, не получается создать базу данных " . $dbf_name);
         }
-        return ['pattern' => $insert_pattern, 'file' => $dbf_file, 'db' => $db ];
+        return [ 'pattern' => $insert_pattern, 'file' => $dbf_file, 'db' => $db ];
     }
 
 }
